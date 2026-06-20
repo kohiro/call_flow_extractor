@@ -10,6 +10,7 @@ import java.util.Map;
 public class ClassAstVisitor extends ASTVisitor {
 
     private final String targetMethodName;
+    private final int targetArgCount;
     private final String fileContent;
 
     private final List<String> imports = new ArrayList<>();
@@ -22,9 +23,10 @@ public class ClassAstVisitor extends ASTVisitor {
     private final Map<String, String> localVariableTypes = new HashMap<>();
     private boolean isInterface = false;
 
-    public ClassAstVisitor(String fileContent, String targetMethodName) {
+    public ClassAstVisitor(String fileContent, String targetMethodName, int targetArgCount) {
         this.fileContent = fileContent;
         this.targetMethodName = targetMethodName;
+        this.targetArgCount = targetArgCount;
     }
 
     @Override
@@ -57,8 +59,13 @@ public class ClassAstVisitor extends ASTVisitor {
     @Override
     public boolean visit(MethodDeclaration node) {
         if (node.getName().getIdentifier().equals(targetMethodName)) {
+            // Check argument count if specified
+            if (targetArgCount != -1 && node.parameters().size() != targetArgCount) {
+                return super.visit(node);
+            }
+            
             // Found target method
-            targetMethodSource = extractSource(node);
+            targetMethodSource = extractSourceWithIndent(node);
             targetMethodDecl = node;
             
             // Extract method parameters
@@ -87,7 +94,8 @@ public class ClassAstVisitor extends ASTVisitor {
                 public boolean visit(MethodInvocation methodInvocation) {
                     String receiver = methodInvocation.getExpression() != null ? methodInvocation.getExpression().toString() : null;
                     String methodName = methodInvocation.getName().getIdentifier();
-                    methodCalls.add(new MethodCallInfo(receiver, methodName));
+                    int argCount = methodInvocation.arguments().size();
+                    methodCalls.add(new MethodCallInfo(receiver, methodName, argCount));
                     return super.visit(methodInvocation);
                 }
             });
@@ -96,6 +104,12 @@ public class ClassAstVisitor extends ASTVisitor {
     }
 
     private String extractSource(ASTNode node) {
+        int start = node.getStartPosition();
+        int length = node.getLength();
+        return fileContent.substring(start, start + length);
+    }
+
+    private String extractSourceWithIndent(ASTNode node) {
         int start = node.getStartPosition();
         int length = node.getLength();
         
@@ -146,10 +160,12 @@ public class ClassAstVisitor extends ASTVisitor {
     public static class MethodCallInfo {
         public final String receiver;
         public final String methodName;
+        public final int argCount;
 
-        public MethodCallInfo(String receiver, String methodName) {
+        public MethodCallInfo(String receiver, String methodName, int argCount) {
             this.receiver = receiver; // Can be null if statically imported or intra-class
             this.methodName = methodName;
+            this.argCount = argCount;
         }
     }
 }

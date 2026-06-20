@@ -21,12 +21,19 @@ public class ProjectIndexer {
     private final Map<String, List<String>> implementorsMap = new HashMap<>();
     private final Map<String, String> superclassMap = new HashMap<>(); // Child FQCN -> Parent Name
     private List<Path> allXmlFiles;
+    private Path projectRootPath;
 
-    public void indexProject(String projectRootPath) throws IOException {
-        Path root = Path.of(projectRootPath);
+    public Path getProjectRootPath() {
+        return projectRootPath;
+    }
+
+    public void indexProject(String rootPath) throws IOException {
+        this.projectRootPath = Path.of(rootPath).toAbsolutePath().normalize();
         
-        try (Stream<Path> paths = Files.walk(root)) {
-            List<Path> allFiles = paths.filter(Files::isRegularFile).collect(Collectors.toList());
+        List<Path> allFiles;
+        try (Stream<Path> stream = Files.walk(projectRootPath)) {
+            allFiles = stream.collect(Collectors.toList());
+        }
             
             allXmlFiles = allFiles.stream()
                     .filter(p -> p.toString().endsWith(".xml"))
@@ -89,7 +96,6 @@ public class ProjectIndexer {
                     // Ignore parsing errors for individual files during indexing
                 }
             }
-        }
     }
 
     private String addImplementor(Type parentType, String childFqcn) {

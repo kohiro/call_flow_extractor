@@ -20,7 +20,7 @@ public class CallFlowExtractorMain {
             indexer.indexProject(projectRoot);
 
             FlowTracer tracer = new FlowTracer(indexer);
-            List<ExtractedBlock> blocks = tracer.trace(controllerFqcn, methodName);
+            List<ExtractedBlock> blocks = tracer.trace(controllerFqcn, methodName, -1);
 
             StringBuilder markdownOutput = new StringBuilder();
             markdownOutput.append("# Data Flow Extraction\n\n");
