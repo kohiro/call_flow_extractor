@@ -52,7 +52,7 @@ public class ClassAstVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(FieldDeclaration node) {
-        fields.add(extractSource(node));
+        fields.add(extractSourceDedented(node));
         return super.visit(node);
     }
 
@@ -65,7 +65,7 @@ public class ClassAstVisitor extends ASTVisitor {
             }
             
             // Found target method
-            targetMethodSource = extractSourceWithIndent(node);
+            targetMethodSource = extractSourceDedented(node);
             targetMethodDecl = node;
             
             // Extract method parameters
@@ -109,20 +109,82 @@ public class ClassAstVisitor extends ASTVisitor {
         return fileContent.substring(start, start + length);
     }
 
-    private String extractSourceWithIndent(ASTNode node) {
+    private String extractSourceDedented(ASTNode node) {
         int start = node.getStartPosition();
         int length = node.getLength();
         
-        // Find the start of the line to include indentation
+        // Go back to the very beginning of the line
         int lineStart = start;
         while (lineStart > 0 && fileContent.charAt(lineStart - 1) != '\n') {
-            if (!Character.isWhitespace(fileContent.charAt(lineStart - 1))) {
-                break; // Stop if we hit non-whitespace
-            }
             lineStart--;
         }
         
-        return fileContent.substring(lineStart, start + length);
+        String rawSource = fileContent.substring(lineStart, start + length);
+        String[] lines = rawSource.split("\n", -1);
+        
+        String firstLinePrefix = fileContent.substring(lineStart, start);
+        boolean hasNonWhitespacePrefix = !firstLinePrefix.trim().isEmpty();
+        
+        int minIndentLength = Integer.MAX_VALUE;
+        String minIndent = "";
+        
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            
+            // Remove \r if present
+            if (line.endsWith("\r")) {
+                line = line.substring(0, line.length() - 1);
+                lines[i] = line;
+            }
+            
+            if (i == 0 && hasNonWhitespacePrefix) {
+                continue;
+            }
+            if (line.trim().isEmpty()) {
+                continue;
+            }
+            
+            String currentIndent = "";
+            for (int j = 0; j < line.length(); j++) {
+                char c = line.charAt(j);
+                if (c == ' ' || c == '\t') {
+                    currentIndent += c;
+                } else {
+                    break;
+                }
+            }
+            if (currentIndent.length() < minIndentLength) {
+                minIndentLength = currentIndent.length();
+                minIndent = currentIndent;
+            }
+        }
+        
+        if (minIndentLength == Integer.MAX_VALUE || minIndentLength == 0) {
+            return fileContent.substring(start, start + length);
+        }
+        
+        StringBuilder dedented = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            
+            if (i == 0 && hasNonWhitespacePrefix) {
+                String nodeContentOnFirstLine = line.substring(firstLinePrefix.length());
+                dedented.append(nodeContentOnFirstLine);
+            } else {
+                if (line.startsWith(minIndent)) {
+                    dedented.append(line.substring(minIndent.length()));
+                } else if (line.trim().isEmpty()) {
+                    dedented.append("");
+                } else {
+                    dedented.append(line);
+                }
+            }
+            
+            if (i < lines.length - 1) {
+                dedented.append("\n");
+            }
+        }
+        return dedented.toString();
     }
 
     public List<String> getImports() {

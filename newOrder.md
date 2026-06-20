@@ -2,9 +2,10 @@
 
 **Start:** `cryptobot.web.view.pages.MarketView#newOrder`
 
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/web/view/pages/MarketView.java
+### src/main/java/cryptobot/web/view/pages/MarketView.java (newOrder)
 
 ```java
+// --- インポート ---
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -35,28 +36,30 @@ import static java.math.BigDecimal.ONE;
 import static org.knowm.xchange.dto.Order.OrderType.ASK;
 import static org.knowm.xchange.dto.Order.OrderType.BID;
 
-    static final String BTC_PRICE_HTML = """
+// --- フィールド ---
+static final String BTC_PRICE_HTML = """
             <div class="coinmarketcap-currency-widget" data-currencyid="1" data-base="JPY" data-secondary="USD" 
                 data-ticker="true" data-rank="false" data-marketcap="true" data-volume="true" data-statsticker="true" data-stats="JPY">
             </div>""";
-    @Autowired Broadcaster broadcaster;
-    @Autowired DistributedMarketOrderLogic dmo;
-    @Autowired ServiceManager serviceManager;
-    @Value("${cryptobot.currencyPair}") CurrencyPair ccyp;
-    @Value("${cryptobot.price.precision}")  int scale;
-    @Value("${cryptobot.volume.precision}") int volScale;
-    String volFormat;
-    String priceFormat;
-    Registration broadcasterRegistration;
-    Predicate<? super MarketData> enabled = r->r.getExchangeService().isEnable();
-    ExecutorService taskWorker;
-    TaskExecutor viewUpdater;
-    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
-    private static final String GRID_ID = "market_grid";
-    private Grid<MarketData> grid;
-    private Text priceDivergence;
-    private Dialog dialog;
+@Autowired Broadcaster broadcaster;
+@Autowired DistributedMarketOrderLogic dmo;
+@Autowired ServiceManager serviceManager;
+@Value("${cryptobot.currencyPair}") CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}")  int scale;
+@Value("${cryptobot.volume.precision}") int volScale;
+String volFormat;
+String priceFormat;
+Registration broadcasterRegistration;
+Predicate<? super MarketData> enabled = r->r.getExchangeService().isEnable();
+ExecutorService taskWorker;
+TaskExecutor viewUpdater;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
+private static final String GRID_ID = "market_grid";
+private Grid<MarketData> grid;
+private Text priceDivergence;
+private Dialog dialog;
 
+// --- メソッド定義 ---
     private void newOrder(Grid<MarketData> grid, MarketData marketData) {
         if (marketData == null || marketData.getExchangeService().isEnable() == false) {
             notifyError(this.getUI(), "exchange not ebnabled");
@@ -105,9 +108,10 @@ import static org.knowm.xchange.dto.Order.OrderType.BID;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/web/view/pages/MarketView.java
+### src/main/java/cryptobot/web/view/pages/MarketView.java (placeOrder)
 
 ```java
+// --- インポート ---
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -130,28 +134,30 @@ import java.util.function.Predicate;
 import static cryptobot.web.view.pages.CommonComponent.*;
 import static java.lang.String.format;
 
-    static final String BTC_PRICE_HTML = """
+// --- フィールド ---
+static final String BTC_PRICE_HTML = """
             <div class="coinmarketcap-currency-widget" data-currencyid="1" data-base="JPY" data-secondary="USD" 
                 data-ticker="true" data-rank="false" data-marketcap="true" data-volume="true" data-statsticker="true" data-stats="JPY">
             </div>""";
-    @Autowired Broadcaster broadcaster;
-    @Autowired DistributedMarketOrderLogic dmo;
-    @Autowired ServiceManager serviceManager;
-    @Value("${cryptobot.currencyPair}") CurrencyPair ccyp;
-    @Value("${cryptobot.price.precision}")  int scale;
-    @Value("${cryptobot.volume.precision}") int volScale;
-    String volFormat;
-    String priceFormat;
-    Registration broadcasterRegistration;
-    Predicate<? super MarketData> enabled = r->r.getExchangeService().isEnable();
-    ExecutorService taskWorker;
-    TaskExecutor viewUpdater;
-    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
-    private static final String GRID_ID = "market_grid";
-    private Grid<MarketData> grid;
-    private Text priceDivergence;
-    private Dialog dialog;
+@Autowired Broadcaster broadcaster;
+@Autowired DistributedMarketOrderLogic dmo;
+@Autowired ServiceManager serviceManager;
+@Value("${cryptobot.currencyPair}") CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}")  int scale;
+@Value("${cryptobot.volume.precision}") int volScale;
+String volFormat;
+String priceFormat;
+Registration broadcasterRegistration;
+Predicate<? super MarketData> enabled = r->r.getExchangeService().isEnable();
+ExecutorService taskWorker;
+TaskExecutor viewUpdater;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
+private static final String GRID_ID = "market_grid";
+private Grid<MarketData> grid;
+private Text priceDivergence;
+private Dialog dialog;
 
+// --- メソッド定義 ---
     private boolean placeOrder(ExchangeService service, OrderType orderType, BigDecimal price, BigDecimal volume) {
         if (orderType == null) {
             notifyError(this.getUI(),"Order Type in not selected");
@@ -177,9 +183,10 @@ import static java.lang.String.format;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (order)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -207,58 +214,58 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	/**
-	 * 成行注文
-	 * @param type 注文の方向
-	 * @param volume 数量
-	 * @return 注文送信後に注文情報を取得した結果の注文レコード
+	 * 指値注文
+	 * @param type
+	 * @param volume
+	 * @param limitPrice
+	 * @return
 	 * @throws Exception
 	 */
-	public OrderRecord order(OrderType type, BigDecimal volume) throws Exception {
-		var bookType = type.getOpposite();
-		getOrderbookService().takeOrder(bookType, volume);
+	public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		OrderRecord order;
-        try {
-            if (type.equals(OrderType.BID)) {
-                order = buySpot(volume.setScale(volScale, HALF_UP));
-            } else {
-                order = sellSpot(volume.setScale(volScale, HALF_UP));
-            }
-			log.info("market order created. order: {}", order);
-			var price = order.getAveragePrice();
-            getOrderbookService().correctBestPrice(bookType, price);
-            return order;
-        } catch (Exception e) {
+		try {
+			if (type.equals(OrderType.BID)) {
+				order = buySpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
+			} else {
+				order = sellSpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
+			}
+			log.info("limit order created. order: {}", order);
+			return order;
+		} catch (Exception e) {
 			mailer.info("exchange disabled on order error", "disabled exchange: " + getName());
 			setEnable(false);
 			throw e;
-        }
-    }
+		}
+	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (buySpot)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -289,26 +296,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		LimitOrder order = new LimitOrder(OrderType.BID, volume, ccyp, null, null, limitPrice);
 		String id = xchange.getTradeService().placeLimitOrder(order);
@@ -316,9 +325,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (getOrder)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -344,32 +354,35 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	abstract public OrderRecord getOrder(String id) throws Exception;
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/binance/Binance.java
+### src/main/java/cryptobot/exchange/binance/Binance.java (getOrder)
 
 ```java
+// --- インポート ---
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 import org.knowm.xchange.binance.service.BinanceAccountService;
@@ -386,25 +399,27 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.*;
 
-	@Autowired BinanceOrderbookService orderbookService;
-	@Value("${binance.api.key}") private String API_KEY;
-	@Value("${binance.api.secret}") private String SECRET;
-	@Value("${binance.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${binance.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${binance.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${binance.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${binance.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${binance.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${binance.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${binance.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${binance.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${binance.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${binance.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	BinanceTradeService tradeService;
-	BinanceAccountService accountService;
-	private final int stepSize = 4;
-	@Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
+// --- フィールド ---
+@Autowired BinanceOrderbookService orderbookService;
+@Value("${binance.api.key}") private String API_KEY;
+@Value("${binance.api.secret}") private String SECRET;
+@Value("${binance.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${binance.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${binance.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${binance.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${binance.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${binance.address.xlm:#{null}}") String XLM_ADDRESS;
+@Value("${binance.address.xlm.memo:#{null}}") String XLM_MEMO;
+@Value("${binance.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${binance.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${binance.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${binance.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+BinanceTradeService tradeService;
+BinanceAccountService accountService;
+private final int stepSize = 4;
+@Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
 
+// --- メソッド定義 ---
 	synchronized public OrderRecord getOrder(String orderId) throws Exception {
 		var present = orderPool.getById(orderId);
 		if (present != null) {
@@ -430,9 +445,10 @@ import java.util.*;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (getOrder)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.math.BigDecimal.*;
@@ -456,30 +472,32 @@ import cryptobot.exchange.PlacedOrderNotFoundException;
 import cryptobot.exchange.bitbank.dto.*;
 import cryptobot.misc.MailSender;
 
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
 	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 			CurrencyPair.BTC_JPY, "BTC_JPY"
 	);
 
+// --- メソッド定義 ---
 	@Override
 	synchronized public OrderRecord getOrder(String id) throws Exception {
 		var path = "/v1/user/spot/order";
@@ -496,9 +514,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (doHttpGet)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.math.BigDecimal.*;
@@ -523,30 +542,32 @@ import cryptobot.misc.JsonUtils;
 import cryptobot.misc.MailSender;
 import org.springframework.web.client.RestClient.ResponseSpec.ErrorHandler;
 
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
 	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 			CurrencyPair.BTC_JPY, "BTC_JPY"
 	);
 
+// --- メソッド定義 ---
 	protected <T> T doHttpGet(String path, Class<T> clazz, Map<String, String> params) throws Exception {
 		Map<String, String> query = params != null ? params : Map.of();
 		Map<String, String> headers = getPrivateRequestHeader(path, query);
@@ -569,9 +590,10 @@ import org.springframework.web.client.RestClient.ResponseSpec.ErrorHandler;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (getPrivateRequestHeader)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.lang.System.currentTimeMillis;
@@ -593,40 +615,46 @@ import cryptobot.exchange.OrderbookService;
 import cryptobot.exchange.bitbank.dto.*;
 import cryptobot.misc.MailSender;
 
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
 	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 			CurrencyPair.BTC_JPY, "BTC_JPY"
 	);
 
-	protected Map<String, String> getPrivateRequestHeader(String json) {
+// --- メソッド定義 ---
+	protected Map<String, String> getPrivateRequestHeader(String path, Map<String, String> query) {
 		long nonce = currentTimeMillis();
-		String message = String.valueOf(nonce) + json;
+		String queryString = query.entrySet().stream()
+				.map(e -> e.getKey() + "=" + e.getValue()).collect(joining("&"));
+		if (!queryString.isEmpty()) queryString = "?" + queryString;
+		String message = String.valueOf(nonce) + path + queryString;
 		return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message));
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (makePrivateRequestHeaders)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.math.BigDecimal.*;
@@ -647,30 +675,32 @@ import cryptobot.exchange.OrderbookService;
 import cryptobot.exchange.bitbank.dto.*;
 import cryptobot.misc.MailSender;
 
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
 	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 			CurrencyPair.BTC_JPY, "BTC_JPY"
 	);
 
+// --- メソッド定義 ---
 	private Map<String, String> makePrivateRequestHeaders(long nonce, String sign) {
 		return Map.of(
 				"Content-Type", "application/json; charset=utf-8",
@@ -680,9 +710,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/GenericService.java
+### src/main/java/cryptobot/exchange/GenericService.java (createHMAC)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import org.apache.commons.codec.binary.Hex;
@@ -692,9 +723,11 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	protected volatile boolean serviceStarted = false;
+// --- フィールド ---
+protected final Logger log = LoggerFactory.getLogger(getClass());
+protected volatile boolean serviceStarted = false;
 
+// --- メソッド定義 ---
     @NotNull
     protected String createHMAC(String secret, String data) {
         try {
@@ -710,9 +743,10 @@ import javax.crypto.spec.SecretKeySpec;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/coincheck/Coincheck.java
+### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (getOrder)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import cryptobot.dto.OrderRecord;
@@ -728,27 +762,29 @@ import java.util.*;
 import static org.knowm.xchange.currency.CurrencyPair.BTC_JPY;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
-    @Value("${coincheck.api.key}") private String API_KEY;
-    @Value("${coincheck.api.secret}") private String SECRET;
-    @Autowired CoincheckOrderbookService orderbookService;
-    static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
-        /** id 注文のID（新規注文でのIDと同一です）*/
+// --- フィールド ---
+@Value("${coincheck.api.key}") private String API_KEY;
+@Value("${coincheck.api.secret}") private String SECRET;
+@Autowired CoincheckOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
+/** id 注文のID（新規注文でのIDと同一です）*/
         @JsonProperty("id")  String orderId;
-        /** rate 注文のレート（ null の場合は成り行き注文です）*/
+/** rate 注文のレート（ null の場合は成り行き注文です）*/
         @JsonProperty("rate")  BigDecimal limitPrice;
-        /** pending_amount 注文の未決済の量 */
+/** pending_amount 注文の未決済の量 */
         @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
-        /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
+/** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
         @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
-        /** order_type 注文のタイプ（"sell" or "buy"）*/
+/** order_type 注文のタイプ（"sell" or "buy"）*/
         @JsonProperty("order_type")  String orderType;
-        /** stop_loss_rate 逆指値レート */
+/** stop_loss_rate 逆指値レート */
         @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
-        /** pair 取引ペア */
+/** pair 取引ペア */
         @JsonProperty("pair")  CurrencyPair currencyPair;
-        /** created_at 注文の作成日時 */
+/** created_at 注文の作成日時 */
         @JsonProperty("created_at")  String timestamp;
 
+// --- メソッド定義 ---
     @Override
     public OrderRecord getOrder(String id) throws Exception {
         List<LimitOrder> openOrders =  getOpenOrders();
@@ -776,9 +812,10 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/coincheck/Coincheck.java
+### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (getOpenOrders)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import cryptobot.exchange.OrderbookService;
@@ -797,27 +834,29 @@ import static org.knowm.xchange.coincheck.CoincheckAdapter.createOrderType;
 import static org.knowm.xchange.currency.CurrencyPair.BTC_JPY;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
-    @Value("${coincheck.api.key}") private String API_KEY;
-    @Value("${coincheck.api.secret}") private String SECRET;
-    @Autowired CoincheckOrderbookService orderbookService;
-    static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
-        /** id 注文のID（新規注文でのIDと同一です）*/
+// --- フィールド ---
+@Value("${coincheck.api.key}") private String API_KEY;
+@Value("${coincheck.api.secret}") private String SECRET;
+@Autowired CoincheckOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
+/** id 注文のID（新規注文でのIDと同一です）*/
         @JsonProperty("id")  String orderId;
-        /** rate 注文のレート（ null の場合は成り行き注文です）*/
+/** rate 注文のレート（ null の場合は成り行き注文です）*/
         @JsonProperty("rate")  BigDecimal limitPrice;
-        /** pending_amount 注文の未決済の量 */
+/** pending_amount 注文の未決済の量 */
         @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
-        /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
+/** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
         @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
-        /** order_type 注文のタイプ（"sell" or "buy"）*/
+/** order_type 注文のタイプ（"sell" or "buy"）*/
         @JsonProperty("order_type")  String orderType;
-        /** stop_loss_rate 逆指値レート */
+/** stop_loss_rate 逆指値レート */
         @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
-        /** pair 取引ペア */
+/** pair 取引ペア */
         @JsonProperty("pair")  CurrencyPair currencyPair;
-        /** created_at 注文の作成日時 */
+/** created_at 注文の作成日時 */
         @JsonProperty("created_at")  String timestamp;
 
+// --- メソッド定義 ---
     @Override
     public List<LimitOrder> getOpenOrders() throws IOException {
         var path = "/api/exchange/orders/opens";
@@ -859,9 +898,10 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/coincheck/Coincheck.java
+### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (sendRequest)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cryptobot.exchange.OrderbookService;
 import org.knowm.xchange.currency.Currency;
@@ -874,27 +914,29 @@ import java.util.*;
 import static org.knowm.xchange.currency.CurrencyPair.BTC_JPY;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
-    @Value("${coincheck.api.key}") private String API_KEY;
-    @Value("${coincheck.api.secret}") private String SECRET;
-    @Autowired CoincheckOrderbookService orderbookService;
-    static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
-        /** id 注文のID（新規注文でのIDと同一です）*/
+// --- フィールド ---
+@Value("${coincheck.api.key}") private String API_KEY;
+@Value("${coincheck.api.secret}") private String SECRET;
+@Autowired CoincheckOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
+/** id 注文のID（新規注文でのIDと同一です）*/
         @JsonProperty("id")  String orderId;
-        /** rate 注文のレート（ null の場合は成り行き注文です）*/
+/** rate 注文のレート（ null の場合は成り行き注文です）*/
         @JsonProperty("rate")  BigDecimal limitPrice;
-        /** pending_amount 注文の未決済の量 */
+/** pending_amount 注文の未決済の量 */
         @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
-        /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
+/** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
         @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
-        /** order_type 注文のタイプ（"sell" or "buy"）*/
+/** order_type 注文のタイプ（"sell" or "buy"）*/
         @JsonProperty("order_type")  String orderType;
-        /** stop_loss_rate 逆指値レート */
+/** stop_loss_rate 逆指値レート */
         @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
-        /** pair 取引ペア */
+/** pair 取引ペア */
         @JsonProperty("pair")  CurrencyPair currencyPair;
-        /** created_at 注文の作成日時 */
+/** created_at 注文の作成日時 */
         @JsonProperty("created_at")  String timestamp;
 
+// --- メソッド定義 ---
     private <T> T sendRequest(String path, Class<T> responseClass) {
         var url = "https://coincheck.com" + path;
         var nonce = String.valueOf(new Date().getTime());
@@ -910,9 +952,10 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/coincheck/Coincheck.java
+### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (parseDatetime)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cryptobot.exchange.OrderbookService;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -927,27 +970,29 @@ import java.util.*;
 import static org.knowm.xchange.currency.CurrencyPair.BTC_JPY;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
-    @Value("${coincheck.api.key}") private String API_KEY;
-    @Value("${coincheck.api.secret}") private String SECRET;
-    @Autowired CoincheckOrderbookService orderbookService;
-    static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
-        /** id 注文のID（新規注文でのIDと同一です）*/
+// --- フィールド ---
+@Value("${coincheck.api.key}") private String API_KEY;
+@Value("${coincheck.api.secret}") private String SECRET;
+@Autowired CoincheckOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
+/** id 注文のID（新規注文でのIDと同一です）*/
         @JsonProperty("id")  String orderId;
-        /** rate 注文のレート（ null の場合は成り行き注文です）*/
+/** rate 注文のレート（ null の場合は成り行き注文です）*/
         @JsonProperty("rate")  BigDecimal limitPrice;
-        /** pending_amount 注文の未決済の量 */
+/** pending_amount 注文の未決済の量 */
         @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
-        /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
+/** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
         @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
-        /** order_type 注文のタイプ（"sell" or "buy"）*/
+/** order_type 注文のタイプ（"sell" or "buy"）*/
         @JsonProperty("order_type")  String orderType;
-        /** stop_loss_rate 逆指値レート */
+/** stop_loss_rate 逆指値レート */
         @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
-        /** pair 取引ペア */
+/** pair 取引ペア */
         @JsonProperty("pair")  CurrencyPair currencyPair;
-        /** created_at 注文の作成日時 */
+/** created_at 注文の作成日時 */
         @JsonProperty("created_at")  String timestamp;
 
+// --- メソッド定義 ---
     private static Date parseDatetime(String datetime) {
         try {
             return DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT
@@ -958,9 +1003,10 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java
+### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (getOrder)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
@@ -984,21 +1030,23 @@ import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 
-	private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
-	private BitfinexTradeService tradeService;
-	@Value("${bitfinex.api.key}") private String API_KEY;
-	@Value("${bitfinex.api.secret}") private String SECRET;
-	@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired BitfinexOrderbookService orderbookService;
+// --- フィールド ---
+private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
+private BitfinexTradeService tradeService;
+@Value("${bitfinex.api.key}") private String API_KEY;
+@Value("${bitfinex.api.secret}") private String SECRET;
+@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
+@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
+@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired BitfinexOrderbookService orderbookService;
 
+// --- メソッド定義 ---
 	@Override
 	synchronized public OrderRecord getOrder(String id) throws IOException {
 		// 注文直後だと「BitfinexExceptionV1: No such order found」となる。
@@ -1045,9 +1093,10 @@ import cryptobot.exchange.OrderbookService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java
+### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (getOpenOrders)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
@@ -1066,21 +1115,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import cryptobot.exchange.OrderbookService;
 
-	private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
-	private BitfinexTradeService tradeService;
-	@Value("${bitfinex.api.key}") private String API_KEY;
-	@Value("${bitfinex.api.secret}") private String SECRET;
-	@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired BitfinexOrderbookService orderbookService;
+// --- フィールド ---
+private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
+private BitfinexTradeService tradeService;
+@Value("${bitfinex.api.key}") private String API_KEY;
+@Value("${bitfinex.api.secret}") private String SECRET;
+@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
+@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
+@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired BitfinexOrderbookService orderbookService;
 
+// --- メソッド定義 ---
 	synchronized public List<LimitOrder> getOpenOrders() throws IOException {
 //		var pairString = BitfinexUtils.toPairString(ccyp);
 //		var activeOrders = tradeService.getBitfinexActiveOrdesV2(pairString);
@@ -1102,9 +1153,10 @@ import cryptobot.exchange.OrderbookService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/dto/OrderRecord.java
+### src/main/java/cryptobot/dto/OrderRecord.java (getVolume)
 
 ```java
+// --- インポート ---
 import cryptobot.exchange.ExchangeService;
 import lombok.ToString;
 import org.knowm.xchange.currency.Currency;
@@ -1112,19 +1164,22 @@ import java.math.BigDecimal;
 import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
-	private ExchangeService service;
-	private HashMap<String, Object> metaInfo = new HashMap<>();
-	@ToString.Exclude private Exception exception;
-	private Currency feeCurrency;
+// --- フィールド ---
+private ExchangeService service;
+private HashMap<String, Object> metaInfo = new HashMap<>();
+@ToString.Exclude private Exception exception;
+private Currency feeCurrency;
 
+// --- メソッド定義 ---
 	public BigDecimal getVolume() {
 		return getOriginalAmount();
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/dto/OrderRecord.java
+### src/main/java/cryptobot/dto/OrderRecord.java (setExecutedVolume)
 
 ```java
+// --- インポート ---
 import cryptobot.exchange.ExchangeService;
 import lombok.ToString;
 import org.knowm.xchange.currency.Currency;
@@ -1132,20 +1187,23 @@ import java.math.BigDecimal;
 import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
-	private ExchangeService service;
-	private HashMap<String, Object> metaInfo = new HashMap<>();
-	@ToString.Exclude private Exception exception;
-	private Currency feeCurrency;
+// --- フィールド ---
+private ExchangeService service;
+private HashMap<String, Object> metaInfo = new HashMap<>();
+@ToString.Exclude private Exception exception;
+private Currency feeCurrency;
 
+// --- メソッド定義 ---
 	public void setExecutedVolume(BigDecimal executedVolume) {
 		setCumulativeAmount(executedVolume);
 		adjustStatusByExecutionVolume();
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/dto/OrderRecord.java
+### src/main/java/cryptobot/dto/OrderRecord.java (adjustStatusByExecutionVolume)
 
 ```java
+// --- インポート ---
 import cryptobot.exchange.ExchangeService;
 import lombok.ToString;
 import org.knowm.xchange.currency.Currency;
@@ -1156,11 +1214,13 @@ import static java.math.BigDecimal.ZERO;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
-	private ExchangeService service;
-	private HashMap<String, Object> metaInfo = new HashMap<>();
-	@ToString.Exclude private Exception exception;
-	private Currency feeCurrency;
+// --- フィールド ---
+private ExchangeService service;
+private HashMap<String, Object> metaInfo = new HashMap<>();
+@ToString.Exclude private Exception exception;
+private Currency feeCurrency;
 
+// --- メソッド定義 ---
 	private void adjustStatusByExecutionVolume() {
 		BigDecimal executed = defaultIfNull(getCumulativeAmount(), ZERO);
 		BigDecimal total = defaultIfNull(getOriginalAmount(), ZERO);
@@ -1180,9 +1240,95 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (getOrder)
 
 ```java
+// --- インポート ---
+import com.fasterxml.jackson.databind.ObjectMapper;
+import cryptobot.dto.HealthStatus;
+import cryptobot.dto.OrderRecord;
+import cryptobot.exchange.OrderbookService;
+import cryptobot.misc.JsonUtils;
+import cryptobot.misc.MailSender;
+import cryptobot.misc.Util;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.Order.OrderType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import static java.math.BigDecimal.ZERO;
+
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+	private String URL_BASE;
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+			Thread.ofVirtual().name("bf_healthcheck").factory());
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+		CurrencyPair.BTC_JPY, "BTC_JPY",
+		CurrencyPair.ETH_BTC, "ETH_BTC",
+		CurrencyPair.BCH_BTC, "BCH_BTC");
+
+// --- メソッド定義 ---
+	synchronized public OrderRecord getOrder(String childOrderId) throws IOException {
+		var op = orderPool.getById(childOrderId);
+		if (op != null) {
+			return op;
+		}
+		var order = getOrder(childOrderId, OrderFilterBy.child_order_id);
+		var executedVolume = ZERO;
+		// 約定していても注文情報に反映されていない場合があるため、念のため取引情報を取得して確認
+		var trades = getTradesByOrderId(childOrderId);
+		executedVolume = trades.stream()
+			.map(trade->trade.getOriginalAmount()).reduce(ZERO, BigDecimal::add);
+		// 注文なし＆取引なしの場合（キャンセル済 or 無効な注文）
+		if (order == null && executedVolume.compareTo(ZERO) == 0) {
+			return null;
+		}
+		if (order != null) {
+			// 注文情報が取得できた場合 ⇒約定金額によりステータスを決定
+			order.setExecutedVolume(order.getExecutedVolume().max(executedVolume));
+			return order;
+		} else {
+			// 注文取得できず、取引情報が¥取得できた場合 ⇒注文情報の反映が遅延していると想定して再取得
+			Util.sleep(1000);
+			// orderが取得できなくても約定しているはずなのでも再度実行
+			return getOrder(childOrderId);
+		}
+	}
+
+```
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (getOrder)
+
+```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.dto.OrderRecord;
@@ -1204,37 +1350,39 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
+// --- メソッド定義 ---
 	synchronized public OrderRecord getOrder(String orderKey, OrderFilterBy filterBy) throws IOException {
 		String path = String.format(
 			"/v1/me/getchildorders?product_code=%s&%s=%s",
@@ -1252,9 +1400,139 @@ import java.util.concurrent.ScheduledExecutorService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (toPairString)
 
 ```java
+// --- インポート ---
+import com.fasterxml.jackson.databind.ObjectMapper;
+import cryptobot.dto.HealthStatus;
+import cryptobot.exchange.OrderbookService;
+import cryptobot.misc.JsonUtils;
+import cryptobot.misc.MailSender;
+import cryptobot.misc.Util;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.Order.OrderType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+	private String URL_BASE;
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+			Thread.ofVirtual().name("bf_healthcheck").factory());
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+		CurrencyPair.BTC_JPY, "BTC_JPY",
+		CurrencyPair.ETH_BTC, "ETH_BTC",
+		CurrencyPair.BCH_BTC, "BCH_BTC");
+
+// --- メソッド定義 ---
+	public static String toPairString(CurrencyPair currencyPair) {
+		return currencyPair.getBase().toString().toUpperCase() + "_" +
+				currencyPair.getCounter().toString().toUpperCase();
+	}
+
+```
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (doGetWithAuth)
+
+```java
+// --- インポート ---
+import com.fasterxml.jackson.databind.ObjectMapper;
+import cryptobot.dto.HealthStatus;
+import cryptobot.exchange.OrderbookService;
+import cryptobot.misc.JsonUtils;
+import cryptobot.misc.MailSender;
+import cryptobot.misc.Util;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.Order.OrderType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+	private String URL_BASE;
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+			Thread.ofVirtual().name("bf_healthcheck").factory());
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+		CurrencyPair.BTC_JPY, "BTC_JPY",
+		CurrencyPair.ETH_BTC, "ETH_BTC",
+		CurrencyPair.BCH_BTC, "BCH_BTC");
+
+// --- メソッド定義 ---
+	private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeReference) {
+		String timestamp = String.valueOf(new Date().getTime());
+		String data = timestamp + "GET" + path;
+		String hash = createHMAC(SECRET, data);
+		return restClient.get()
+				.uri(URL_BASE + path)
+				.header(ACCESS_KEY, API_KEY)
+				.header(ACCESS_TIMESTAMP, timestamp)
+				.header(ACCESS_SIGN, hash)
+				.retrieve()
+				.body(typeReference);
+	}
+
+```
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (getTradesByOrderId)
+
+```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.exchange.OrderbookService;
@@ -1278,37 +1556,39 @@ import static java.util.stream.Collectors.toList;
 import static org.knowm.xchange.dto.Order.OrderType.ASK;
 import static org.knowm.xchange.dto.Order.OrderType.BID;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
+// --- メソッド定義 ---
 	@Override
 	public List<UserTrade> getTradesByOrderId(String childOrderId) throws IOException {
 		String path = String.format(
@@ -1339,132 +1619,10 @@ import static org.knowm.xchange.dto.Order.OrderType.BID;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (parseDate)
 
 ```java
-import com.fasterxml.jackson.databind.ObjectMapper;
-import cryptobot.dto.HealthStatus;
-import cryptobot.exchange.OrderbookService;
-import cryptobot.misc.JsonUtils;
-import cryptobot.misc.MailSender;
-import cryptobot.misc.Util;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order.OrderType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
-
-	public static String toPairString(CurrencyPair currencyPair) {
-		return currencyPair.getBase().toString().toUpperCase() + "_" +
-				currencyPair.getCounter().toString().toUpperCase();
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
-
-```java
-import com.fasterxml.jackson.databind.ObjectMapper;
-import cryptobot.dto.HealthStatus;
-import cryptobot.exchange.OrderbookService;
-import cryptobot.misc.JsonUtils;
-import cryptobot.misc.MailSender;
-import cryptobot.misc.Util;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order.OrderType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
-
-	private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeReference) {
-		String timestamp = String.valueOf(new Date().getTime());
-		String data = timestamp + "GET" + path;
-		String hash = createHMAC(SECRET, data);
-		return restClient.get()
-				.uri(URL_BASE + path)
-				.header(ACCESS_KEY, API_KEY)
-				.header(ACCESS_TIMESTAMP, timestamp)
-				.header(ACCESS_SIGN, hash)
-				.retrieve()
-				.body(typeReference);
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
-
-```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.exchange.OrderbookService;
@@ -1484,37 +1642,39 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
+// --- メソッド定義 ---
 	public static Date parseDate(String datetime) {
 		var df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 		try {
@@ -1525,13 +1685,15 @@ import java.util.concurrent.ScheduledExecutorService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/misc/Util.java
+### src/main/java/cryptobot/misc/Util.java (sleep)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 
+// --- メソッド定義 ---
 	public static void sleep(long milli) {
 		try {
 			Thread.sleep(milli);
@@ -1541,9 +1703,10 @@ import static org.knowm.xchange.dto.Order.OrderType.*;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java
+### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (getOrder)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
@@ -1561,28 +1724,30 @@ import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 
-	private static final String HMAC_SHA256 = "HmacSHA256";
-	private static final String URL_BASE = "https://api.bitflyer.jp";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	private static final String ccyps = "FX_BTC_JPY";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	BigDecimal TRADING_CHARGE = ZERO;
-	@Autowired BitflyerFxOrderbookService orderbookService;
-	@Autowired Bitflyer bitflyer;
-		public OrderType type;
-		public BigDecimal price;
-		public BigDecimal volume;
-		public BigDecimal collateral;
-		public Date openDate;
-		public Integer leverage;
-		public BigDecimal pnl;
-		public BigDecimal sfd;
+// --- フィールド ---
+private static final String HMAC_SHA256 = "HmacSHA256";
+private static final String URL_BASE = "https://api.bitflyer.jp";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+private static final String ccyps = "FX_BTC_JPY";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+BigDecimal TRADING_CHARGE = ZERO;
+@Autowired BitflyerFxOrderbookService orderbookService;
+@Autowired Bitflyer bitflyer;
+public OrderType type;
+public BigDecimal price;
+public BigDecimal volume;
+public BigDecimal collateral;
+public Date openDate;
+public Integer leverage;
+public BigDecimal pnl;
+public BigDecimal sfd;
 
+// --- メソッド定義 ---
 	public OrderRecord getOrder(String childOrderAcceptanceId) throws IOException {
 		var params = Map.of("product_code", ccyps, "count", "100");
 		var path = "/v1/me/getchildorders?" + params.entrySet().stream()
@@ -1606,9 +1771,10 @@ import cryptobot.exchange.OrderbookService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java
+### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (doGetWithAuth)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
@@ -1622,28 +1788,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.core.ParameterizedTypeReference;
 import cryptobot.exchange.OrderbookService;
 
-	private static final String HMAC_SHA256 = "HmacSHA256";
-	private static final String URL_BASE = "https://api.bitflyer.jp";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	private static final String ccyps = "FX_BTC_JPY";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	BigDecimal TRADING_CHARGE = ZERO;
-	@Autowired BitflyerFxOrderbookService orderbookService;
-	@Autowired Bitflyer bitflyer;
-		public OrderType type;
-		public BigDecimal price;
-		public BigDecimal volume;
-		public BigDecimal collateral;
-		public Date openDate;
-		public Integer leverage;
-		public BigDecimal pnl;
-		public BigDecimal sfd;
+// --- フィールド ---
+private static final String HMAC_SHA256 = "HmacSHA256";
+private static final String URL_BASE = "https://api.bitflyer.jp";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+private static final String ccyps = "FX_BTC_JPY";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+BigDecimal TRADING_CHARGE = ZERO;
+@Autowired BitflyerFxOrderbookService orderbookService;
+@Autowired Bitflyer bitflyer;
+public OrderType type;
+public BigDecimal price;
+public BigDecimal volume;
+public BigDecimal collateral;
+public Date openDate;
+public Integer leverage;
+public BigDecimal pnl;
+public BigDecimal sfd;
 
+// --- メソッド定義 ---
 	private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeReference) throws Exception {
 		String timestamp = String.valueOf(new Date().getTime());
 		char[] hash = createHMAC("GET", path, timestamp, null);
@@ -1657,9 +1825,10 @@ import cryptobot.exchange.OrderbookService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java
+### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (createHMAC)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
@@ -1677,28 +1846,30 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import cryptobot.exchange.OrderbookService;
 
-	private static final String HMAC_SHA256 = "HmacSHA256";
-	private static final String URL_BASE = "https://api.bitflyer.jp";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	private static final String ccyps = "FX_BTC_JPY";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	BigDecimal TRADING_CHARGE = ZERO;
-	@Autowired BitflyerFxOrderbookService orderbookService;
-	@Autowired Bitflyer bitflyer;
-		public OrderType type;
-		public BigDecimal price;
-		public BigDecimal volume;
-		public BigDecimal collateral;
-		public Date openDate;
-		public Integer leverage;
-		public BigDecimal pnl;
-		public BigDecimal sfd;
+// --- フィールド ---
+private static final String HMAC_SHA256 = "HmacSHA256";
+private static final String URL_BASE = "https://api.bitflyer.jp";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+private static final String ccyps = "FX_BTC_JPY";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+BigDecimal TRADING_CHARGE = ZERO;
+@Autowired BitflyerFxOrderbookService orderbookService;
+@Autowired Bitflyer bitflyer;
+public OrderType type;
+public BigDecimal price;
+public BigDecimal volume;
+public BigDecimal collateral;
+public Date openDate;
+public Integer leverage;
+public BigDecimal pnl;
+public BigDecimal sfd;
 
+// --- メソッド定義 ---
 	private char[] createHMAC(String method, String path, String timestamp, String body) throws NoSuchAlgorithmException, InvalidKeyException {
 		Mac sha256_HMAC = Mac.getInstance(HMAC_SHA256);
 		SecretKeySpec secret_key = new SecretKeySpec(SECRET.getBytes() , HMAC_SHA256);
@@ -1710,9 +1881,10 @@ import cryptobot.exchange.OrderbookService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java
+### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (getOrder)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -1732,26 +1904,28 @@ import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 import cryptobot.misc.MailSender;
 
-	private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "access-key";
-	private static final String ACCESS_NONCE = "access-nonce";
-	private static final String ACCESS_SIGN = "access-signature";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitpoint.api.key:#{null}}") String API_KEY;
-	@Value("${bitpoint.api.secret:#{null}}") String SECRET;
-	@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
-	@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired MailSender mail;
-	@Autowired BitpointOrderbookService orderbookService;
-	static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
+// --- フィールド ---
+private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "access-key";
+private static final String ACCESS_NONCE = "access-nonce";
+private static final String ACCESS_SIGN = "access-signature";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitpoint.api.key:#{null}}") String API_KEY;
+@Value("${bitpoint.api.secret:#{null}}") String SECRET;
+@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
+@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired MailSender mail;
+@Autowired BitpointOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
 			CurrencyPair.BTC_JPY, "BTCJPY",
 			CurrencyPair.ETH_JPY, "ETHJPY");
-	@Autowired BitpointWeb web;
+@Autowired BitpointWeb web;
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord getOrder(String id) throws Exception {
 		var path = "/api/singleOrder";
@@ -1766,9 +1940,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java
+### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (doHttpGet)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -1788,26 +1963,28 @@ import cryptobot.exchange.OrderbookService;
 import cryptobot.misc.MailSender;
 import cryptobot.misc.JsonUtils;
 
-	private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "access-key";
-	private static final String ACCESS_NONCE = "access-nonce";
-	private static final String ACCESS_SIGN = "access-signature";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitpoint.api.key:#{null}}") String API_KEY;
-	@Value("${bitpoint.api.secret:#{null}}") String SECRET;
-	@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
-	@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired MailSender mail;
-	@Autowired BitpointOrderbookService orderbookService;
-	static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
+// --- フィールド ---
+private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "access-key";
+private static final String ACCESS_NONCE = "access-nonce";
+private static final String ACCESS_SIGN = "access-signature";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitpoint.api.key:#{null}}") String API_KEY;
+@Value("${bitpoint.api.secret:#{null}}") String SECRET;
+@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
+@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired MailSender mail;
+@Autowired BitpointOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
 			CurrencyPair.BTC_JPY, "BTCJPY",
 			CurrencyPair.ETH_JPY, "ETHJPY");
-	@Autowired BitpointWeb web;
+@Autowired BitpointWeb web;
 
+// --- メソッド定義 ---
 	private JsonNode doHttpGet(String path, Map<String, String> params) throws Exception {
 		long nonce = System.currentTimeMillis();
 		var requestParam = new HashMap<>(params);
@@ -1834,9 +2011,10 @@ import cryptobot.misc.JsonUtils;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java
+### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (createLimitOrder)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -1856,26 +2034,28 @@ import com.fasterxml.jackson.databind.JsonNode;
 import cryptobot.exchange.OrderbookService;
 import cryptobot.misc.MailSender;
 
-	private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "access-key";
-	private static final String ACCESS_NONCE = "access-nonce";
-	private static final String ACCESS_SIGN = "access-signature";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitpoint.api.key:#{null}}") String API_KEY;
-	@Value("${bitpoint.api.secret:#{null}}") String SECRET;
-	@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
-	@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired MailSender mail;
-	@Autowired BitpointOrderbookService orderbookService;
-	static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
+// --- フィールド ---
+private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "access-key";
+private static final String ACCESS_NONCE = "access-nonce";
+private static final String ACCESS_SIGN = "access-signature";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitpoint.api.key:#{null}}") String API_KEY;
+@Value("${bitpoint.api.secret:#{null}}") String SECRET;
+@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
+@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired MailSender mail;
+@Autowired BitpointOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
 			CurrencyPair.BTC_JPY, "BTCJPY",
 			CurrencyPair.ETH_JPY, "ETHJPY");
-	@Autowired BitpointWeb web;
+@Autowired BitpointWeb web;
 
+// --- メソッド定義 ---
 	private LimitOrder createLimitOrder(JsonNode json) {
 		var orderId = json.path("orderId").asText();
 		var type = json.path("side").asText().equals("SELL") ? ASK : BID;
@@ -1891,9 +2071,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java
+### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (adaptStatus)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -1911,26 +2092,28 @@ import org.springframework.stereotype.Service;
 import cryptobot.exchange.OrderbookService;
 import cryptobot.misc.MailSender;
 
-	private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "access-key";
-	private static final String ACCESS_NONCE = "access-nonce";
-	private static final String ACCESS_SIGN = "access-signature";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitpoint.api.key:#{null}}") String API_KEY;
-	@Value("${bitpoint.api.secret:#{null}}") String SECRET;
-	@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
-	@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired MailSender mail;
-	@Autowired BitpointOrderbookService orderbookService;
-	static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
+// --- フィールド ---
+private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "access-key";
+private static final String ACCESS_NONCE = "access-nonce";
+private static final String ACCESS_SIGN = "access-signature";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitpoint.api.key:#{null}}") String API_KEY;
+@Value("${bitpoint.api.secret:#{null}}") String SECRET;
+@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
+@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired MailSender mail;
+@Autowired BitpointOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
 			CurrencyPair.BTC_JPY, "BTCJPY",
 			CurrencyPair.ETH_JPY, "ETHJPY");
-	@Autowired BitpointWeb web;
+@Autowired BitpointWeb web;
 
+// --- メソッド定義 ---
 	private static OrderStatus adaptStatus(String status) {
 		// ステータス(1：執行中、2：執行済、3：約定、5：訂正中、6：訂正済、7：取消中、8：取消済、9：出来ず、10：逆指値)
 		if (status.equals("1") || status.equals("2") ||
@@ -1946,9 +2129,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/binance/Binance.java
+### src/main/java/cryptobot/exchange/binance/Binance.java (buySpot)
 
 ```java
+// --- インポート ---
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 import org.knowm.xchange.binance.service.BinanceAccountService;
@@ -1968,25 +2152,27 @@ import static java.math.BigDecimal.ONE;
 import static java.math.RoundingMode.HALF_UP;
 import static org.knowm.xchange.dto.Order.OrderType.BID;
 
-	@Autowired BinanceOrderbookService orderbookService;
-	@Value("${binance.api.key}") private String API_KEY;
-	@Value("${binance.api.secret}") private String SECRET;
-	@Value("${binance.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${binance.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${binance.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${binance.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${binance.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${binance.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${binance.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${binance.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${binance.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${binance.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${binance.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	BinanceTradeService tradeService;
-	BinanceAccountService accountService;
-	private final int stepSize = 4;
-	@Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
+// --- フィールド ---
+@Autowired BinanceOrderbookService orderbookService;
+@Value("${binance.api.key}") private String API_KEY;
+@Value("${binance.api.secret}") private String SECRET;
+@Value("${binance.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${binance.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${binance.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${binance.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${binance.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${binance.address.xlm:#{null}}") String XLM_ADDRESS;
+@Value("${binance.address.xlm.memo:#{null}}") String XLM_MEMO;
+@Value("${binance.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${binance.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${binance.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${binance.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+BinanceTradeService tradeService;
+BinanceAccountService accountService;
+private final int stepSize = 4;
+@Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
 
+// --- メソッド定義 ---
 	@Override
 	synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		// 取得通貨で手数料を徴収されるため、取引金額(volume)に手数分を上乗せて受け渡す。
@@ -1999,9 +2185,10 @@ import static org.knowm.xchange.dto.Order.OrderType.BID;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (getFeeRate)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -2028,26 +2215,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	public BigDecimal getFeeRate(FeeType feeType) {
 		if (feeType.equals(FeeType.MAKER)) {
 			return fee.getMakerFee();
@@ -2057,9 +2246,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrderCreate)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -2085,262 +2275,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
-		synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
-			var startTime = System.currentTimeMillis();
-			while (System.currentTimeMillis() - startTime < 10*1000L) {
-				var order = getById(orderId);
-				if (order != null && order.getStatus() != null) {
-					if (!order.isActive()) {
-						return order;
-					}
-				}
-				expectedOrderId.add(orderId);
-				this.wait(3000L);
-				expectedOrderId.remove(orderId);
-			}
-			return null;
-		}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
-
-```java
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import cryptobot.dto.*;
-import org.springframework.web.client.RestClient;
-import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.account.Balance;
-import org.knowm.xchange.dto.account.Fee;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import cryptobot.AppConfig;
-import cryptobot.misc.MailSender;
-
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
-
-		synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
-			var startTime = System.currentTimeMillis();
-			while (System.currentTimeMillis() - startTime < 10*1000L) {
-				var order = getById(orderId);
-				if (order != null && order.getStatus() != null) {
-					if (!order.isActive()) {
-						return order;
-					}
-				}
-				expectedOrderId.add(orderId);
-				this.wait(3000L);
-				expectedOrderId.remove(orderId);
-			}
-			return null;
-		}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
-
-```java
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import cryptobot.dto.*;
-import org.springframework.web.client.RestClient;
-import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.account.Balance;
-import org.knowm.xchange.dto.account.Fee;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import cryptobot.AppConfig;
-import cryptobot.misc.MailSender;
-
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
-
-		synchronized public OrderRecord getById(String id) {
-			return get(id);
-		}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
-
-```java
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import cryptobot.dto.*;
-import org.springframework.web.client.RestClient;
-import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.account.Balance;
-import org.knowm.xchange.dto.account.Fee;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import cryptobot.AppConfig;
-import cryptobot.misc.MailSender;
-
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
-
-		synchronized public OrderRecord getById(String id) {
-			return get(id);
-		}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
-
-```java
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import cryptobot.dto.*;
-import org.springframework.web.client.RestClient;
-import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.account.Balance;
-import org.knowm.xchange.dto.account.Fee;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import cryptobot.AppConfig;
-import cryptobot.misc.MailSender;
-
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
-
+// --- メソッド定義 ---
 	/**
 	 * 指値注文発行後の取得待ち(注文発行後は即時に取得できない)
 	 * @param orderId
@@ -2360,9 +2316,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrder)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -2389,26 +2346,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 		synchronized public OrderRecord waitOrder(String orderId, List<OrderStatus> status) throws InterruptedException {
 			var startTime = System.currentTimeMillis();
 			while (System.currentTimeMillis() - startTime < 10*1000L) {
@@ -2428,9 +2387,10 @@ import cryptobot.misc.MailSender;
 		}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (update)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -2456,26 +2416,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 		synchronized public void update(OrderRecord order) {
 			var current = get(order.getId());
 			if (current == null && order.getUserReference() != null) {
@@ -2516,9 +2478,10 @@ import cryptobot.misc.MailSender;
 		}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (buySpot)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.math.BigDecimal.*;
@@ -2540,39 +2503,42 @@ import cryptobot.exchange.OrderbookService;
 import cryptobot.exchange.bitbank.dto.*;
 import cryptobot.misc.MailSender;
 
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
 	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 			CurrencyPair.BTC_JPY, "BTC_JPY"
 	);
 
+// --- メソッド定義 ---
 	@Override
 	synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		return executeOrder(volume, limitPrice, BitbankOrders.Side.BUY, BitbankOrders.Type.LIMIT);
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (executeOrder)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.lang.System.currentTimeMillis;
@@ -2596,30 +2562,32 @@ import cryptobot.exchange.OrderbookService;
 import cryptobot.exchange.bitbank.dto.*;
 import cryptobot.misc.MailSender;
 
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
 	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 			CurrencyPair.BTC_JPY, "BTC_JPY"
 	);
 
+// --- メソッド定義 ---
 	private OrderRecord executeOrder(BigDecimal volume, BigDecimal price, BitbankOrders.Side side, BitbankOrders.Type type) throws Exception {
 		var path = "/v1/user/spot/order";
 		var body = BitbankOrderBody.builder()
@@ -2648,9 +2616,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (doHttpPost)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.math.BigDecimal.*;
@@ -2674,30 +2643,32 @@ import cryptobot.exchange.bitbank.dto.*;
 import cryptobot.misc.JsonUtils;
 import cryptobot.misc.MailSender;
 
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
 	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 			CurrencyPair.BTC_JPY, "BTC_JPY"
 	);
 
+// --- メソッド定義 ---
 	protected <T> T doHttpPost(String path, Class<T> clazz, Object body) throws Exception {
 		String json = JsonUtils.MAPPER.writeValueAsString(body);
 		Map<String, String> headers = getPrivateRequestHeader(json);
@@ -2714,28 +2685,338 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/dto/OrderRecord.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (getPrivateRequestHeader)
 
 ```java
+// --- インポート ---
+import static cryptobot.exchange.ExchangeService.FeeType.*;
+import static java.lang.String.*;
+import static java.lang.System.currentTimeMillis;
+import static java.math.BigDecimal.*;
+import static java.math.RoundingMode.*;
+import static java.util.Objects.*;
+import static java.util.stream.Collectors.*;
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.knowm.xchange.dto.Order.OrderStatus.*;
+import static org.knowm.xchange.dto.Order.OrderType.*;
+import java.math.BigDecimal;
+import java.util.Map;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import cryptobot.exchange.OrderbookService;
+import cryptobot.exchange.bitbank.dto.*;
+import cryptobot.misc.MailSender;
+
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+	private String API_ENDPOINT;
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+			CurrencyPair.BTC_JPY, "BTC_JPY"
+	);
+
+// --- メソッド定義 ---
+	protected Map<String, String> getPrivateRequestHeader(String json) {
+		long nonce = currentTimeMillis();
+		String message = String.valueOf(nonce) + json;
+		return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message));
+	}
+
+```
+### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrderClosed)
+
+```java
+// --- インポート ---
+import static java.math.BigDecimal.*;
+import static java.math.RoundingMode.*;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
+import static org.knowm.xchange.dto.Order.OrderStatus.*;
+import static org.knowm.xchange.dto.Order.OrderType.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import cryptobot.dto.*;
+import org.springframework.web.client.RestClient;
+import org.knowm.xchange.BaseExchange;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.Order;
+import org.knowm.xchange.dto.account.Balance;
+import org.knowm.xchange.dto.account.Fee;
+import org.knowm.xchange.dto.marketdata.Ticker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import cryptobot.AppConfig;
+import cryptobot.misc.MailSender;
+
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
+
+// --- メソッド定義 ---
+		synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
+			var startTime = System.currentTimeMillis();
+			while (System.currentTimeMillis() - startTime < 10*1000L) {
+				var order = getById(orderId);
+				if (order != null && order.getStatus() != null) {
+					if (!order.isActive()) {
+						return order;
+					}
+				}
+				expectedOrderId.add(orderId);
+				this.wait(3000L);
+				expectedOrderId.remove(orderId);
+			}
+			return null;
+		}
+
+```
+### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrderClosed)
+
+```java
+// --- インポート ---
+import static java.math.BigDecimal.*;
+import static java.math.RoundingMode.*;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
+import static org.knowm.xchange.dto.Order.OrderStatus.*;
+import static org.knowm.xchange.dto.Order.OrderType.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import cryptobot.dto.*;
+import org.springframework.web.client.RestClient;
+import org.knowm.xchange.BaseExchange;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.Order;
+import org.knowm.xchange.dto.account.Balance;
+import org.knowm.xchange.dto.account.Fee;
+import org.knowm.xchange.dto.marketdata.Ticker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import cryptobot.AppConfig;
+import cryptobot.misc.MailSender;
+
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
+
+// --- メソッド定義 ---
+		synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
+			var startTime = System.currentTimeMillis();
+			while (System.currentTimeMillis() - startTime < 10*1000L) {
+				var order = getById(orderId);
+				if (order != null && order.getStatus() != null) {
+					if (!order.isActive()) {
+						return order;
+					}
+				}
+				expectedOrderId.add(orderId);
+				this.wait(3000L);
+				expectedOrderId.remove(orderId);
+			}
+			return null;
+		}
+
+```
+### src/main/java/cryptobot/exchange/ExchangeService.java (getById)
+
+```java
+// --- インポート ---
+import static java.math.BigDecimal.*;
+import static java.math.RoundingMode.*;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
+import static org.knowm.xchange.dto.Order.OrderStatus.*;
+import static org.knowm.xchange.dto.Order.OrderType.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import cryptobot.dto.*;
+import org.springframework.web.client.RestClient;
+import org.knowm.xchange.BaseExchange;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.Order;
+import org.knowm.xchange.dto.account.Balance;
+import org.knowm.xchange.dto.account.Fee;
+import org.knowm.xchange.dto.marketdata.Ticker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import cryptobot.AppConfig;
+import cryptobot.misc.MailSender;
+
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
+
+// --- メソッド定義 ---
+		synchronized public OrderRecord getById(String id) {
+			return get(id);
+		}
+
+```
+### src/main/java/cryptobot/exchange/ExchangeService.java (getById)
+
+```java
+// --- インポート ---
+import static java.math.BigDecimal.*;
+import static java.math.RoundingMode.*;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
+import static org.knowm.xchange.dto.Order.OrderStatus.*;
+import static org.knowm.xchange.dto.Order.OrderType.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import cryptobot.dto.*;
+import org.springframework.web.client.RestClient;
+import org.knowm.xchange.BaseExchange;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.Order;
+import org.knowm.xchange.dto.account.Balance;
+import org.knowm.xchange.dto.account.Fee;
+import org.knowm.xchange.dto.marketdata.Ticker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import cryptobot.AppConfig;
+import cryptobot.misc.MailSender;
+
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
+
+// --- メソッド定義 ---
+		synchronized public OrderRecord getById(String id) {
+			return get(id);
+		}
+
+```
+### src/main/java/cryptobot/dto/OrderRecord.java (isActive)
+
+```java
+// --- インポート ---
 import cryptobot.exchange.ExchangeService;
 import lombok.ToString;
 import org.knowm.xchange.currency.Currency;
 import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
-	private ExchangeService service;
-	private HashMap<String, Object> metaInfo = new HashMap<>();
-	@ToString.Exclude private Exception exception;
-	private Currency feeCurrency;
+// --- フィールド ---
+private ExchangeService service;
+private HashMap<String, Object> metaInfo = new HashMap<>();
+@ToString.Exclude private Exception exception;
+private Currency feeCurrency;
 
+// --- メソッド定義 ---
 	public boolean isActive() {
 		return getStatus() == null || !getStatus().isFinal();
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (buySpot)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -2766,26 +3047,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		LimitOrder order = new LimitOrder(OrderType.BID, volume, ccyp, null, null, limitPrice);
 		String id = xchange.getTradeService().placeLimitOrder(order);
@@ -2793,9 +3076,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java
+### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (buySpot)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
@@ -2818,21 +3102,23 @@ import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 
-	private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
-	private BitfinexTradeService tradeService;
-	@Value("${bitfinex.api.key}") private String API_KEY;
-	@Value("${bitfinex.api.secret}") private String SECRET;
-	@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired BitfinexOrderbookService orderbookService;
+// --- フィールド ---
+private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
+private BitfinexTradeService tradeService;
+@Value("${bitfinex.api.key}") private String API_KEY;
+@Value("${bitfinex.api.secret}") private String SECRET;
+@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
+@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
+@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired BitfinexOrderbookService orderbookService;
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		// 取得通貨で手数料を徴収されるため、取引金額(volume)に手数分を上乗せて受け渡す。
@@ -2848,9 +3134,10 @@ import cryptobot.exchange.OrderbookService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (buySpot)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.dto.OrderRecord;
@@ -2874,37 +3161,39 @@ import static java.math.BigDecimal.ONE;
 import static java.math.RoundingMode.HALF_UP;
 import static org.knowm.xchange.dto.Order.OrderType.BID;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		// 取引通貨(base currency)で手数料を徴収されるため、徴収後の取得額が引数で指定された額になるよう調整
@@ -2917,9 +3206,10 @@ import static org.knowm.xchange.dto.Order.OrderType.BID;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (placeLimitOrder)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.exchange.OrderbookService;
@@ -2931,7 +3221,7 @@ import cryptobot.misc.Util;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.trade.MarketOrder;
+import org.knowm.xchange.dto.trade.LimitOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -2940,57 +3230,60 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
-	public String placeMarketOrder(MarketOrder order) throws Exception {
+// --- メソッド定義 ---
+	protected String placeLimitOrder(LimitOrder order) throws Exception {
 		String type = BitflyerOrderType.fromOrderType(order.getType()).toString();
 		String product = toPairString(order.getCurrencyPair());
 		String path = "/v1/me/sendchildorder";
 		BitflyerNewOrderRequest request = new BitflyerNewOrderRequest(
-				"MARKET", product, type, order.getOriginalAmount(), order.getAveragePrice());
+			"LIMIT", product, type, order.getOriginalAmount(), order.getLimitPrice());
 		String requestBody = OBJECT_MAPPER.writeValueAsString(request);
 		try {
 			OrderResult orderResult = doPostWithAuth(path, requestBody, OrderResult.class);
 			if (orderResult==null) return null;
         	return orderResult.getChildOrderAcceptanceId();
-		} catch (Exception e) {
-			throw e;
-		}
+        } catch (Exception e) {
+            throw e;
+        }
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (doPostWithAuth)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.exchange.OrderbookService;
@@ -3009,37 +3302,39 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
+// --- メソッド定義 ---
 	private <T> T doPostWithAuth(String path, String requestBody, Class<T> responseClass) {
 		String timestamp = String.valueOf(new Date().getTime());
 		String data = timestamp + "POST" + path + requestBody;
@@ -3056,22 +3351,26 @@ import java.util.concurrent.ScheduledExecutorService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/dto/OrderResult.java
+### src/main/java/cryptobot/exchange/bitflyer/dto/OrderResult.java (getChildOrderAcceptanceId)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-	@JsonProperty("child_order_acceptance_id")
+// --- フィールド ---
+@JsonProperty("child_order_acceptance_id")
 	private String childOrderAcceptanceId;
 
+// --- メソッド定義 ---
 	public String getChildOrderAcceptanceId() {
 		return childOrderAcceptanceId;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (waitOrderCreate)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.dto.OrderRecord;
@@ -3090,94 +3389,60 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
+// --- メソッド定義 ---
 	/**
-	 * 成行注文の約定待ち合わせ
+	 * 指値注文発行後の取得待ち(注文発行後は即時に取得できない)
 	 * @param acceptanceId CHILD_ORDER_ACCEPTANCE_ID(注文送信直後なのでCHILD_ORDER_IDが未決定の状態を想定)
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public OrderRecord waitOrderClosed(String acceptanceId) throws Exception {
-		// 希にbitFlyerで成行注文の約定に時間がかかる場合があるため、約定を待機
-		return retry(3, 60*1000, ()->{
-			// リアルタイムAPIでの状態更新を待機
-			var order = orderPool.waitOrderClosed(acceptanceId);
-			// 状態更新を確認できた場合
-			if (order != null) {
-				return order;
-			}
-			// 状態更新のタイムアウトの場合
-			else {
-				var result = getOrderWithRetry(acceptanceId);
-				if(result.isActive()) {
-					throw new Exception("market order not settled.");
-				}
-				return result;
-			}
-		});
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/GenericService.java
-
-```java
-import static java.math.BigDecimal.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import java.util.concurrent.Callable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	protected volatile boolean serviceStarted = false;
-
-	protected<T> T retry(int count, long wait, Callable<T> callable) throws Exception {
-		int n = 0;
-		while (true) {
-			try {
-				return callable.call();
-			} catch (Exception e) {
-				if (++n > count) throw e;
-				log.warn("retry will be executed - caused by : {}", e.getMessage());
-				Thread.sleep(wait);
-			}
+	public OrderRecord waitOrderCreate(String acceptanceId) throws Exception {
+		var order = orderPool.waitOrder(acceptanceId, null);
+		if (order != null) {
+			return order;
+		} else {
+			return getOrderWithRetry(acceptanceId);
 		}
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (getOrderWithRetry)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.dto.OrderRecord;
@@ -3198,37 +3463,39 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import static cryptobot.exchange.bitflyer.Bitflyer.OrderFilterBy.child_order_acceptance_id;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
+// --- メソッド定義 ---
 	private OrderRecord getOrderWithRetry(String acceptanceId) throws Exception {
 		for (int i = 0; i < 30; i++) {
 			try {
@@ -3243,149 +3510,10 @@ import static cryptobot.exchange.bitflyer.Bitflyer.OrderFilterBy.child_order_acc
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (buySpot)
 
 ```java
-import com.fasterxml.jackson.databind.ObjectMapper;
-import cryptobot.dto.HealthStatus;
-import cryptobot.exchange.OrderbookService;
-import cryptobot.exchange.bitflyer.dto.BitflyerNewOrderRequest;
-import cryptobot.exchange.bitflyer.dto.OrderResult;
-import cryptobot.misc.JsonUtils;
-import cryptobot.misc.MailSender;
-import cryptobot.misc.Util;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.trade.LimitOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
-
-	protected String placeLimitOrder(LimitOrder order) throws Exception {
-		String type = BitflyerOrderType.fromOrderType(order.getType()).toString();
-		String product = toPairString(order.getCurrencyPair());
-		String path = "/v1/me/sendchildorder";
-		BitflyerNewOrderRequest request = new BitflyerNewOrderRequest(
-			"LIMIT", product, type, order.getOriginalAmount(), order.getLimitPrice());
-		String requestBody = OBJECT_MAPPER.writeValueAsString(request);
-		try {
-			OrderResult orderResult = doPostWithAuth(path, requestBody, OrderResult.class);
-			if (orderResult==null) return null;
-        	return orderResult.getChildOrderAcceptanceId();
-        } catch (Exception e) {
-            throw e;
-        }
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
-
-```java
-import com.fasterxml.jackson.databind.ObjectMapper;
-import cryptobot.dto.HealthStatus;
-import cryptobot.dto.OrderRecord;
-import cryptobot.exchange.OrderbookService;
-import cryptobot.misc.JsonUtils;
-import cryptobot.misc.MailSender;
-import cryptobot.misc.Util;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order.OrderType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
-
-	/**
-	 * 指値注文発行後の取得待ち(注文発行後は即時に取得できない)
-	 * @param acceptanceId CHILD_ORDER_ACCEPTANCE_ID(注文送信直後なのでCHILD_ORDER_IDが未決定の状態を想定)
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public OrderRecord waitOrderCreate(String acceptanceId) throws Exception {
-		var order = orderPool.waitOrder(acceptanceId, null);
-		if (order != null) {
-			return order;
-		} else {
-			return getOrderWithRetry(acceptanceId);
-		}
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java
-
-```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
@@ -3399,37 +3527,40 @@ import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 
-	private static final String HMAC_SHA256 = "HmacSHA256";
-	private static final String URL_BASE = "https://api.bitflyer.jp";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	private static final String ccyps = "FX_BTC_JPY";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	BigDecimal TRADING_CHARGE = ZERO;
-	@Autowired BitflyerFxOrderbookService orderbookService;
-	@Autowired Bitflyer bitflyer;
-		public OrderType type;
-		public BigDecimal price;
-		public BigDecimal volume;
-		public BigDecimal collateral;
-		public Date openDate;
-		public Integer leverage;
-		public BigDecimal pnl;
-		public BigDecimal sfd;
+// --- フィールド ---
+private static final String HMAC_SHA256 = "HmacSHA256";
+private static final String URL_BASE = "https://api.bitflyer.jp";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+private static final String ccyps = "FX_BTC_JPY";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+BigDecimal TRADING_CHARGE = ZERO;
+@Autowired BitflyerFxOrderbookService orderbookService;
+@Autowired Bitflyer bitflyer;
+public OrderType type;
+public BigDecimal price;
+public BigDecimal volume;
+public BigDecimal collateral;
+public Date openDate;
+public Integer leverage;
+public BigDecimal pnl;
+public BigDecimal sfd;
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		return null;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java
+### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (buySpot)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -3449,26 +3580,28 @@ import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 import cryptobot.misc.MailSender;
 
-	private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "access-key";
-	private static final String ACCESS_NONCE = "access-nonce";
-	private static final String ACCESS_SIGN = "access-signature";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitpoint.api.key:#{null}}") String API_KEY;
-	@Value("${bitpoint.api.secret:#{null}}") String SECRET;
-	@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
-	@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired MailSender mail;
-	@Autowired BitpointOrderbookService orderbookService;
-	static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
+// --- フィールド ---
+private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "access-key";
+private static final String ACCESS_NONCE = "access-nonce";
+private static final String ACCESS_SIGN = "access-signature";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitpoint.api.key:#{null}}") String API_KEY;
+@Value("${bitpoint.api.secret:#{null}}") String SECRET;
+@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
+@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired MailSender mail;
+@Autowired BitpointOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
 			CurrencyPair.BTC_JPY, "BTCJPY",
 			CurrencyPair.ETH_JPY, "ETHJPY");
-	@Autowired BitpointWeb web;
+@Autowired BitpointWeb web;
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		var path = "/api/order";
@@ -3486,9 +3619,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java
+### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (doHttpPost)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -3508,26 +3642,28 @@ import cryptobot.exchange.OrderbookService;
 import cryptobot.misc.MailSender;
 import cryptobot.misc.JsonUtils;
 
-	private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "access-key";
-	private static final String ACCESS_NONCE = "access-nonce";
-	private static final String ACCESS_SIGN = "access-signature";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitpoint.api.key:#{null}}") String API_KEY;
-	@Value("${bitpoint.api.secret:#{null}}") String SECRET;
-	@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
-	@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired MailSender mail;
-	@Autowired BitpointOrderbookService orderbookService;
-	static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
+// --- フィールド ---
+private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "access-key";
+private static final String ACCESS_NONCE = "access-nonce";
+private static final String ACCESS_SIGN = "access-signature";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitpoint.api.key:#{null}}") String API_KEY;
+@Value("${bitpoint.api.secret:#{null}}") String SECRET;
+@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
+@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired MailSender mail;
+@Autowired BitpointOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
 			CurrencyPair.BTC_JPY, "BTCJPY",
 			CurrencyPair.ETH_JPY, "ETHJPY");
-	@Autowired BitpointWeb web;
+@Autowired BitpointWeb web;
 
+// --- メソッド定義 ---
 	private JsonNode doHttpPost(String path, Map<String, String> params) throws Exception {
 		long nonce = System.currentTimeMillis();
 		var data = new HashMap<>(params);
@@ -3552,9 +3688,10 @@ import cryptobot.misc.JsonUtils;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (sellSpot)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -3585,26 +3722,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		LimitOrder order = new LimitOrder(OrderType.ASK, volume, ccyp, null, null, limitPrice);
 		String id = xchange.getTradeService().placeLimitOrder(order);
@@ -3612,9 +3751,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/binance/Binance.java
+### src/main/java/cryptobot/exchange/binance/Binance.java (sellSpot)
 
 ```java
+// --- インポート ---
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 import org.knowm.xchange.binance.service.BinanceAccountService;
@@ -3632,25 +3772,27 @@ import java.util.*;
 import static java.math.RoundingMode.HALF_UP;
 import static org.knowm.xchange.dto.Order.OrderType.ASK;
 
-	@Autowired BinanceOrderbookService orderbookService;
-	@Value("${binance.api.key}") private String API_KEY;
-	@Value("${binance.api.secret}") private String SECRET;
-	@Value("${binance.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${binance.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${binance.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${binance.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${binance.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${binance.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${binance.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${binance.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${binance.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${binance.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${binance.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	BinanceTradeService tradeService;
-	BinanceAccountService accountService;
-	private final int stepSize = 4;
-	@Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
+// --- フィールド ---
+@Autowired BinanceOrderbookService orderbookService;
+@Value("${binance.api.key}") private String API_KEY;
+@Value("${binance.api.secret}") private String SECRET;
+@Value("${binance.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${binance.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${binance.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${binance.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${binance.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${binance.address.xlm:#{null}}") String XLM_ADDRESS;
+@Value("${binance.address.xlm.memo:#{null}}") String XLM_MEMO;
+@Value("${binance.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${binance.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${binance.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${binance.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+BinanceTradeService tradeService;
+BinanceAccountService accountService;
+private final int stepSize = 4;
+@Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
 
+// --- メソッド定義 ---
 	@Override
 	synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		LimitOrder limitOrder = new Builder(OrderType.ASK, ccyp)
@@ -3661,9 +3803,10 @@ import static org.knowm.xchange.dto.Order.OrderType.ASK;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
+### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (sellSpot)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.math.BigDecimal.*;
@@ -3685,39 +3828,42 @@ import cryptobot.exchange.OrderbookService;
 import cryptobot.exchange.bitbank.dto.*;
 import cryptobot.misc.MailSender;
 
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
+// --- フィールド ---
+@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
 	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
+@Value("${bitbank.api.key}") String API_KEY;
+@Value("${bitbank.api.secret}") String SECRET;
+@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
+@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
+@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+@Autowired MailSender mail;
+@Autowired BitbankOrderbookService orderbookService;
+BitbankAssets assetsResponse = null;
+String ccyps;
+private Map<String, String> errorCodes;
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 			CurrencyPair.BTC_JPY, "BTC_JPY"
 	);
 
+// --- メソッド定義 ---
 	@Override
 	synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		return executeOrder(volume, limitPrice, BitbankOrders.Side.SELL, BitbankOrders.Type.LIMIT);
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (sellSpot)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -3748,26 +3894,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		LimitOrder order = new LimitOrder(OrderType.ASK, volume, ccyp, null, null, limitPrice);
 		String id = xchange.getTradeService().placeLimitOrder(order);
@@ -3775,9 +3923,10 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java
+### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (sellSpot)
 
 ```java
+// --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
@@ -3799,21 +3948,23 @@ import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 
-	private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
-	private BitfinexTradeService tradeService;
-	@Value("${bitfinex.api.key}") private String API_KEY;
-	@Value("${bitfinex.api.secret}") private String SECRET;
-	@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired BitfinexOrderbookService orderbookService;
+// --- フィールド ---
+private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
+private BitfinexTradeService tradeService;
+@Value("${bitfinex.api.key}") private String API_KEY;
+@Value("${bitfinex.api.secret}") private String SECRET;
+@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
+@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
+@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
+@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired BitfinexOrderbookService orderbookService;
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		LimitOrder limitOrder = new LimitOrder.Builder(OrderType.ASK, ccyp)
@@ -3825,9 +3976,10 @@ import cryptobot.exchange.OrderbookService;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
+### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (sellSpot)
 
 ```java
+// --- インポート ---
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.dto.HealthStatus;
 import cryptobot.dto.OrderRecord;
@@ -3851,37 +4003,39 @@ import static java.math.BigDecimal.ONE;
 import static java.math.RoundingMode.HALF_UP;
 import static org.knowm.xchange.dto.Order.OrderType.ASK;
 
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
+// --- フィールド ---
+@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
 	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
+@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
+@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
+private HealthStatus status;
+@Autowired MailSender mail;
+@Autowired BitflyerOrderbookService orderbookService;
+@Autowired BitflyerWeb web;
+ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
+private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
+public static enum OrderFilterBy
+public enum BitflyerOrderType
+private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
+static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
 		CurrencyPair.BTC_JPY, "BTC_JPY",
 		CurrencyPair.ETH_BTC, "ETH_BTC",
 		CurrencyPair.BCH_BTC, "BCH_BTC");
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		// 取引通貨(base currency)で手数料を徴収されるため、引数で指定された額＝残高減少額になるよう調整
@@ -3894,9 +4048,10 @@ import static org.knowm.xchange.dto.Order.OrderType.ASK;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java
+### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (sellSpot)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
@@ -3910,37 +4065,40 @@ import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 
-	private static final String HMAC_SHA256 = "HmacSHA256";
-	private static final String URL_BASE = "https://api.bitflyer.jp";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	private static final String ccyps = "FX_BTC_JPY";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	BigDecimal TRADING_CHARGE = ZERO;
-	@Autowired BitflyerFxOrderbookService orderbookService;
-	@Autowired Bitflyer bitflyer;
-		public OrderType type;
-		public BigDecimal price;
-		public BigDecimal volume;
-		public BigDecimal collateral;
-		public Date openDate;
-		public Integer leverage;
-		public BigDecimal pnl;
-		public BigDecimal sfd;
+// --- フィールド ---
+private static final String HMAC_SHA256 = "HmacSHA256";
+private static final String URL_BASE = "https://api.bitflyer.jp";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "ACCESS-KEY";
+private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
+private static final String ACCESS_SIGN = "ACCESS-SIGN";
+private static final String CONTENT_TYPE = "Content-Type";
+private static final String ccyps = "FX_BTC_JPY";
+@Value("${bitflyer.api.key:#{null}}") String API_KEY;
+@Value("${bitflyer.api.secret:#{null}}") String SECRET;
+BigDecimal TRADING_CHARGE = ZERO;
+@Autowired BitflyerFxOrderbookService orderbookService;
+@Autowired Bitflyer bitflyer;
+public OrderType type;
+public BigDecimal price;
+public BigDecimal volume;
+public BigDecimal collateral;
+public Date openDate;
+public Integer leverage;
+public BigDecimal pnl;
+public BigDecimal sfd;
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		return null;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java
+### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (sellSpot)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -3960,26 +4118,28 @@ import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.OrderbookService;
 import cryptobot.misc.MailSender;
 
-	private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "access-key";
-	private static final String ACCESS_NONCE = "access-nonce";
-	private static final String ACCESS_SIGN = "access-signature";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitpoint.api.key:#{null}}") String API_KEY;
-	@Value("${bitpoint.api.secret:#{null}}") String SECRET;
-	@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
-	@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired MailSender mail;
-	@Autowired BitpointOrderbookService orderbookService;
-	static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
+// --- フィールド ---
+private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
+private static final String APPLICATION_JSON = "application/json";
+private static final String ACCESS_KEY = "access-key";
+private static final String ACCESS_NONCE = "access-nonce";
+private static final String ACCESS_SIGN = "access-signature";
+private static final String CONTENT_TYPE = "Content-Type";
+@Value("${bitpoint.api.key:#{null}}") String API_KEY;
+@Value("${bitpoint.api.secret:#{null}}") String SECRET;
+@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
+@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
+@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
+@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
+@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
+@Autowired MailSender mail;
+@Autowired BitpointOrderbookService orderbookService;
+static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
 			CurrencyPair.BTC_JPY, "BTCJPY",
 			CurrencyPair.ETH_JPY, "ETHJPY");
-	@Autowired BitpointWeb web;
+@Autowired BitpointWeb web;
 
+// --- メソッド定義 ---
 	@Override
 	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		var path = "/api/order";
@@ -3997,22 +4157,25 @@ import cryptobot.misc.MailSender;
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/misc/MailSender.java
+### src/main/java/cryptobot/misc/MailSender.java (info)
 
 ```java
+// --- インポート ---
 import jakarta.mail.*;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-    @Value("${mail.smtp.userid}") String userid;
-    @Value("${mail.smtp.password}") String password;
-    @Value("${mail.smtp.host}") String hostname;
-    @Value("${mail.smtp.port:587}") String port;
-    @Value("${mail.destination}") String destination;
-    ExecutorService executor = Executors.newThreadPerTaskExecutor(
+// --- フィールド ---
+@Value("${mail.smtp.userid}") String userid;
+@Value("${mail.smtp.password}") String password;
+@Value("${mail.smtp.host}") String hostname;
+@Value("${mail.smtp.port:587}") String port;
+@Value("${mail.destination}") String destination;
+ExecutorService executor = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("mail-send").factory());
 
+// --- メソッド定義 ---
     public void info(String subject, String body) {
         executor.submit(()->{
             send(subject, body);
@@ -4020,9 +4183,10 @@ import java.util.concurrent.Executors;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/misc/MailSender.java
+### src/main/java/cryptobot/misc/MailSender.java (send)
 
 ```java
+// --- インポート ---
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -4032,14 +4196,16 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-    @Value("${mail.smtp.userid}") String userid;
-    @Value("${mail.smtp.password}") String password;
-    @Value("${mail.smtp.host}") String hostname;
-    @Value("${mail.smtp.port:587}") String port;
-    @Value("${mail.destination}") String destination;
-    ExecutorService executor = Executors.newThreadPerTaskExecutor(
+// --- フィールド ---
+@Value("${mail.smtp.userid}") String userid;
+@Value("${mail.smtp.password}") String password;
+@Value("${mail.smtp.host}") String hostname;
+@Value("${mail.smtp.port:587}") String port;
+@Value("${mail.destination}") String destination;
+ExecutorService executor = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("mail-send").factory());
 
+// --- メソッド定義 ---
     private void send(String subject, String body) {
         // SMTPサーバーの設定
         Properties props = new Properties();
@@ -4090,9 +4256,10 @@ import java.util.concurrent.Executors;
     }
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (getName)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -4118,34 +4285,37 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (getName)
 
 ```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -4171,401 +4341,37 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}
 
 ```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
+### src/main/java/cryptobot/exchange/ExchangeService.java (order)
 
 ```java
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import cryptobot.dto.*;
-import org.springframework.web.client.RestClient;
-import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.account.Balance;
-import org.knowm.xchange.dto.account.Fee;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import cryptobot.AppConfig;
-import cryptobot.misc.MailSender;
-
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
-
-	abstract protected OrderbookService getOrderbookService();
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/binance/Binance.java
-
-```java
-import cryptobot.exchange.OrderbookService;
-import org.knowm.xchange.binance.service.BinanceAccountService;
-import org.knowm.xchange.binance.service.BinanceTradeService;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.service.trade.TradeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.*;
-
-	@Autowired BinanceOrderbookService orderbookService;
-	@Value("${binance.api.key}") private String API_KEY;
-	@Value("${binance.api.secret}") private String SECRET;
-	@Value("${binance.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${binance.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${binance.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${binance.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${binance.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${binance.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${binance.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${binance.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${binance.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${binance.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${binance.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	BinanceTradeService tradeService;
-	BinanceAccountService accountService;
-	private final int stepSize = 4;
-	@Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
-
-	@Override
-	protected OrderbookService getOrderbookService() {
-		return orderbookService;
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitbank/Bitbank.java
-
-```java
-import static cryptobot.exchange.ExchangeService.FeeType.*;
-import static java.lang.String.*;
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
-import static org.apache.commons.lang3.StringUtils.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.math.BigDecimal;
-import java.util.Map;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import cryptobot.exchange.OrderbookService;
-import cryptobot.exchange.bitbank.dto.*;
-import cryptobot.misc.MailSender;
-
-	@Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
-	@Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
-	@Value("${bitbank.api.key}") String API_KEY;
-	@Value("${bitbank.api.secret}") String SECRET;
-	@Value("${bitbank.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitbank.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitbank.address.eth:#{null}}") String ETH_ADDRESS;
-	@Value("${bitbank.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitbank.address.btc:#{null}}") String BTC_ADDRESS;
-	@Value("${bitbank.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitbank.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitbank.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitbank.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	@Autowired MailSender mail;
-	@Autowired BitbankOrderbookService orderbookService;
-	BitbankAssets assetsResponse = null;
-	String ccyps;
-	private Map<String, String> errorCodes;
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
-
-	@Override
-	protected OrderbookService getOrderbookService() { return orderbookService; }
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/coincheck/Coincheck.java
-
-```java
-import com.fasterxml.jackson.annotation.JsonProperty;
-import cryptobot.exchange.OrderbookService;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.*;
-import static org.knowm.xchange.currency.CurrencyPair.BTC_JPY;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-
-    @Value("${coincheck.api.key}") private String API_KEY;
-    @Value("${coincheck.api.secret}") private String SECRET;
-    @Autowired CoincheckOrderbookService orderbookService;
-    static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
-        /** id 注文のID（新規注文でのIDと同一です）*/
-        @JsonProperty("id")  String orderId;
-        /** rate 注文のレート（ null の場合は成り行き注文です）*/
-        @JsonProperty("rate")  BigDecimal limitPrice;
-        /** pending_amount 注文の未決済の量 */
-        @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
-        /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
-        @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
-        /** order_type 注文のタイプ（"sell" or "buy"）*/
-        @JsonProperty("order_type")  String orderType;
-        /** stop_loss_rate 逆指値レート */
-        @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
-        /** pair 取引ペア */
-        @JsonProperty("pair")  CurrencyPair currencyPair;
-        /** created_at 注文の作成日時 */
-        @JsonProperty("created_at")  String timestamp;
-
-    @Override
-    protected OrderbookService getOrderbookService() {
-        return orderbookService;
-    }
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java
-
-```java
-import static cryptobot.exchange.ExchangeService.FeeType.*;
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.math.BigDecimal;
-import java.util.*;
-import org.knowm.xchange.bitfinex.service.BitfinexTradeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import cryptobot.exchange.OrderbookService;
-
-	private static final BigDecimal TRADING_CHARGE = new BigDecimal("0.00200000");
-	private BitfinexTradeService tradeService;
-	@Value("${bitfinex.api.key}") private String API_KEY;
-	@Value("${bitfinex.api.secret}") private String SECRET;
-	@Value("${bitfinex.fee.withdraw.counter}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitfinex.fee.withdraw.base}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitfinex.address.bch:#{null}}") String BCH_ADDRESS;
-	@Value("${bitfinex.address.xlm:#{null}}") String XLM_ADDRESS;
-	@Value("${bitfinex.address.xlm.memo:#{null}}") String XLM_MEMO;
-	@Value("${bitfinex.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitfinex.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitfinex.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitfinex.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired BitfinexOrderbookService orderbookService;
-
-	@Override
-	protected OrderbookService getOrderbookService() {
-		return orderbookService;
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java
-
-```java
-import com.fasterxml.jackson.databind.ObjectMapper;
-import cryptobot.dto.HealthStatus;
-import cryptobot.exchange.OrderbookService;
-import cryptobot.misc.JsonUtils;
-import cryptobot.misc.MailSender;
-import cryptobot.misc.Util;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order.OrderType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-	@Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	@Value("${bitflyer.fee.withdraw.counter:#{null}}") BigDecimal COUNTER_WITHDRAW_FEE;
-	@Value("${bitflyer.fee.withdraw.base:#{null}}") BigDecimal BASE_WITHDRAW_FEE;
-	@Value("${bitflyer.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitflyer.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitflyer.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitflyer.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Value("${cryptobot.healthcheck}") private String enableHealthCheck;
-	private HealthStatus status;
-	@Autowired MailSender mail;
-	@Autowired BitflyerOrderbookService orderbookService;
-	@Autowired BitflyerWeb web;
-	ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
-	private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
-	public static enum OrderFilterBy
-	public enum BitflyerOrderType
-		private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
-	static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
-
-	@Override
-	protected OrderbookService getOrderbookService() {
-		return orderbookService;
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java
-
-```java
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static org.knowm.xchange.currency.Currency.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.math.BigDecimal;
-import java.util.*;
-import org.knowm.xchange.dto.Order.OrderType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import cryptobot.exchange.OrderbookService;
-
-	private static final String HMAC_SHA256 = "HmacSHA256";
-	private static final String URL_BASE = "https://api.bitflyer.jp";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "ACCESS-KEY";
-	private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
-	private static final String ACCESS_SIGN = "ACCESS-SIGN";
-	private static final String CONTENT_TYPE = "Content-Type";
-	private static final String ccyps = "FX_BTC_JPY";
-	@Value("${bitflyer.api.key:#{null}}") String API_KEY;
-	@Value("${bitflyer.api.secret:#{null}}") String SECRET;
-	BigDecimal TRADING_CHARGE = ZERO;
-	@Autowired BitflyerFxOrderbookService orderbookService;
-	@Autowired Bitflyer bitflyer;
-		public OrderType type;
-		public BigDecimal price;
-		public BigDecimal volume;
-		public BigDecimal collateral;
-		public Date openDate;
-		public Integer leverage;
-		public BigDecimal pnl;
-		public BigDecimal sfd;
-
-	@Override
-	protected OrderbookService getOrderbookService() {
-		return orderbookService;
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java
-
-```java
-import static java.math.BigDecimal.*;
-import static java.util.stream.Collectors.*;
-import static org.apache.commons.lang3.StringUtils.*;
-import static org.knowm.xchange.currency.CurrencyPair.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.math.BigDecimal;
-import java.util.Map;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import cryptobot.exchange.OrderbookService;
-import cryptobot.misc.MailSender;
-
-	private static final String URL_BASE = "https://smartapi.bitpoint.co.jp/bpj-smart-api";
-	private static final String APPLICATION_JSON = "application/json";
-	private static final String ACCESS_KEY = "access-key";
-	private static final String ACCESS_NONCE = "access-nonce";
-	private static final String ACCESS_SIGN = "access-signature";
-	private static final String CONTENT_TYPE = "Content-Type";
-	@Value("${bitpoint.api.key:#{null}}") String API_KEY;
-	@Value("${bitpoint.api.secret:#{null}}") String SECRET;
-	@Value("${bitpoint.pincode:#{null}}") String PIN_CODE;
-	@Value("${bitpoint.rebalance.threshold.base:0}") BigDecimal rebalanceThresholdBase;
-	@Value("${bitpoint.rebalance.target.base:0}") BigDecimal rebalanceTargetBase;
-	@Value("${bitpoint.rebalance.threshold.counter:0}") BigDecimal rebalanceThresholdCounter;
-	@Value("${bitpoint.rebalance.target.counter:0}") BigDecimal rebalanceTargetCounter;
-	@Autowired MailSender mail;
-	@Autowired BitpointOrderbookService orderbookService;
-	static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
-			CurrencyPair.BTC_JPY, "BTCJPY",
-			CurrencyPair.ETH_JPY, "ETHJPY");
-	@Autowired BitpointWeb web;
-
-	@Override
-	protected OrderbookService getOrderbookService() {
-		return orderbookService;
-	}
-
-```
-### /Users/kh/git/ccy/cryptobot/src/main/java/cryptobot/exchange/ExchangeService.java
-
-```java
+// --- インポート ---
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Optional.*;
@@ -4593,53 +4399,52 @@ import org.springframework.context.ApplicationEventPublisher;
 import cryptobot.AppConfig;
 import cryptobot.misc.MailSender;
 
-	@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-	@Value("${cryptobot.price.precision}") protected int scale;
-	@Value("${cryptobot.volume.precision}") protected int volScale;
-	protected BaseExchange xchange;
-	protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-	protected final OrderPool orderPool = new OrderPool();
-	protected volatile Ticker lastTick;
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-	private boolean enable = true;
-	private boolean allowBid = true;
-	private boolean allowAsk = true;
-	@Autowired ApplicationEventPublisher publisher;
-	@Autowired protected AppConfig config;
-	@Autowired protected RestClient restClient;
-	@Autowired MailSender mailer;
-	protected Fee fee = new Fee(ZERO, ZERO);
-	public static enum FeeType
-	@Autowired TickerLogger tickerLogger;
-		final Set<String> expectedOrderId = new HashSet<>();
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
 
+// --- メソッド定義 ---
 	/**
-	 * 成行注文
-	 * @param type 注文の方向
-	 * @param volume 数量
-	 * @return 注文送信後に注文情報を取得した結果の注文レコード
+	 * 指値注文
+	 * @param type
+	 * @param volume
+	 * @param limitPrice
+	 * @return
 	 * @throws Exception
 	 */
-	public OrderRecord order(OrderType type, BigDecimal volume) throws Exception {
-		var bookType = type.getOpposite();
-		getOrderbookService().takeOrder(bookType, volume);
+	public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPrice) throws Exception {
 		OrderRecord order;
-        try {
-            if (type.equals(OrderType.BID)) {
-                order = buySpot(volume.setScale(volScale, HALF_UP));
-            } else {
-                order = sellSpot(volume.setScale(volScale, HALF_UP));
-            }
-			log.info("market order created. order: {}", order);
-			var price = order.getAveragePrice();
-            getOrderbookService().correctBestPrice(bookType, price);
-            return order;
-        } catch (Exception e) {
+		try {
+			if (type.equals(OrderType.BID)) {
+				order = buySpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
+			} else {
+				order = sellSpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
+			}
+			log.info("limit order created. order: {}", order);
+			return order;
+		} catch (Exception e) {
 			mailer.info("exchange disabled on order error", "disabled exchange: " + getName());
 			setEnable(false);
 			throw e;
-        }
-    }
+		}
+	}
 
 ```
 
