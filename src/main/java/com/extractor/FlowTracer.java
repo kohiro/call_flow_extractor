@@ -209,13 +209,18 @@ public class FlowTracer {
                 }
             }
 
-            // Determine which text is actually extracted for import filtering
             String extractedContent = String.join("\n", usedFields) + "\n" + methodSource;
             
             Set<String> words = new HashSet<>();
             java.util.regex.Matcher wordMatcher = java.util.regex.Pattern.compile("\\b[A-Za-z_][A-Za-z0-9_]*\\b").matcher(extractedContent);
             while (wordMatcher.find()) {
                 words.add(wordMatcher.group());
+            }
+            
+            Set<String> standaloneWords = new HashSet<>();
+            java.util.regex.Matcher standaloneMatcher = java.util.regex.Pattern.compile("(?<![A-Za-z0-9_.])([A-Za-z_][A-Za-z0-9_]*)").matcher(extractedContent);
+            while (standaloneMatcher.find()) {
+                standaloneWords.add(standaloneMatcher.group(1));
             }
             
             boolean hasImports = false;
@@ -226,7 +231,7 @@ public class FlowTracer {
                     boolean keep = true;
                     if (imp.startsWith("import static ")) {
                         String className = imp.substring(14, imp.lastIndexOf('.')).trim();
-                        keep = isStaticWildcardUsed(className, words, indexer);
+                        keep = isStaticWildcardUsed(className, standaloneWords, indexer);
                     } else {
                         String packageName = imp.substring(7, imp.lastIndexOf('.')).trim();
                         keep = isPackageWildcardUsed(packageName, words, indexer);
@@ -352,7 +357,8 @@ public class FlowTracer {
             } catch (Exception e) {}
         }
         
-        return className.startsWith("java.") || className.startsWith("javax.") ? false : true;
+        boolean keepUnknown = Boolean.getBoolean("extractor.keep.unknown.wildcards");
+        return className.startsWith("java.") || className.startsWith("javax.") ? false : keepUnknown;
     }
 
     private boolean isPackageWildcardUsed(String packageName, Set<String> words, ProjectIndexer indexer) {
@@ -368,7 +374,8 @@ public class FlowTracer {
                 }
             }
         }
-        return packageName.startsWith("java.") || packageName.startsWith("javax.") ? false : true;
+        boolean keepUnknown = Boolean.getBoolean("extractor.keep.unknown.wildcards");
+        return packageName.startsWith("java.") || packageName.startsWith("javax.") ? false : keepUnknown;
     }
 
     private boolean isMyBatisAnnotation(String methodSource) {
