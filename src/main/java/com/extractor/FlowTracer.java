@@ -26,7 +26,7 @@ public class FlowTracer {
     }
 
     public List<ExtractedBlock> trace(String fqcn, String methodName, int argCount) {
-        traceRecursive(fqcn, methodName, argCount);
+        traceClassAndImplementors(fqcn, methodName, argCount);
         return getExtractedBlocks();
     }
 

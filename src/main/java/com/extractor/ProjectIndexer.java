@@ -15,6 +15,21 @@ import java.util.stream.Stream;
 
 public class ProjectIndexer {
 
+    public static class EntryMethod {
+        public final String fqcn;
+        public final String methodName;
+        public EntryMethod(String fqcn, String methodName) {
+            this.fqcn = fqcn;
+            this.methodName = methodName;
+        }
+    }
+
+    private final List<EntryMethod> entryMethods = new ArrayList<>();
+    
+    public List<EntryMethod> getEntryMethods() {
+        return entryMethods;
+    }
+
     private final Map<String, Path> javaFilesByFqcn = new HashMap<>();
     private final Map<String, Path> javaFilesBySimpleName = new HashMap<>();
     private final Map<Path, String> fqcnByJavaFile = new HashMap<>();
@@ -88,6 +103,30 @@ public class ProjectIndexer {
                             }
                             for (Object superInterface : node.superInterfaceTypes()) {
                                 addImplementor((Type) superInterface, fqcn);
+                            }
+                            return super.visit(node);
+                        }
+
+                        @Override
+                        public boolean visit(MethodDeclaration node) {
+                            boolean hasMapping = false;
+                            for (Object mod : node.modifiers()) {
+                                if (mod instanceof Annotation) {
+                                    String annotName = ((Annotation) mod).getTypeName().getFullyQualifiedName();
+                                    if (annotName.endsWith("Mapping")) {
+                                        hasMapping = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (hasMapping) {
+                                ASTNode parent = node.getParent();
+                                if (parent instanceof TypeDeclaration) {
+                                    TypeDeclaration typeNode = (TypeDeclaration) parent;
+                                    String simpleName = typeNode.getName().getIdentifier();
+                                    String fqcn = pkgName.isEmpty() ? simpleName : pkgName + "." + simpleName;
+                                    entryMethods.add(new EntryMethod(fqcn, node.getName().getIdentifier()));
+                                }
                             }
                             return super.visit(node);
                         }
