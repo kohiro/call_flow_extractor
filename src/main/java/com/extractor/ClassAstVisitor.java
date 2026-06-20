@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class ClassAstVisitor extends ASTVisitor {
 
+    private final String targetFqcn;
     private final String targetMethodName;
     private final int targetArgCount;
     private final String fileContent;
@@ -26,9 +27,18 @@ public class ClassAstVisitor extends ASTVisitor {
 
     private final List<String> imports = new ArrayList<>();
     private final List<String> staticImports = new ArrayList<>();
-    private String targetMethodSource = null;
-    private MethodDeclaration targetMethodDecl = null;
-    private String targetClassSignature;
+    public static class ExtractedMethod {
+        public String source;
+        public int firstLineNumber;
+        public MethodDeclaration decl;
+    }
+    
+    private List<ExtractedMethod> extractedMethods = new ArrayList<>();
+    private String targetClassSignature = null;
+    
+    public List<ExtractedMethod> getExtractedMethods() {
+        return extractedMethods;
+    }
     
     private final List<FieldData> fields = new ArrayList<>();
     private final List<MethodCallInfo> methodCalls = new ArrayList<>();
@@ -36,8 +46,9 @@ public class ClassAstVisitor extends ASTVisitor {
     private final Map<String, String> methodReturnTypes = new HashMap<>();
     private boolean isInterface = false;
 
-    public ClassAstVisitor(String fileContent, String targetMethodName, int targetArgCount, CompilationUnit cu) {
+    public ClassAstVisitor(String fileContent, String targetFqcn, String targetMethodName, int targetArgCount, CompilationUnit cu) {
         this.fileContent = fileContent;
+        this.targetFqcn = targetFqcn;
         this.targetMethodName = targetMethodName;
         this.targetArgCount = targetArgCount;
         this.cu = cu;
@@ -52,6 +63,33 @@ public class ClassAstVisitor extends ASTVisitor {
                 return false; // No need to visit children of MethodDeclaration for this pass
             }
         });
+    }
+
+    private String computeNodeFqcn(ASTNode node) {
+        if (node != null) {
+            StringBuilder sb = new StringBuilder();
+            ASTNode parent = node.getParent();
+            while (parent != null) {
+                if (parent instanceof TypeDeclaration) {
+                    if (sb.length() > 0) sb.insert(0, ".");
+                    sb.insert(0, ((TypeDeclaration) parent).getName().getIdentifier());
+                } else if (parent instanceof EnumDeclaration) {
+                    if (sb.length() > 0) sb.insert(0, ".");
+                    sb.insert(0, ((EnumDeclaration) parent).getName().getIdentifier());
+                } else if (parent instanceof RecordDeclaration) {
+                    if (sb.length() > 0) sb.insert(0, ".");
+                    sb.insert(0, ((RecordDeclaration) parent).getName().getIdentifier());
+                }
+                parent = parent.getParent();
+            }
+            if (sb.length() > 0) {
+                if (cu != null && cu.getPackage() != null) {
+                    return cu.getPackage().getName().getFullyQualifiedName() + "." + sb.toString();
+                }
+                return sb.toString();
+            }
+        }
+        return null;
     }
 
     public int getTargetMethodFirstLineNumber() {
@@ -97,16 +135,46 @@ public class ClassAstVisitor extends ASTVisitor {
     @Override
     public boolean visit(MethodDeclaration node) {
         if (node.getName().getIdentifier().equals(targetMethodName)) {
-            // Check argument count if specified
             if (targetArgCount != -1 && node.parameters().size() != targetArgCount) {
                 return super.visit(node);
             }
             
-            // Found target method
-            targetMethodSource = extractSourceDedented(node);
-            targetMethodDecl = node;
+            String currentFqcn = computeNodeFqcn(node);
+            boolean fqcnMatch = false;
+            if (targetFqcn.equals(currentFqcn)) {
+                fqcnMatch = true;
+            } else {
+                String targetSimple = targetFqcn;
+                int lastDot = targetFqcn.lastIndexOf('.');
+                if (lastDot != -1) {
+                    targetSimple = targetFqcn.substring(lastDot + 1);
+                }
+                if (currentFqcn != null && (currentFqcn.endsWith("." + targetSimple) || currentFqcn.equals(targetSimple))) {
+                    // Ensure the package matches if targetFqcn had a package
+                    if (lastDot != -1) {
+                        String targetPkg = targetFqcn.substring(0, lastDot);
+                        if (currentFqcn.startsWith(targetPkg + ".")) {
+                            fqcnMatch = true;
+                        }
+                    } else {
+                        fqcnMatch = true;
+                    }
+                }
+            }
             
-            // Extract class signature
+            
+            if (!fqcnMatch) {
+                return super.visit(node);
+            }
+            
+            // Found target method
+            ExtractedMethod em = new ExtractedMethod();
+            em.source = extractSourceDedented(node);
+            em.decl = node;
+            em.firstLineNumber = cu.getLineNumber(node.getStartPosition());
+            extractedMethods.add(em);
+            
+            // Extract class signature if not already extracted
             ASTNode parent = node.getParent();
             while (parent != null && !(parent instanceof TypeDeclaration) && !(parent instanceof EnumDeclaration) && !(parent instanceof RecordDeclaration)) {
                 parent = parent.getParent();
@@ -158,10 +226,7 @@ public class ClassAstVisitor extends ASTVisitor {
                             if (frag.getInitializer() instanceof MethodInvocation) {
                                 MethodInvocation minv = (MethodInvocation) frag.getInitializer();
                                 if (minv.getExpression() == null) {
-                                    String retType = methodReturnTypes.get(minv.getName().getIdentifier());
-                                    if (retType != null) {
-                                        inferredType = retType;
-                                    }
+                                    inferredType = methodReturnTypes.getOrDefault(minv.getName().getIdentifier(), "var");
                                 }
                             } else if (frag.getInitializer() instanceof ClassInstanceCreation) {
                                 inferredType = ((ClassInstanceCreation) frag.getInitializer()).getType().toString();
@@ -197,13 +262,16 @@ public class ClassAstVisitor extends ASTVisitor {
         int length = node.getLength();
         
         // Go back to the very beginning of the line
-        int lineStart = start;
-        while (lineStart > 0 && fileContent.charAt(lineStart - 1) != '\n') {
-            lineStart--;
+        int lineStart = -1;
+        for (int i = start; i >= 0; i--) {
+            if (fileContent.charAt(i) == '\n') {
+                lineStart = i + 1;
+                break;
+            }
         }
-        
-        // Record the first line number for comment injection
-        targetMethodFirstLineNumber = cu.getLineNumber(lineStart);
+        if (lineStart == -1) {
+            lineStart = 0;
+        }
         
         String rawSource = fileContent.substring(lineStart, start + length);
         String[] lines = rawSource.split("\n", -1);
@@ -280,25 +348,13 @@ public class ClassAstVisitor extends ASTVisitor {
     public List<String> getStaticImports() {
         return staticImports;
     }
-
     public List<FieldData> getFields() {
         return fields;
     }
 
-    public String getTargetMethodSource() {
-        return targetMethodSource;
-    }
-
-    public MethodDeclaration getTargetMethodDecl() {
-        return targetMethodDecl;
-    }
-
-    public String getTargetClassSignature() {
-        return targetClassSignature;
-    }
-
     public String getTargetClassName() {
-        if (targetMethodDecl != null) {
+        if (!extractedMethods.isEmpty()) {
+            MethodDeclaration targetMethodDecl = extractedMethods.get(0).decl;
             ASTNode parent = targetMethodDecl.getParent();
             while (parent != null && !(parent instanceof TypeDeclaration) && !(parent instanceof EnumDeclaration) && !(parent instanceof RecordDeclaration)) {
                 parent = parent.getParent();
@@ -314,8 +370,13 @@ public class ClassAstVisitor extends ASTVisitor {
         return null;
     }
 
+    public String getTargetClassSignature() {
+        return targetClassSignature;
+    }
+
     public String getTargetFqcn() {
-        if (targetMethodDecl != null) {
+        if (!extractedMethods.isEmpty()) {
+            MethodDeclaration targetMethodDecl = extractedMethods.get(0).decl;
             StringBuilder sb = new StringBuilder();
             ASTNode parent = targetMethodDecl.getParent();
             while (parent != null) {

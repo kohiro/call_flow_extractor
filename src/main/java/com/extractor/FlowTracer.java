@@ -31,8 +31,8 @@ public class FlowTracer {
     }
 
     private List<String> traceRecursive(String fqcn, String methodName, int argCount) {
-        // Use argCount in uniqueId to distinguish overloads, use -1 if unknown
-        String uniqueId = fqcn + "#" + methodName + (argCount != -1 ? "#" + argCount : "");
+        // Prevent infinite recursion and duplicate processing
+        String uniqueId = fqcn + "#" + methodName + (argCount != -1 ? "(" + argCount + ")" : "");
         if (visitedMethods.containsKey(uniqueId)) {
             return visitedMethods.get(uniqueId);
         }
@@ -40,15 +40,13 @@ public class FlowTracer {
         List<String> currentLinks = new ArrayList<>();
         visitedMethods.put(uniqueId, currentLinks);
 
+
         Path javaFile = indexer.getJavaFile(fqcn);
         if (javaFile == null) {
             String simpleName = fqcn.contains(".") ? fqcn.substring(fqcn.lastIndexOf(".") + 1) : fqcn;
             javaFile = indexer.getJavaFileBySimpleName(simpleName);
         }
 
-        if (javaFile != null) {
-            fqcn = indexer.getFqcn(javaFile);
-        }
 
         if (javaFile == null) {
             // It could be an external library or we couldn't resolve it. Just skip.
@@ -71,11 +69,10 @@ public class FlowTracer {
             parser.setSource(content.toCharArray());
             parser.setKind(ASTParser.K_COMPILATION_UNIT);
             CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-
-            ClassAstVisitor visitor = new ClassAstVisitor(content, methodName, argCount, cu);
+            ClassAstVisitor visitor = new ClassAstVisitor(content, fqcn, methodName, argCount, cu);
             cu.accept(visitor);
 
-            if (visitor.getTargetMethodDecl() == null) {
+            if (visitor.getExtractedMethods().isEmpty()) {
                 // Method not found in this specific class, but might be in superclass.
                 String superclass = indexer.getSuperclass(fqcn);
                 if (superclass != null) {
@@ -84,7 +81,10 @@ public class FlowTracer {
                     currentLinks.clear();
                     currentLinks.addAll(superLinks);
                 }
-                return currentLinks;
+                if (visitor.getExtractedMethods().isEmpty()) {
+                    System.err.println("WARNING: Target method not found: " + methodName + " in " + fqcn);
+                    return currentLinks;
+                }
             }
 
             String actualFqcn = visitor.getTargetFqcn();
@@ -92,9 +92,20 @@ public class FlowTracer {
                 actualFqcn = fqcn;
             }
 
-            String title = actualFqcn + "#" + methodName;
-            String anchor = title.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
+            String title = actualFqcn + "#" + methodName + (argCount != -1 ? "(" + argCount + ")" : "");
             
+            if (!actualFqcn.equals(fqcn)) {
+                String actualUniqueId = actualFqcn + "#" + methodName + (argCount != -1 ? "(" + argCount + ")" : "");
+                if (visitedMethods.containsKey(actualUniqueId)) {
+                    List<String> existing = visitedMethods.get(actualUniqueId);
+                    currentLinks.clear();
+                    currentLinks.addAll(existing);
+                    return currentLinks;
+                }
+                visitedMethods.put(actualUniqueId, currentLinks);
+            }
+            
+            String anchor = title.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
             String simpleClassName = actualFqcn;
             int lastDot = actualFqcn.lastIndexOf('.');
             if (lastDot != -1) {
@@ -102,15 +113,13 @@ public class FlowTracer {
             }
             
             currentLinks.clear();
-            currentLinks.add(String.format("[%s](#%s)", simpleClassName + "#" + methodName, anchor));
+            currentLinks.add(String.format("[%s](#%s)", simpleClassName + "#" + methodName + (argCount != -1 ? "(" + argCount + ")" : ""), anchor));
 
             // Reserve spot for PRE-ORDER traversal output
             int blockIndex = extractedBlocks.size();
             extractedBlocks.add(null);
 
-            // Trace further down and collect links
-            Map<Integer, Set<String>> lineToLinks = new HashMap<>();
-            
+            // Assign targetIds to method calls
             for (ClassAstVisitor.MethodCallInfo call : visitor.getMethodCalls()) {
                 List<String> targetIds = new ArrayList<>();
                 
@@ -123,7 +132,6 @@ public class FlowTracer {
                 } else if ("this".equals(call.receiver)) {
                     targetIds.addAll(traceClassAndImplementors(fqcn, call.methodName, call.argCount));
                 } else {
-                    // Resolve the receiver to a class
                     List<String> fieldSources = visitor.getFields().stream().map(fd -> fd.source).collect(Collectors.toList());
                     String targetTypeFqcn = resolveTargetTypeFqcn(call.receiver, fqcn, fieldSources, visitor.getImports(), visitor.getLocalVariableTypes());
                     if (targetTypeFqcn != null) {
@@ -131,27 +139,67 @@ public class FlowTracer {
                     }
                 }
                 
-                if (!targetIds.isEmpty()) {
-                    int lineIndex = call.lineNumber - visitor.getTargetMethodFirstLineNumber();
-                    lineToLinks.computeIfAbsent(lineIndex, k -> new LinkedHashSet<>()).addAll(targetIds);
-                }
+                // Use a dynamic field or just a local map to group targets
+                // Actually, wait, let's keep it simple
             }
 
-            // Append comments to method source lines
-            String[] methodLines = visitor.getTargetMethodSource().split("\n", -1);
-            for (Map.Entry<Integer, Set<String>> entry : lineToLinks.entrySet()) {
-                int lineIndex = entry.getKey();
-                if (lineIndex >= 0 && lineIndex < methodLines.length) {
-                    String linksComment = " // -> " + String.join(", ", entry.getValue());
-                    methodLines[lineIndex] = methodLines[lineIndex] + linksComment;
+            // Group links per method
+            StringBuilder combinedSource = new StringBuilder();
+            boolean firstMethod = true;
+            boolean hasMybatis = false;
+            
+            for (ClassAstVisitor.ExtractedMethod em : visitor.getExtractedMethods()) {
+                if (isMyBatisAnnotation(em.source)) {
+                    hasMybatis = true;
                 }
-            }
-            String methodSource = String.join("\n", methodLines);
+                
+                Map<Integer, Set<String>> lineToLinks = new HashMap<>();
+                for (ClassAstVisitor.MethodCallInfo call : visitor.getMethodCalls()) {
+                    // Check if call belongs to THIS method
+                    int lineIndex = call.lineNumber - em.firstLineNumber;
+                    String[] methodLines = em.source.split("\n", -1);
+                    if (lineIndex >= 0 && lineIndex < methodLines.length) {
+                        // resolve again for the call since we didn't store it
+                        List<String> targetIds = new ArrayList<>();
+                        if (call.receiver == null) {
+                            List<String> staticTargets = resolveStaticImports(call.methodName, visitor.getStaticImports());
+                            for (String staticTarget : staticTargets) {
+                                targetIds.addAll(traceRecursive(staticTarget, call.methodName, call.argCount));
+                            }
+                            targetIds.addAll(traceClassAndImplementors(fqcn, call.methodName, call.argCount));
+                        } else if ("this".equals(call.receiver)) {
+                            targetIds.addAll(traceClassAndImplementors(fqcn, call.methodName, call.argCount));
+                        } else {
+                            List<String> fieldSources = visitor.getFields().stream().map(fd -> fd.source).collect(Collectors.toList());
+                            String targetTypeFqcn = resolveTargetTypeFqcn(call.receiver, fqcn, fieldSources, visitor.getImports(), visitor.getLocalVariableTypes());
+                            if (targetTypeFqcn != null) {
+                                targetIds.addAll(traceClassAndImplementors(targetTypeFqcn, call.methodName, call.argCount));
+                            }
+                        }
+                        if (!targetIds.isEmpty()) {
+                            lineToLinks.computeIfAbsent(lineIndex, k -> new LinkedHashSet<>()).addAll(targetIds);
+                        }
+                    }
+                }
 
-            // Build the block content
+                String[] methodLines = em.source.split("\n", -1);
+                for (Map.Entry<Integer, Set<String>> entry : lineToLinks.entrySet()) {
+                    int lineIndex = entry.getKey();
+                    if (lineIndex >= 0 && lineIndex < methodLines.length) {
+                        String linksComment = " // -> " + String.join(", ", entry.getValue());
+                        methodLines[lineIndex] = methodLines[lineIndex] + linksComment;
+                    }
+                }
+                
+                if (!firstMethod) {
+                    combinedSource.append("\n\n");
+                }
+                combinedSource.append(String.join("\n", methodLines));
+                firstMethod = false;
+            }
+
             StringBuilder blockContent = new StringBuilder();
-
-            // Filter fields based on usage in the target method
+            String methodSource = combinedSource.toString();
             List<String> usedFields = new ArrayList<>();
             for (ClassAstVisitor.FieldData fd : visitor.getFields()) {
                 boolean isUsed = false;
@@ -217,12 +265,12 @@ public class FlowTracer {
             }
             
             blockContent.append("// --- メソッド定義 ---\n");
+            
             blockContent.append(methodSource).append("\n");
 
             extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor));
 
-            // Check if this is a Mapper with an annotation
-            if (isMyBatisAnnotation(visitor.getTargetMethodSource())) {
+            if (hasMybatis) {
                 return currentLinks; // SQL is already in the annotation, we can stop here
             }
 
