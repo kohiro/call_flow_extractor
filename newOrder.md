@@ -38,9 +38,9 @@ import static org.knowm.xchange.dto.Order.OrderType.BID;
 
 // --- フィールド ---
 static final String BTC_PRICE_HTML = """
-            <div class="coinmarketcap-currency-widget" data-currencyid="1" data-base="JPY" data-secondary="USD" 
-                data-ticker="true" data-rank="false" data-marketcap="true" data-volume="true" data-statsticker="true" data-stats="JPY">
-            </div>""";
+        <div class="coinmarketcap-currency-widget" data-currencyid="1" data-base="JPY" data-secondary="USD" 
+            data-ticker="true" data-rank="false" data-marketcap="true" data-volume="true" data-statsticker="true" data-stats="JPY">
+        </div>""";
 @Autowired Broadcaster broadcaster;
 @Autowired DistributedMarketOrderLogic dmo;
 @Autowired ServiceManager serviceManager;
@@ -60,52 +60,52 @@ private Text priceDivergence;
 private Dialog dialog;
 
 // --- メソッド定義 ---
-    private void newOrder(Grid<MarketData> grid, MarketData marketData) {
-        if (marketData == null || marketData.getExchangeService().isEnable() == false) {
-            notifyError(this.getUI(), "exchange not ebnabled");
-            return;
-        }
-        dialog = new Dialog(){{
-            setModality(ModalityMode.MODELESS);
-            setDraggable(true);
-            setResizable(true);
-            setHeaderTitle("New Order");
-        }};
-        var orderType = new Select<OrderType>("BID/ASK", e->{}, BID, ASK);
-        var limitPrice = new NumberField("Limit Price"){{
-            setPlaceholder("Limit Price");
-            setStep(ONE.movePointLeft(scale - 1).doubleValue());
-            setStepButtonsVisible(true);
-            setValue(marketData.getBid().doubleValue());
-        }};
-        var volume = new NumberField("Volume"){{
-            setPlaceholder("Volume");
-            setStep(ONE.movePointLeft(volScale - 5).doubleValue());
-            setStepButtonsVisible(true);
-            setValue(Double.valueOf(1));
-        }};
-        orderType.addValueChangeListener(e->{
-            if (BID.equals(e.getValue())) {
-                limitPrice.setValue(marketData.getBid().doubleValue());
-            } else {
-                limitPrice.setValue(marketData.getAsk().doubleValue());
-            }
-        });
-        dialog.add(new VerticalLayout(orderType, limitPrice, volume){{
-            setPadding(false);
-            setSpacing(false);
-        }});
-        var cancel = new Button("Cancel", e -> dialog.close());
-        var execute = new Button("Execute", e ->{
-            boolean success = placeOrder(
-                marketData.getExchangeService(), orderType.getValue(),
-                new BigDecimal(limitPrice.getValue()), new BigDecimal(volume.getValue()));
-            if (success) dialog.close();
-        });
-        execute.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        dialog.getFooter().add(cancel, execute);
-        dialog.open();
+private void newOrder(Grid<MarketData> grid, MarketData marketData) {
+    if (marketData == null || marketData.getExchangeService().isEnable() == false) {
+        notifyError(this.getUI(), "exchange not ebnabled");
+        return;
     }
+    dialog = new Dialog(){{
+        setModality(ModalityMode.MODELESS);
+        setDraggable(true);
+        setResizable(true);
+        setHeaderTitle("New Order");
+    }};
+    var orderType = new Select<OrderType>("BID/ASK", e->{}, BID, ASK);
+    var limitPrice = new NumberField("Limit Price"){{
+        setPlaceholder("Limit Price");
+        setStep(ONE.movePointLeft(scale - 1).doubleValue());
+        setStepButtonsVisible(true);
+        setValue(marketData.getBid().doubleValue());
+    }};
+    var volume = new NumberField("Volume"){{
+        setPlaceholder("Volume");
+        setStep(ONE.movePointLeft(volScale - 5).doubleValue());
+        setStepButtonsVisible(true);
+        setValue(Double.valueOf(1));
+    }};
+    orderType.addValueChangeListener(e->{
+        if (BID.equals(e.getValue())) {
+            limitPrice.setValue(marketData.getBid().doubleValue());
+        } else {
+            limitPrice.setValue(marketData.getAsk().doubleValue());
+        }
+    });
+    dialog.add(new VerticalLayout(orderType, limitPrice, volume){{
+        setPadding(false);
+        setSpacing(false);
+    }});
+    var cancel = new Button("Cancel", e -> dialog.close());
+    var execute = new Button("Execute", e ->{
+        boolean success = placeOrder(
+            marketData.getExchangeService(), orderType.getValue(),
+            new BigDecimal(limitPrice.getValue()), new BigDecimal(volume.getValue()));
+        if (success) dialog.close();
+    });
+    execute.addThemeVariants(ButtonVariant.LUMO_ERROR);
+    dialog.getFooter().add(cancel, execute);
+    dialog.open();
+}
 
 ```
 ### src/main/java/cryptobot/web/view/pages/MarketView.java (placeOrder)
@@ -136,9 +136,9 @@ import static java.lang.String.format;
 
 // --- フィールド ---
 static final String BTC_PRICE_HTML = """
-            <div class="coinmarketcap-currency-widget" data-currencyid="1" data-base="JPY" data-secondary="USD" 
-                data-ticker="true" data-rank="false" data-marketcap="true" data-volume="true" data-statsticker="true" data-stats="JPY">
-            </div>""";
+        <div class="coinmarketcap-currency-widget" data-currencyid="1" data-base="JPY" data-secondary="USD" 
+            data-ticker="true" data-rank="false" data-marketcap="true" data-volume="true" data-statsticker="true" data-stats="JPY">
+        </div>""";
 @Autowired Broadcaster broadcaster;
 @Autowired DistributedMarketOrderLogic dmo;
 @Autowired ServiceManager serviceManager;
@@ -158,29 +158,29 @@ private Text priceDivergence;
 private Dialog dialog;
 
 // --- メソッド定義 ---
-    private boolean placeOrder(ExchangeService service, OrderType orderType, BigDecimal price, BigDecimal volume) {
-        if (orderType == null) {
-            notifyError(this.getUI(),"Order Type in not selected");
-            return false;
-        }
-        if (price == null) {
-            notifyError(this.getUI(),"price not specified");
-            return false;
-        }
-        if (volume == null) {
-            notifyError(this.getUI(),"Volume not specified");
-            return false;
-        }
-        taskWorker.execute(()->{
-            try {
-                service.order(orderType, volume, price);
-                notifySuccess(this.getUI(),"Order placed");
-            } catch (Exception e) {
-                notifyError(this.getUI(),"Order error\n%s".formatted(e.getMessage()));
-            }
-        });
-        return true;
+private boolean placeOrder(ExchangeService service, OrderType orderType, BigDecimal price, BigDecimal volume) {
+    if (orderType == null) {
+        notifyError(this.getUI(),"Order Type in not selected");
+        return false;
     }
+    if (price == null) {
+        notifyError(this.getUI(),"price not specified");
+        return false;
+    }
+    if (volume == null) {
+        notifyError(this.getUI(),"Volume not specified");
+        return false;
+    }
+    taskWorker.execute(()->{
+        try {
+            service.order(orderType, volume, price);
+            notifySuccess(this.getUI(),"Order placed");
+        } catch (Exception e) {
+            notifyError(this.getUI(),"Order error\n%s".formatted(e.getMessage()));
+        }
+    });
+    return true;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (order)
@@ -236,30 +236,30 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	/**
-	 * 指値注文
-	 * @param type
-	 * @param volume
-	 * @param limitPrice
-	 * @return
-	 * @throws Exception
-	 */
-	public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		OrderRecord order;
-		try {
-			if (type.equals(OrderType.BID)) {
-				order = buySpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
-			} else {
-				order = sellSpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
-			}
-			log.info("limit order created. order: {}", order);
-			return order;
-		} catch (Exception e) {
-			mailer.info("exchange disabled on order error", "disabled exchange: " + getName());
-			setEnable(false);
-			throw e;
+/**
+ * 指値注文
+ * @param type
+ * @param volume
+ * @param limitPrice
+ * @return
+ * @throws Exception
+ */
+public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	OrderRecord order;
+	try {
+		if (type.equals(OrderType.BID)) {
+			order = buySpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
+		} else {
+			order = sellSpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
 		}
+		log.info("limit order created. order: {}", order);
+		return order;
+	} catch (Exception e) {
+		mailer.info("exchange disabled on order error", "disabled exchange: " + getName());
+		setEnable(false);
+		throw e;
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (buySpot)
@@ -318,11 +318,11 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		LimitOrder order = new LimitOrder(OrderType.BID, volume, ccyp, null, null, limitPrice);
-		String id = xchange.getTradeService().placeLimitOrder(order);
-		return getOrder(id);
-	}
+public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	LimitOrder order = new LimitOrder(OrderType.BID, volume, ccyp, null, null, limitPrice);
+	String id = xchange.getTradeService().placeLimitOrder(order);
+	return getOrder(id);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (getOrder)
@@ -376,7 +376,7 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	abstract public OrderRecord getOrder(String id) throws Exception;
+abstract public OrderRecord getOrder(String id) throws Exception;
 
 ```
 ### src/main/java/cryptobot/exchange/binance/Binance.java (getOrder)
@@ -420,29 +420,29 @@ private final int stepSize = 4;
 @Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
 
 // --- メソッド定義 ---
-	synchronized public OrderRecord getOrder(String orderId) throws Exception {
-		var present = orderPool.getById(orderId);
-		if (present != null) {
-			return present;
-		}
-		OrderQueryParamInstrument param = new OrderQueryParamInstrument() {
-			@Override public String getOrderId() {return orderId;}
-			@Override public void setOrderId(String id) {}
-			@Override public Instrument getInstrument() {return ccyp;}
-			@Override public void setInstrument(Instrument instrument) {}
-		};
-		Collection<Order> orderList = tradeService.getOrder(param);
-		if (orderList.isEmpty()) {
-			return null;
-		}
-		Order order = orderList.iterator().next();
-		LimitOrder limitOrder = Builder.from(order).build();
-		OrderRecord record = new OrderRecord(this, limitOrder);
-		BigDecimal executedVol = order.getCumulativeAmount();
-		// Builder.from(order)でコピーされないため個別コピー(最新のxchangeライブラリでは解消？)
-		record.setCumulativeAmount(order.getCumulativeAmount());
-		return record;
+synchronized public OrderRecord getOrder(String orderId) throws Exception {
+	var present = orderPool.getById(orderId);
+	if (present != null) {
+		return present;
 	}
+	OrderQueryParamInstrument param = new OrderQueryParamInstrument() {
+		@Override public String getOrderId() {return orderId;}
+		@Override public void setOrderId(String id) {}
+		@Override public Instrument getInstrument() {return ccyp;}
+		@Override public void setInstrument(Instrument instrument) {}
+	};
+	Collection<Order> orderList = tradeService.getOrder(param);
+	if (orderList.isEmpty()) {
+		return null;
+	}
+	Order order = orderList.iterator().next();
+	LimitOrder limitOrder = Builder.from(order).build();
+	OrderRecord record = new OrderRecord(this, limitOrder);
+	BigDecimal executedVol = order.getCumulativeAmount();
+	// Builder.from(order)でコピーされないため個別コピー(最新のxchangeライブラリでは解消？)
+	record.setCumulativeAmount(order.getCumulativeAmount());
+	return record;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (getOrder)
@@ -474,7 +474,7 @@ import cryptobot.misc.MailSender;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -494,24 +494,24 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	@Override
-	synchronized public OrderRecord getOrder(String id) throws Exception {
-		var path = "/v1/user/spot/order";
-		var order = doHttpGet(path, BitbankOrders.Order.class, Map.of("pair", ccyps, "order_id", id));
-		if (order == null || order.orderId == 0)
-			throw new PlacedOrderNotFoundException("order not exists");
-		OrderRecord record = new OrderRecord(this, order.converLimitOrder());
-		// 指値注文の場合(＝Priceが０でない)
-		if (nonNull(record.getLimitPrice()) && record.getLimitPrice().compareTo(ZERO) != 0) {
-			// 指値の場合はaveragePriceが取得出来ないのでpriceをaveragePriceとして設定
-			record.setAveragePrice(record.getLimitPrice());
-		}
-		return record;
+@Override
+synchronized public OrderRecord getOrder(String id) throws Exception {
+	var path = "/v1/user/spot/order";
+	var order = doHttpGet(path, BitbankOrders.Order.class, Map.of("pair", ccyps, "order_id", id));
+	if (order == null || order.orderId == 0)
+		throw new PlacedOrderNotFoundException("order not exists");
+	OrderRecord record = new OrderRecord(this, order.converLimitOrder());
+	// 指値注文の場合(＝Priceが０でない)
+	if (nonNull(record.getLimitPrice()) && record.getLimitPrice().compareTo(ZERO) != 0) {
+		// 指値の場合はaveragePriceが取得出来ないのでpriceをaveragePriceとして設定
+		record.setAveragePrice(record.getLimitPrice());
 	}
+	return record;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (doHttpGet)
@@ -544,7 +544,7 @@ import org.springframework.web.client.RestClient.ResponseSpec.ErrorHandler;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -564,30 +564,30 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	protected <T> T doHttpGet(String path, Class<T> clazz, Map<String, String> params) throws Exception {
-		Map<String, String> query = params != null ? params : Map.of();
-		Map<String, String> headers = getPrivateRequestHeader(path, query);
-		
-		var uriBuilder = fromUriString(API_ENDPOINT + path);
-		query.forEach(uriBuilder::queryParam);
+protected <T> T doHttpGet(String path, Class<T> clazz, Map<String, String> params) throws Exception {
+	Map<String, String> query = params != null ? params : Map.of();
+	Map<String, String> headers = getPrivateRequestHeader(path, query);
+	
+	var uriBuilder = fromUriString(API_ENDPOINT + path);
+	query.forEach(uriBuilder::queryParam);
 
-		ErrorHandler errorHandler = (req, res) -> {
-			throw new RuntimeException("Bitbank API error: " + res.getStatusCode());
-		};
-		String res = restClient.get()
-				.uri(uriBuilder.build().toUri())
-				.headers(h -> headers.forEach(h::add))
-				.retrieve()
-				.onStatus(s -> s.isError(), errorHandler)
-				.body(String.class);
-		JsonNode data = JsonUtils.MAPPER.readTree(res).path("data");
-		return data.traverse(JsonUtils.MAPPER).readValueAs(clazz);
+	ErrorHandler errorHandler = (req, res) -> {
+		throw new RuntimeException("Bitbank API error: " + res.getStatusCode());
+	};
+	String res = restClient.get()
+			.uri(uriBuilder.build().toUri())
+			.headers(h -> headers.forEach(h::add))
+			.retrieve()
+			.onStatus(s -> s.isError(), errorHandler)
+			.body(String.class);
+	JsonNode data = JsonUtils.MAPPER.readTree(res).path("data");
+	return data.traverse(JsonUtils.MAPPER).readValueAs(clazz);
 
-	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (getPrivateRequestHeader)
@@ -617,7 +617,7 @@ import cryptobot.misc.MailSender;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -637,18 +637,18 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	protected Map<String, String> getPrivateRequestHeader(String path, Map<String, String> query) {
-		long nonce = currentTimeMillis();
-		String queryString = query.entrySet().stream()
-				.map(e -> e.getKey() + "=" + e.getValue()).collect(joining("&"));
-		if (!queryString.isEmpty()) queryString = "?" + queryString;
-		String message = String.valueOf(nonce) + path + queryString;
-		return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message));
-	}
+protected Map<String, String> getPrivateRequestHeader(String path, Map<String, String> query) {
+	long nonce = currentTimeMillis();
+	String queryString = query.entrySet().stream()
+			.map(e -> e.getKey() + "=" + e.getValue()).collect(joining("&"));
+	if (!queryString.isEmpty()) queryString = "?" + queryString;
+	String message = String.valueOf(nonce) + path + queryString;
+	return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message));
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (makePrivateRequestHeaders)
@@ -677,7 +677,7 @@ import cryptobot.misc.MailSender;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -697,17 +697,17 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	private Map<String, String> makePrivateRequestHeaders(long nonce, String sign) {
-		return Map.of(
-				"Content-Type", "application/json; charset=utf-8",
-				"ACCESS-KEY", API_KEY,
-				"ACCESS-NONCE", String.valueOf(nonce),
-				"ACCESS-SIGNATURE", sign);
-	}
+private Map<String, String> makePrivateRequestHeaders(long nonce, String sign) {
+	return Map.of(
+			"Content-Type", "application/json; charset=utf-8",
+			"ACCESS-KEY", API_KEY,
+			"ACCESS-NONCE", String.valueOf(nonce),
+			"ACCESS-SIGNATURE", sign);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/GenericService.java (createHMAC)
@@ -728,19 +728,19 @@ protected final Logger log = LoggerFactory.getLogger(getClass());
 protected volatile boolean serviceStarted = false;
 
 // --- メソッド定義 ---
-    @NotNull
-    protected String createHMAC(String secret, String data) {
-        try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
-            mac.init(secret_key);
-            mac.update(data.getBytes());
-            char[] hash = Hex.encodeHex(mac.doFinal());
-            return new String(hash);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+@NotNull
+protected String createHMAC(String secret, String data) {
+    try {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+        mac.init(secret_key);
+        mac.update(data.getBytes());
+        char[] hash = Hex.encodeHex(mac.doFinal());
+        return new String(hash);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
     }
+}
 
 ```
 ### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (getOrder)
@@ -768,48 +768,48 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 @Autowired CoincheckOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
 /** id 注文のID（新規注文でのIDと同一です）*/
-        @JsonProperty("id")  String orderId;
+@JsonProperty("id")  String orderId;
 /** rate 注文のレート（ null の場合は成り行き注文です）*/
-        @JsonProperty("rate")  BigDecimal limitPrice;
+@JsonProperty("rate")  BigDecimal limitPrice;
 /** pending_amount 注文の未決済の量 */
-        @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
+@JsonProperty("pending_amount")  BigDecimal outstandingVolume;
 /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
-        @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
+@JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
 /** order_type 注文のタイプ（"sell" or "buy"）*/
-        @JsonProperty("order_type")  String orderType;
+@JsonProperty("order_type")  String orderType;
 /** stop_loss_rate 逆指値レート */
-        @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
+@JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
 /** pair 取引ペア */
-        @JsonProperty("pair")  CurrencyPair currencyPair;
+@JsonProperty("pair")  CurrencyPair currencyPair;
 /** created_at 注文の作成日時 */
-        @JsonProperty("created_at")  String timestamp;
+@JsonProperty("created_at")  String timestamp;
 
 // --- メソッド定義 ---
-    @Override
-    public OrderRecord getOrder(String id) throws Exception {
-        List<LimitOrder> openOrders =  getOpenOrders();
-        var order = openOrders.stream().filter(o->o.getId().equals(id)).findAny();
-        if (order.isPresent()){
-            return new OrderRecord(this, order.get());
-        }
-        var op = orderPool.getById(id);
-        if (op != null) {
-            var limitOrder = op;
-            var result = sendRequest("/api/exchange/orders/cancel_status?id=%s".formatted(id), JsonNode.class);
-            if (result.path("success").asBoolean()) {
-                if (result.path("cancel").asBoolean()) {
-                    limitOrder.setOrderStatus(CANCELED);
-                } else {
-                    // open orderになしでcancel状態でない＝filledと想定
-                    limitOrder.setOrderStatus(FILLED);
-                }
-            } else {
-                // order状態が取引システムに未反映のため取得に失敗したと想定→状態変化なし
-            }
-            return new OrderRecord(this, limitOrder);
-        }
-        return null;
+@Override
+public OrderRecord getOrder(String id) throws Exception {
+    List<LimitOrder> openOrders =  getOpenOrders();
+    var order = openOrders.stream().filter(o->o.getId().equals(id)).findAny();
+    if (order.isPresent()){
+        return new OrderRecord(this, order.get());
     }
+    var op = orderPool.getById(id);
+    if (op != null) {
+        var limitOrder = op;
+        var result = sendRequest("/api/exchange/orders/cancel_status?id=%s".formatted(id), JsonNode.class);
+        if (result.path("success").asBoolean()) {
+            if (result.path("cancel").asBoolean()) {
+                limitOrder.setOrderStatus(CANCELED);
+            } else {
+                // open orderになしでcancel状態でない＝filledと想定
+                limitOrder.setOrderStatus(FILLED);
+            }
+        } else {
+            // order状態が取引システムに未反映のため取得に失敗したと想定→状態変化なし
+        }
+        return new OrderRecord(this, limitOrder);
+    }
+    return null;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (getOpenOrders)
@@ -840,62 +840,62 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 @Autowired CoincheckOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
 /** id 注文のID（新規注文でのIDと同一です）*/
-        @JsonProperty("id")  String orderId;
+@JsonProperty("id")  String orderId;
 /** rate 注文のレート（ null の場合は成り行き注文です）*/
-        @JsonProperty("rate")  BigDecimal limitPrice;
+@JsonProperty("rate")  BigDecimal limitPrice;
 /** pending_amount 注文の未決済の量 */
-        @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
+@JsonProperty("pending_amount")  BigDecimal outstandingVolume;
 /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
-        @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
+@JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
 /** order_type 注文のタイプ（"sell" or "buy"）*/
-        @JsonProperty("order_type")  String orderType;
+@JsonProperty("order_type")  String orderType;
 /** stop_loss_rate 逆指値レート */
-        @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
+@JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
 /** pair 取引ペア */
-        @JsonProperty("pair")  CurrencyPair currencyPair;
+@JsonProperty("pair")  CurrencyPair currencyPair;
 /** created_at 注文の作成日時 */
-        @JsonProperty("created_at")  String timestamp;
+@JsonProperty("created_at")  String timestamp;
 
 // --- メソッド定義 ---
-    @Override
-    public List<LimitOrder> getOpenOrders() throws IOException {
-        var path = "/api/exchange/orders/opens";
-        JsonNode json = sendRequest(path, JsonNode.class);
-        if (!json.path("success").asBoolean()) {
-            throw new RuntimeException("get order list failed.");
-        }
-        var jsonarray = json.path("orders");
-        List<LimitOrder> limitOrders = new ArrayList<>();
-        for (JsonNode o : jsonarray) {
-            var pool = orderPool.getById(o.get("id").asText());
-            OrderType orderType = createOrderType(o.get("order_type").asText());
-            CurrencyPair cp = new CurrencyPair(o.get("pair").asText().replace("_", "/"));
-            if (!cp.equals(ccyp)) continue;
-
-            var limitOrder = new LimitOrder.Builder(orderType, cp)
-                .id(o.get("id").asText())
-                .orderType(createOrderType(o.get("order_type").asText()))
-                .originalAmount(pool != null ? pool.getOriginalAmount() : null)
-                .remainingAmount(o.path("pending_amount").isNull() ?
-                    (o.path("pending_market_buy_amount").isNull() ? ZERO : new BigDecimal(o.path("pending_market_buy_amount").asText()))
-                    :new BigDecimal(o.path("pending_amount").asText()))
-                .timestamp(parseDatetime(o.get("created_at").asText()))
-                .limitPrice(o.path("rate").isNull() ? null:
-                        new BigDecimal(o.path("rate").asText()))
-                .build();
-            if (limitOrder.getOriginalAmount() == null) {
-                limitOrder.setOrderStatus(NEW);
-            } else if (ZERO.compareTo(limitOrder.getRemainingAmount()) == 0) {
-                limitOrder.setOrderStatus(FILLED);
-            } else if (ZERO.compareTo(limitOrder.getCumulativeAmount()) < 0) {
-                limitOrder.setOrderStatus(PARTIALLY_FILLED);
-            } else {
-                limitOrder.setOrderStatus(OPEN);
-            }
-            limitOrders.add(limitOrder);
-        }
-        return limitOrders;
+@Override
+public List<LimitOrder> getOpenOrders() throws IOException {
+    var path = "/api/exchange/orders/opens";
+    JsonNode json = sendRequest(path, JsonNode.class);
+    if (!json.path("success").asBoolean()) {
+        throw new RuntimeException("get order list failed.");
     }
+    var jsonarray = json.path("orders");
+    List<LimitOrder> limitOrders = new ArrayList<>();
+    for (JsonNode o : jsonarray) {
+        var pool = orderPool.getById(o.get("id").asText());
+        OrderType orderType = createOrderType(o.get("order_type").asText());
+        CurrencyPair cp = new CurrencyPair(o.get("pair").asText().replace("_", "/"));
+        if (!cp.equals(ccyp)) continue;
+
+        var limitOrder = new LimitOrder.Builder(orderType, cp)
+            .id(o.get("id").asText())
+            .orderType(createOrderType(o.get("order_type").asText()))
+            .originalAmount(pool != null ? pool.getOriginalAmount() : null)
+            .remainingAmount(o.path("pending_amount").isNull() ?
+                (o.path("pending_market_buy_amount").isNull() ? ZERO : new BigDecimal(o.path("pending_market_buy_amount").asText()))
+                :new BigDecimal(o.path("pending_amount").asText()))
+            .timestamp(parseDatetime(o.get("created_at").asText()))
+            .limitPrice(o.path("rate").isNull() ? null:
+                    new BigDecimal(o.path("rate").asText()))
+            .build();
+        if (limitOrder.getOriginalAmount() == null) {
+            limitOrder.setOrderStatus(NEW);
+        } else if (ZERO.compareTo(limitOrder.getRemainingAmount()) == 0) {
+            limitOrder.setOrderStatus(FILLED);
+        } else if (ZERO.compareTo(limitOrder.getCumulativeAmount()) < 0) {
+            limitOrder.setOrderStatus(PARTIALLY_FILLED);
+        } else {
+            limitOrder.setOrderStatus(OPEN);
+        }
+        limitOrders.add(limitOrder);
+    }
+    return limitOrders;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (sendRequest)
@@ -920,36 +920,36 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 @Autowired CoincheckOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
 /** id 注文のID（新規注文でのIDと同一です）*/
-        @JsonProperty("id")  String orderId;
+@JsonProperty("id")  String orderId;
 /** rate 注文のレート（ null の場合は成り行き注文です）*/
-        @JsonProperty("rate")  BigDecimal limitPrice;
+@JsonProperty("rate")  BigDecimal limitPrice;
 /** pending_amount 注文の未決済の量 */
-        @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
+@JsonProperty("pending_amount")  BigDecimal outstandingVolume;
 /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
-        @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
+@JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
 /** order_type 注文のタイプ（"sell" or "buy"）*/
-        @JsonProperty("order_type")  String orderType;
+@JsonProperty("order_type")  String orderType;
 /** stop_loss_rate 逆指値レート */
-        @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
+@JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
 /** pair 取引ペア */
-        @JsonProperty("pair")  CurrencyPair currencyPair;
+@JsonProperty("pair")  CurrencyPair currencyPair;
 /** created_at 注文の作成日時 */
-        @JsonProperty("created_at")  String timestamp;
+@JsonProperty("created_at")  String timestamp;
 
 // --- メソッド定義 ---
-    private <T> T sendRequest(String path, Class<T> responseClass) {
-        var url = "https://coincheck.com" + path;
-        var nonce = String.valueOf(new Date().getTime());
-        var signature = createHMAC(SECRET, nonce + url);
+private <T> T sendRequest(String path, Class<T> responseClass) {
+    var url = "https://coincheck.com" + path;
+    var nonce = String.valueOf(new Date().getTime());
+    var signature = createHMAC(SECRET, nonce + url);
 
-        return restClient.get()
-                .uri(url)
-                .header("ACCESS-KEY", API_KEY)
-                .header("ACCESS-NONCE", nonce)
-                .header("ACCESS-SIGNATURE", signature)
-                .retrieve()
-                .body(responseClass);
-    }
+    return restClient.get()
+            .uri(url)
+            .header("ACCESS-KEY", API_KEY)
+            .header("ACCESS-NONCE", nonce)
+            .header("ACCESS-SIGNATURE", signature)
+            .retrieve()
+            .body(responseClass);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (parseDatetime)
@@ -976,31 +976,31 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 @Autowired CoincheckOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(BTC_JPY, "BTC_JPY");
 /** id 注文のID（新規注文でのIDと同一です）*/
-        @JsonProperty("id")  String orderId;
+@JsonProperty("id")  String orderId;
 /** rate 注文のレート（ null の場合は成り行き注文です）*/
-        @JsonProperty("rate")  BigDecimal limitPrice;
+@JsonProperty("rate")  BigDecimal limitPrice;
 /** pending_amount 注文の未決済の量 */
-        @JsonProperty("pending_amount")  BigDecimal outstandingVolume;
+@JsonProperty("pending_amount")  BigDecimal outstandingVolume;
 /** pending_market_buy_amount 注文の未決済の量（現物成行買いの場合のみ） */
-        @JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
+@JsonProperty("pending_market_buy_amount")  BigDecimal outstandingMarketVolume;
 /** order_type 注文のタイプ（"sell" or "buy"）*/
-        @JsonProperty("order_type")  String orderType;
+@JsonProperty("order_type")  String orderType;
 /** stop_loss_rate 逆指値レート */
-        @JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
+@JsonProperty("stop_loss_rate")  BigDecimal stop_loss_rate;
 /** pair 取引ペア */
-        @JsonProperty("pair")  CurrencyPair currencyPair;
+@JsonProperty("pair")  CurrencyPair currencyPair;
 /** created_at 注文の作成日時 */
-        @JsonProperty("created_at")  String timestamp;
+@JsonProperty("created_at")  String timestamp;
 
 // --- メソッド定義 ---
-    private static Date parseDatetime(String datetime) {
-        try {
-            return DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT
-                    .parse(datetime);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+private static Date parseDatetime(String datetime) {
+    try {
+        return DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT
+                .parse(datetime);
+    } catch (ParseException e) {
+        throw new RuntimeException(e);
     }
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (getOrder)
@@ -1047,7 +1047,7 @@ private BitfinexTradeService tradeService;
 @Autowired BitfinexOrderbookService orderbookService;
 
 // --- メソッド定義 ---
-	@Override
+@Override
 	synchronized public OrderRecord getOrder(String id) throws IOException {
 		// 注文直後だと「BitfinexExceptionV1: No such order found」となる。
 //		BitfinexOrderStatusResponse order = tradeService.getBitfinexOrderStatus(id);
@@ -1132,7 +1132,7 @@ private BitfinexTradeService tradeService;
 @Autowired BitfinexOrderbookService orderbookService;
 
 // --- メソッド定義 ---
-	synchronized public List<LimitOrder> getOpenOrders() throws IOException {
+synchronized public List<LimitOrder> getOpenOrders() throws IOException {
 //		var pairString = BitfinexUtils.toPairString(ccyp);
 //		var activeOrders = tradeService.getBitfinexActiveOrdesV2(pairString);
 //		var orderResult = activeOrders.stream()
@@ -1171,9 +1171,9 @@ private HashMap<String, Object> metaInfo = new HashMap<>();
 private Currency feeCurrency;
 
 // --- メソッド定義 ---
-	public BigDecimal getVolume() {
-		return getOriginalAmount();
-	}
+public BigDecimal getVolume() {
+	return getOriginalAmount();
+}
 
 ```
 ### src/main/java/cryptobot/dto/OrderRecord.java (setExecutedVolume)
@@ -1194,10 +1194,10 @@ private HashMap<String, Object> metaInfo = new HashMap<>();
 private Currency feeCurrency;
 
 // --- メソッド定義 ---
-	public void setExecutedVolume(BigDecimal executedVolume) {
-		setCumulativeAmount(executedVolume);
-		adjustStatusByExecutionVolume();
-	}
+public void setExecutedVolume(BigDecimal executedVolume) {
+	setCumulativeAmount(executedVolume);
+	adjustStatusByExecutionVolume();
+}
 
 ```
 ### src/main/java/cryptobot/dto/OrderRecord.java (adjustStatusByExecutionVolume)
@@ -1221,23 +1221,23 @@ private HashMap<String, Object> metaInfo = new HashMap<>();
 private Currency feeCurrency;
 
 // --- メソッド定義 ---
-	private void adjustStatusByExecutionVolume() {
-		BigDecimal executed = defaultIfNull(getCumulativeAmount(), ZERO);
-		BigDecimal total = defaultIfNull(getOriginalAmount(), ZERO);
-		OrderStatus currentStatus = getStatus();
+private void adjustStatusByExecutionVolume() {
+	BigDecimal executed = defaultIfNull(getCumulativeAmount(), ZERO);
+	BigDecimal total = defaultIfNull(getOriginalAmount(), ZERO);
+	OrderStatus currentStatus = getStatus();
 
-		if (currentStatus == null) return;
+	if (currentStatus == null) return;
 
-		if (executed.compareTo(ZERO) > 0) {
-			if (total.compareTo(ZERO) > 0 && executed.compareTo(total) >= 0) {
-				setOrderStatus(FILLED);
-			} else if (currentStatus.equals(CANCELED)) {
-				setOrderStatus(PARTIALLY_CANCELED);
-			} else if (!currentStatus.isFinal()) {
-				setOrderStatus(PARTIALLY_FILLED);
-			}
+	if (executed.compareTo(ZERO) > 0) {
+		if (total.compareTo(ZERO) > 0 && executed.compareTo(total) >= 0) {
+			setOrderStatus(FILLED);
+		} else if (currentStatus.equals(CANCELED)) {
+			setOrderStatus(PARTIALLY_CANCELED);
+		} else if (!currentStatus.isFinal()) {
+			setOrderStatus(PARTIALLY_FILLED);
 		}
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (getOrder)
@@ -1266,7 +1266,7 @@ import static java.math.BigDecimal.ZERO;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -1286,43 +1286,43 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	synchronized public OrderRecord getOrder(String childOrderId) throws IOException {
-		var op = orderPool.getById(childOrderId);
-		if (op != null) {
-			return op;
-		}
-		var order = getOrder(childOrderId, OrderFilterBy.child_order_id);
-		var executedVolume = ZERO;
-		// 約定していても注文情報に反映されていない場合があるため、念のため取引情報を取得して確認
-		var trades = getTradesByOrderId(childOrderId);
-		executedVolume = trades.stream()
-			.map(trade->trade.getOriginalAmount()).reduce(ZERO, BigDecimal::add);
-		// 注文なし＆取引なしの場合（キャンセル済 or 無効な注文）
-		if (order == null && executedVolume.compareTo(ZERO) == 0) {
-			return null;
-		}
-		if (order != null) {
-			// 注文情報が取得できた場合 ⇒約定金額によりステータスを決定
-			order.setExecutedVolume(order.getExecutedVolume().max(executedVolume));
-			return order;
-		} else {
-			// 注文取得できず、取引情報が¥取得できた場合 ⇒注文情報の反映が遅延していると想定して再取得
-			Util.sleep(1000);
-			// orderが取得できなくても約定しているはずなのでも再度実行
-			return getOrder(childOrderId);
-		}
+synchronized public OrderRecord getOrder(String childOrderId) throws IOException {
+	var op = orderPool.getById(childOrderId);
+	if (op != null) {
+		return op;
 	}
+	var order = getOrder(childOrderId, OrderFilterBy.child_order_id);
+	var executedVolume = ZERO;
+	// 約定していても注文情報に反映されていない場合があるため、念のため取引情報を取得して確認
+	var trades = getTradesByOrderId(childOrderId);
+	executedVolume = trades.stream()
+		.map(trade->trade.getOriginalAmount()).reduce(ZERO, BigDecimal::add);
+	// 注文なし＆取引なしの場合（キャンセル済 or 無効な注文）
+	if (order == null && executedVolume.compareTo(ZERO) == 0) {
+		return null;
+	}
+	if (order != null) {
+		// 注文情報が取得できた場合 ⇒約定金額によりステータスを決定
+		order.setExecutedVolume(order.getExecutedVolume().max(executedVolume));
+		return order;
+	} else {
+		// 注文取得できず、取引情報が¥取得できた場合 ⇒注文情報の反映が遅延していると想定して再取得
+		Util.sleep(1000);
+		// orderが取得できなくても約定しているはずなのでも再度実行
+		return getOrder(childOrderId);
+	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (getOrder)
@@ -1352,7 +1352,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -1372,32 +1372,32 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	synchronized public OrderRecord getOrder(String orderKey, OrderFilterBy filterBy) throws IOException {
-		String path = String.format(
-			"/v1/me/getchildorders?product_code=%s&%s=%s",
-			toPairString(ccyp), filterBy.toString(), orderKey);
-		log.debug("Rest API Request to: {}", path);
-		try {
-			OrderList result = doGetWithAuth(path, OrderList.class);
-			if (result.size() == 0) {
-				return null;
-			}
-			return new OrderRecord(this, result.get(0).converLimitOrder());
-		} catch (Exception e) {
-			throw e;
+synchronized public OrderRecord getOrder(String orderKey, OrderFilterBy filterBy) throws IOException {
+	String path = String.format(
+		"/v1/me/getchildorders?product_code=%s&%s=%s",
+		toPairString(ccyp), filterBy.toString(), orderKey);
+	log.debug("Rest API Request to: {}", path);
+	try {
+		OrderList result = doGetWithAuth(path, OrderList.class);
+		if (result.size() == 0) {
+			return null;
 		}
+		return new OrderRecord(this, result.get(0).converLimitOrder());
+	} catch (Exception e) {
+		throw e;
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (toPairString)
@@ -1423,7 +1423,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -1443,21 +1443,21 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	public static String toPairString(CurrencyPair currencyPair) {
-		return currencyPair.getBase().toString().toUpperCase() + "_" +
-				currencyPair.getCounter().toString().toUpperCase();
-	}
+public static String toPairString(CurrencyPair currencyPair) {
+	return currencyPair.getBase().toString().toUpperCase() + "_" +
+			currencyPair.getCounter().toString().toUpperCase();
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (doGetWithAuth)
@@ -1484,7 +1484,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -1504,29 +1504,29 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeReference) {
-		String timestamp = String.valueOf(new Date().getTime());
-		String data = timestamp + "GET" + path;
-		String hash = createHMAC(SECRET, data);
-		return restClient.get()
-				.uri(URL_BASE + path)
-				.header(ACCESS_KEY, API_KEY)
-				.header(ACCESS_TIMESTAMP, timestamp)
-				.header(ACCESS_SIGN, hash)
-				.retrieve()
-				.body(typeReference);
-	}
+private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeReference) {
+	String timestamp = String.valueOf(new Date().getTime());
+	String data = timestamp + "GET" + path;
+	String hash = createHMAC(SECRET, data);
+	return restClient.get()
+			.uri(URL_BASE + path)
+			.header(ACCESS_KEY, API_KEY)
+			.header(ACCESS_TIMESTAMP, timestamp)
+			.header(ACCESS_SIGN, hash)
+			.retrieve()
+			.body(typeReference);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (getTradesByOrderId)
@@ -1558,7 +1558,7 @@ import static org.knowm.xchange.dto.Order.OrderType.BID;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -1578,45 +1578,45 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	@Override
-	public List<UserTrade> getTradesByOrderId(String childOrderId) throws IOException {
-		String path = String.format(
-			"/v1/me/getexecutions?child_order_id=%s&product_code=%s",
-			childOrderId, toPairString(ccyp));
-		log.debug("Rest API Request to: {}", path);
-		try {
-			TradeList result = doGetWithAuth(path, TradeList.class);
+@Override
+public List<UserTrade> getTradesByOrderId(String childOrderId) throws IOException {
+	String path = String.format(
+		"/v1/me/getexecutions?child_order_id=%s&product_code=%s",
+		childOrderId, toPairString(ccyp));
+	log.debug("Rest API Request to: {}", path);
+	try {
+		TradeList result = doGetWithAuth(path, TradeList.class);
             List <UserTrade> trades = result.stream().map(bfTrade->{
-				var execDate = parseDate(bfTrade.getExecDate());
-				var orderType = bfTrade.getSide().equals("BUY")?OrderType.BID:OrderType.ASK;
-				return UserTrade.builder()
-					.type(orderType)
-					.originalAmount(bfTrade.getVolume())
-					.instrument(ccyp)
-					.price(bfTrade.getPrice())
-					.timestamp(execDate)
-					.id(String.valueOf(bfTrade.getId()))
-					.orderId(bfTrade.getChildOrderId())
-					.feeAmount(bfTrade.getCommission())
-					.feeCurrency(ccyp.getBase())
-					.build();
-			}).collect(toList());
-			return trades;
-		} catch (Exception e) {
-			throw e;
-		}
+			var execDate = parseDate(bfTrade.getExecDate());
+			var orderType = bfTrade.getSide().equals("BUY")?OrderType.BID:OrderType.ASK;
+			return UserTrade.builder()
+				.type(orderType)
+				.originalAmount(bfTrade.getVolume())
+				.instrument(ccyp)
+				.price(bfTrade.getPrice())
+				.timestamp(execDate)
+				.id(String.valueOf(bfTrade.getId()))
+				.orderId(bfTrade.getChildOrderId())
+				.feeAmount(bfTrade.getCommission())
+				.feeCurrency(ccyp.getBase())
+				.build();
+		}).collect(toList());
+		return trades;
+	} catch (Exception e) {
+		throw e;
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (parseDate)
@@ -1644,7 +1644,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -1664,25 +1664,25 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	public static Date parseDate(String datetime) {
-		var df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-		try {
-			return df.parse(datetime+"+0000");
-		} catch (ParseException e) {
-			return null;
-		}
+public static Date parseDate(String datetime) {
+	var df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	try {
+		return df.parse(datetime+"+0000");
+	} catch (ParseException e) {
+		return null;
 	}
+}
 
 ```
 ### src/main/java/cryptobot/misc/Util.java (sleep)
@@ -1694,13 +1694,13 @@ import static java.math.RoundingMode.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 
 // --- メソッド定義 ---
-	public static void sleep(long milli) {
-		try {
-			Thread.sleep(milli);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+public static void sleep(long milli) {
+	try {
+		Thread.sleep(milli);
+	} catch (InterruptedException e) {
+		throw new RuntimeException(e);
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (getOrder)
@@ -1748,27 +1748,27 @@ public BigDecimal pnl;
 public BigDecimal sfd;
 
 // --- メソッド定義 ---
-	public OrderRecord getOrder(String childOrderAcceptanceId) throws IOException {
-		var params = Map.of("product_code", ccyps, "count", "100");
-		var path = "/v1/me/getchildorders?" + params.entrySet().stream()
-				.map(e->e.getKey()+"="+e.getValue()).collect(joining("&"));
-		try {
-			OrderList result = doGetWithAuth(path, OrderList.class);
-			if (childOrderAcceptanceId == null) return new OrderRecord(this, result.get(0).converLimitOrder());
-			OrderList edittedResult = new OrderList();
-			result.stream()
-				.filter(n->n.getChildOrderAcceptanceId().equals(childOrderAcceptanceId))
-				.forEach(n->{edittedResult.add(n);});
-			Optional<OrderRecord> order = edittedResult.stream()
-				.map(bo->new OrderRecord(this, bo.converLimitOrder()))
-				.findAny();
-			if (order.isEmpty()) return null;
-			OrderRecord orderRecord = order.get();
-			return orderRecord;
-		} catch (Exception e) {
-			throw new IOException(e);
-		}
+public OrderRecord getOrder(String childOrderAcceptanceId) throws IOException {
+	var params = Map.of("product_code", ccyps, "count", "100");
+	var path = "/v1/me/getchildorders?" + params.entrySet().stream()
+			.map(e->e.getKey()+"="+e.getValue()).collect(joining("&"));
+	try {
+		OrderList result = doGetWithAuth(path, OrderList.class);
+		if (childOrderAcceptanceId == null) return new OrderRecord(this, result.get(0).converLimitOrder());
+		OrderList edittedResult = new OrderList();
+		result.stream()
+			.filter(n->n.getChildOrderAcceptanceId().equals(childOrderAcceptanceId))
+			.forEach(n->{edittedResult.add(n);});
+		Optional<OrderRecord> order = edittedResult.stream()
+			.map(bo->new OrderRecord(this, bo.converLimitOrder()))
+			.findAny();
+		if (order.isEmpty()) return null;
+		OrderRecord orderRecord = order.get();
+		return orderRecord;
+	} catch (Exception e) {
+		throw new IOException(e);
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (doGetWithAuth)
@@ -1812,17 +1812,17 @@ public BigDecimal pnl;
 public BigDecimal sfd;
 
 // --- メソッド定義 ---
-	private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeReference) throws Exception {
-		String timestamp = String.valueOf(new Date().getTime());
-		char[] hash = createHMAC("GET", path, timestamp, null);
-		return restClient.get()
-				.uri(URL_BASE + path)
-				.header(ACCESS_KEY, API_KEY)
-				.header(ACCESS_TIMESTAMP, timestamp)
-				.header(ACCESS_SIGN, new String(hash))
-				.retrieve()
-				.body(typeReference);
-	}
+private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeReference) throws Exception {
+	String timestamp = String.valueOf(new Date().getTime());
+	char[] hash = createHMAC("GET", path, timestamp, null);
+	return restClient.get()
+			.uri(URL_BASE + path)
+			.header(ACCESS_KEY, API_KEY)
+			.header(ACCESS_TIMESTAMP, timestamp)
+			.header(ACCESS_SIGN, new String(hash))
+			.retrieve()
+			.body(typeReference);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (createHMAC)
@@ -1870,15 +1870,15 @@ public BigDecimal pnl;
 public BigDecimal sfd;
 
 // --- メソッド定義 ---
-	private char[] createHMAC(String method, String path, String timestamp, String body) throws NoSuchAlgorithmException, InvalidKeyException {
-		Mac sha256_HMAC = Mac.getInstance(HMAC_SHA256);
-		SecretKeySpec secret_key = new SecretKeySpec(SECRET.getBytes() , HMAC_SHA256);
-		sha256_HMAC.init(secret_key);
-		String text = timestamp + method + path + (body==null?"":body);
-		sha256_HMAC.update(text.getBytes());
-		char[] hash = Hex.encodeHex(sha256_HMAC.doFinal());
-		return hash;
-	}
+private char[] createHMAC(String method, String path, String timestamp, String body) throws NoSuchAlgorithmException, InvalidKeyException {
+	Mac sha256_HMAC = Mac.getInstance(HMAC_SHA256);
+	SecretKeySpec secret_key = new SecretKeySpec(SECRET.getBytes() , HMAC_SHA256);
+	sha256_HMAC.init(secret_key);
+	String text = timestamp + method + path + (body==null?"":body);
+	sha256_HMAC.update(text.getBytes());
+	char[] hash = Hex.encodeHex(sha256_HMAC.doFinal());
+	return hash;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (getOrder)
@@ -1921,23 +1921,23 @@ private static final String CONTENT_TYPE = "Content-Type";
 @Autowired MailSender mail;
 @Autowired BitpointOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
-			CurrencyPair.BTC_JPY, "BTCJPY",
-			CurrencyPair.ETH_JPY, "ETHJPY");
+		CurrencyPair.BTC_JPY, "BTCJPY",
+		CurrencyPair.ETH_JPY, "ETHJPY");
 @Autowired BitpointWeb web;
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord getOrder(String id) throws Exception {
-		var path = "/api/singleOrder";
-		var params = Map.of(
-				"symbol", SUPPORTED_CCYP.get(BTC_JPY),
-				"orderId", id,
-				"tradeType", "SPOT");
-		JsonNode json = doHttpGet(path, params);
-		log.info("order info : {}", json);
-		var order = createLimitOrder(json);
-		return new OrderRecord(this, order);
-	}
+@Override
+public OrderRecord getOrder(String id) throws Exception {
+	var path = "/api/singleOrder";
+	var params = Map.of(
+			"symbol", SUPPORTED_CCYP.get(BTC_JPY),
+			"orderId", id,
+			"tradeType", "SPOT");
+	JsonNode json = doHttpGet(path, params);
+	log.info("order info : {}", json);
+	var order = createLimitOrder(json);
+	return new OrderRecord(this, order);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (doHttpGet)
@@ -1980,35 +1980,35 @@ private static final String CONTENT_TYPE = "Content-Type";
 @Autowired MailSender mail;
 @Autowired BitpointOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
-			CurrencyPair.BTC_JPY, "BTCJPY",
-			CurrencyPair.ETH_JPY, "ETHJPY");
+		CurrencyPair.BTC_JPY, "BTCJPY",
+		CurrencyPair.ETH_JPY, "ETHJPY");
 @Autowired BitpointWeb web;
 
 // --- メソッド定義 ---
-	private JsonNode doHttpGet(String path, Map<String, String> params) throws Exception {
-		long nonce = System.currentTimeMillis();
-		var requestParam = new HashMap<>(params);
-		requestParam.put("timestamp", String.valueOf(nonce));
-		requestParam.put("recvWindow", "10000");
-		
-		var paramString = requestParam.entrySet().stream()
-				.map(e -> e.getKey() + "=" + e.getValue())
-				.collect(joining("&"));
-		
-		var url = URL_BASE + path + (isEmpty(paramString) ? "" : "?" + paramString);
-		var message = API_KEY + "\n" + nonce + "\n" + (paramString == null ? "" : paramString);
-		var signature = createHMAC(SECRET, message);
+private JsonNode doHttpGet(String path, Map<String, String> params) throws Exception {
+	long nonce = System.currentTimeMillis();
+	var requestParam = new HashMap<>(params);
+	requestParam.put("timestamp", String.valueOf(nonce));
+	requestParam.put("recvWindow", "10000");
+	
+	var paramString = requestParam.entrySet().stream()
+			.map(e -> e.getKey() + "=" + e.getValue())
+			.collect(joining("&"));
+	
+	var url = URL_BASE + path + (isEmpty(paramString) ? "" : "?" + paramString);
+	var message = API_KEY + "\n" + nonce + "\n" + (paramString == null ? "" : paramString);
+	var signature = createHMAC(SECRET, message);
 
-		String body = restClient.get()
-				.uri(url)
-				.header(ACCESS_KEY, API_KEY)
-				.header(ACCESS_NONCE, String.valueOf(nonce))
-				.header(ACCESS_SIGN, signature)
-				.header(CONTENT_TYPE, APPLICATION_JSON)
-				.retrieve()
-				.body(String.class);
-		return JsonUtils.MAPPER.readTree(body);
-	}
+	String body = restClient.get()
+			.uri(url)
+			.header(ACCESS_KEY, API_KEY)
+			.header(ACCESS_NONCE, String.valueOf(nonce))
+			.header(ACCESS_SIGN, signature)
+			.header(CONTENT_TYPE, APPLICATION_JSON)
+			.retrieve()
+			.body(String.class);
+	return JsonUtils.MAPPER.readTree(body);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (createLimitOrder)
@@ -2051,24 +2051,24 @@ private static final String CONTENT_TYPE = "Content-Type";
 @Autowired MailSender mail;
 @Autowired BitpointOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
-			CurrencyPair.BTC_JPY, "BTCJPY",
-			CurrencyPair.ETH_JPY, "ETHJPY");
+		CurrencyPair.BTC_JPY, "BTCJPY",
+		CurrencyPair.ETH_JPY, "ETHJPY");
 @Autowired BitpointWeb web;
 
 // --- メソッド定義 ---
-	private LimitOrder createLimitOrder(JsonNode json) {
-		var orderId = json.path("orderId").asText();
-		var type = json.path("side").asText().equals("SELL") ? ASK : BID;
-		var executedVol = new BigDecimal(json.path("executedQty").asText("0"));
-		var totalVolume = new BigDecimal(json.path("orderQty").asText("0"));
-		var price = new BigDecimal(json.path("price").asText("0"));
-		var timestamp = new Date(json.path("time").asLong());
-		var status = adaptStatus(json.path("status").asText());
-		var symbol = json.path("symbol").asText("");
-		var ccyp = new CurrencyPair(symbol.substring(0, 3), symbol.substring(3, 6));
-		return new LimitOrder(type, totalVolume, ccyp, orderId,
-				timestamp, price, null, executedVol, ZERO, status);
-	}
+private LimitOrder createLimitOrder(JsonNode json) {
+	var orderId = json.path("orderId").asText();
+	var type = json.path("side").asText().equals("SELL") ? ASK : BID;
+	var executedVol = new BigDecimal(json.path("executedQty").asText("0"));
+	var totalVolume = new BigDecimal(json.path("orderQty").asText("0"));
+	var price = new BigDecimal(json.path("price").asText("0"));
+	var timestamp = new Date(json.path("time").asLong());
+	var status = adaptStatus(json.path("status").asText());
+	var symbol = json.path("symbol").asText("");
+	var ccyp = new CurrencyPair(symbol.substring(0, 3), symbol.substring(3, 6));
+	return new LimitOrder(type, totalVolume, ccyp, orderId,
+			timestamp, price, null, executedVol, ZERO, status);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (adaptStatus)
@@ -2109,24 +2109,24 @@ private static final String CONTENT_TYPE = "Content-Type";
 @Autowired MailSender mail;
 @Autowired BitpointOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
-			CurrencyPair.BTC_JPY, "BTCJPY",
-			CurrencyPair.ETH_JPY, "ETHJPY");
+		CurrencyPair.BTC_JPY, "BTCJPY",
+		CurrencyPair.ETH_JPY, "ETHJPY");
 @Autowired BitpointWeb web;
 
 // --- メソッド定義 ---
-	private static OrderStatus adaptStatus(String status) {
-		// ステータス(1：執行中、2：執行済、3：約定、5：訂正中、6：訂正済、7：取消中、8：取消済、9：出来ず、10：逆指値)
-		if (status.equals("1") || status.equals("2") ||
-				status.equals("5") || status.equals("6") || status.equals("ACCEPTED")) {
-			return OrderStatus.NEW;
-		} else if (status.equals("3")) {
-			return OrderStatus.FILLED;
-		} else if (status.equals("7") || status.equals("8") || status.equals("9") || status.equals("CANCEL")) {
-			return OrderStatus.CANCELED;
-		} else {
-			return OrderStatus.FILLED;
-		}
+private static OrderStatus adaptStatus(String status) {
+	// ステータス(1：執行中、2：執行済、3：約定、5：訂正中、6：訂正済、7：取消中、8：取消済、9：出来ず、10：逆指値)
+	if (status.equals("1") || status.equals("2") ||
+			status.equals("5") || status.equals("6") || status.equals("ACCEPTED")) {
+		return OrderStatus.NEW;
+	} else if (status.equals("3")) {
+		return OrderStatus.FILLED;
+	} else if (status.equals("7") || status.equals("8") || status.equals("9") || status.equals("CANCEL")) {
+		return OrderStatus.CANCELED;
+	} else {
+		return OrderStatus.FILLED;
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/binance/Binance.java (buySpot)
@@ -2173,16 +2173,16 @@ private final int stepSize = 4;
 @Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
 
 // --- メソッド定義 ---
-	@Override
-	synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		// 取得通貨で手数料を徴収されるため、取引金額(volume)に手数分を上乗せて受け渡す。
-		volume = volume.divide(ONE.subtract(getFeeRate(MAKER)), stepSize, HALF_UP);
-		LimitOrder limitOrder = new Builder(OrderType.BID, ccyp)
-				.limitPrice(limitPrice).originalAmount(volume.setScale(stepSize, HALF_UP)).build();
-		String orderId = tradeService.placeLimitOrder(limitOrder);
-		log.info("order sent. id: {}", orderId);
-		return waitOrderCreate(orderId);
-	}
+@Override
+synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	// 取得通貨で手数料を徴収されるため、取引金額(volume)に手数分を上乗せて受け渡す。
+	volume = volume.divide(ONE.subtract(getFeeRate(MAKER)), stepSize, HALF_UP);
+	LimitOrder limitOrder = new Builder(OrderType.BID, ccyp)
+			.limitPrice(limitPrice).originalAmount(volume.setScale(stepSize, HALF_UP)).build();
+	String orderId = tradeService.placeLimitOrder(limitOrder);
+	log.info("order sent. id: {}", orderId);
+	return waitOrderCreate(orderId);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (getFeeRate)
@@ -2237,13 +2237,13 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	public BigDecimal getFeeRate(FeeType feeType) {
-		if (feeType.equals(FeeType.MAKER)) {
-			return fee.getMakerFee();
-		} else {
-			return fee.getTakerFee();
-		}
+public BigDecimal getFeeRate(FeeType feeType) {
+	if (feeType.equals(FeeType.MAKER)) {
+		return fee.getMakerFee();
+	} else {
+		return fee.getTakerFee();
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrderCreate)
@@ -2297,23 +2297,23 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	/**
-	 * 指値注文発行後の取得待ち(注文発行後は即時に取得できない)
-	 * @param orderId
-	 * @return
-	 * @throws Exception
-	 */
-	protected OrderRecord waitOrderCreate(String orderId) throws Exception {
-		var order = orderPool.waitOrder(orderId, null);
-		if (order != null) {
-			return new OrderRecord(this, order);
-		} else {
-			// 取引所過負荷により通知が大幅に遅延する場合があるためRESTで取得した注文情報をorderPoolに格納
-			order = getOrder(orderId);
-			orderPool.update(order);
-			return order;
-		}
+/**
+ * 指値注文発行後の取得待ち(注文発行後は即時に取得できない)
+ * @param orderId
+ * @return
+ * @throws Exception
+ */
+protected OrderRecord waitOrderCreate(String orderId) throws Exception {
+	var order = orderPool.waitOrder(orderId, null);
+	if (order != null) {
+		return new OrderRecord(this, order);
+	} else {
+		// 取引所過負荷により通知が大幅に遅延する場合があるためRESTで取得した注文情報をorderPoolに格納
+		order = getOrder(orderId);
+		orderPool.update(order);
+		return order;
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrder)
@@ -2368,23 +2368,23 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-		synchronized public OrderRecord waitOrder(String orderId, List<OrderStatus> status) throws InterruptedException {
-			var startTime = System.currentTimeMillis();
-			while (System.currentTimeMillis() - startTime < 10*1000L) {
-				var order = get(orderId);
-				if (order != null) {
-					if (status == null) {
-						return order;
-					} else if (status.contains(order.getStatus())) {
-						return order;
-					}
-				}
-				expectedOrderId.add(orderId);
-				this.wait(3000L);
-				expectedOrderId.remove(orderId);
+synchronized public OrderRecord waitOrder(String orderId, List<OrderStatus> status) throws InterruptedException {
+	var startTime = System.currentTimeMillis();
+	while (System.currentTimeMillis() - startTime < 10*1000L) {
+		var order = get(orderId);
+		if (order != null) {
+			if (status == null) {
+				return order;
+			} else if (status.contains(order.getStatus())) {
+				return order;
 			}
-			return null;
 		}
+		expectedOrderId.add(orderId);
+		this.wait(3000L);
+		expectedOrderId.remove(orderId);
+	}
+	return null;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (update)
@@ -2438,44 +2438,44 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-		synchronized public void update(OrderRecord order) {
-			var current = get(order.getId());
-			if (current == null && order.getUserReference() != null) {
-				current = get(order.getUserReference());
-				// idがなくてrefだけ存在する場合（id未確定で注文受付直後の状態,bitflyerでchild_order_acceptance_idのみある状態）
-				if (current != null) {
-					current = order;
-					put(order.getId(), order);
-					put(order.getUserReference(), order);
-				}
-			}
-			if (current == null) {
-				super.put(order.getId(), order);
-				if (order.getUserReference() != null)
-					super.put(order.getUserReference(), order);
-				if (this.size() > 200) {
-					var op = values().stream().filter(o -> o.getStatus().equals(CANCELED)).findFirst();
-					if (op.isPresent() == false)
-						op = values().stream().filter(o -> !o.isActive()).findFirst();
-					op.ifPresent(o -> {
-						this.remove(o.getId());
-						if (o.getUserReference() != null)
-							this.remove(o.getUserReference());
-					});
-				}
-			}
-			else {
-				current.updateBy(order);
-			}
-			if (expectedOrderId.contains(order.getId())) {
-				expectedOrderId.remove(order.getId());
-				notifyAll();
-			}
-			if (expectedOrderId.contains(order.getUserReference())) {
-				expectedOrderId.remove(order.getUserReference());
-				notifyAll();
-			}
+synchronized public void update(OrderRecord order) {
+	var current = get(order.getId());
+	if (current == null && order.getUserReference() != null) {
+		current = get(order.getUserReference());
+		// idがなくてrefだけ存在する場合（id未確定で注文受付直後の状態,bitflyerでchild_order_acceptance_idのみある状態）
+		if (current != null) {
+			current = order;
+			put(order.getId(), order);
+			put(order.getUserReference(), order);
 		}
+	}
+	if (current == null) {
+		super.put(order.getId(), order);
+		if (order.getUserReference() != null)
+			super.put(order.getUserReference(), order);
+		if (this.size() > 200) {
+			var op = values().stream().filter(o -> o.getStatus().equals(CANCELED)).findFirst();
+			if (op.isPresent() == false)
+				op = values().stream().filter(o -> !o.isActive()).findFirst();
+			op.ifPresent(o -> {
+				this.remove(o.getId());
+				if (o.getUserReference() != null)
+					this.remove(o.getUserReference());
+			});
+		}
+	}
+	else {
+		current.updateBy(order);
+	}
+	if (expectedOrderId.contains(order.getId())) {
+		expectedOrderId.remove(order.getId());
+		notifyAll();
+	}
+	if (expectedOrderId.contains(order.getUserReference())) {
+		expectedOrderId.remove(order.getUserReference());
+		notifyAll();
+	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (buySpot)
@@ -2505,7 +2505,7 @@ import cryptobot.misc.MailSender;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -2525,14 +2525,14 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	@Override
-	synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		return executeOrder(volume, limitPrice, BitbankOrders.Side.BUY, BitbankOrders.Type.LIMIT);
-	}
+@Override
+synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	return executeOrder(volume, limitPrice, BitbankOrders.Side.BUY, BitbankOrders.Type.LIMIT);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (executeOrder)
@@ -2564,7 +2564,7 @@ import cryptobot.misc.MailSender;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -2584,36 +2584,36 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	private OrderRecord executeOrder(BigDecimal volume, BigDecimal price, BitbankOrders.Side side, BitbankOrders.Type type) throws Exception {
-		var path = "/v1/user/spot/order";
-		var body = BitbankOrderBody.builder()
-				.pair(ccyps)
-				.amount(volume.toString())
-				.price(price)
-				.side(side.getCode())
-				.type(type.getCode())
-				.build();
-		
-		var order = doHttpPost(path, BitbankOrders.Order.class, body);
+private OrderRecord executeOrder(BigDecimal volume, BigDecimal price, BitbankOrders.Side side, BitbankOrders.Type type) throws Exception {
+	var path = "/v1/user/spot/order";
+	var body = BitbankOrderBody.builder()
+			.pair(ccyps)
+			.amount(volume.toString())
+			.price(price)
+			.side(side.getCode())
+			.type(type.getCode())
+			.build();
+	
+	var order = doHttpPost(path, BitbankOrders.Order.class, body);
 
-		log.info("order sent. id: {}", order.orderId);
-		var orderId = String.valueOf(order.orderId);
-		
-		if (type == BitbankOrders.Type.MARKET) {
-			var startTime = currentTimeMillis();
-			while (currentTimeMillis() - startTime < 3600 * 1000L) {
-				OrderRecord or = waitOrderClosed(orderId);
-				if (or != null && !or.isActive()) return or;
-			}
-			throw new OrderNotFilledException(orderPool.getById(orderId));
-		} else {
-			return waitOrderCreate(orderId);
+	log.info("order sent. id: {}", order.orderId);
+	var orderId = String.valueOf(order.orderId);
+	
+	if (type == BitbankOrders.Type.MARKET) {
+		var startTime = currentTimeMillis();
+		while (currentTimeMillis() - startTime < 3600 * 1000L) {
+			OrderRecord or = waitOrderClosed(orderId);
+			if (or != null && !or.isActive()) return or;
 		}
+		throw new OrderNotFilledException(orderPool.getById(orderId));
+	} else {
+		return waitOrderCreate(orderId);
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (doHttpPost)
@@ -2645,7 +2645,7 @@ import cryptobot.misc.MailSender;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -2665,24 +2665,24 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	protected <T> T doHttpPost(String path, Class<T> clazz, Object body) throws Exception {
-		String json = JsonUtils.MAPPER.writeValueAsString(body);
-		Map<String, String> headers = getPrivateRequestHeader(json);
+protected <T> T doHttpPost(String path, Class<T> clazz, Object body) throws Exception {
+	String json = JsonUtils.MAPPER.writeValueAsString(body);
+	Map<String, String> headers = getPrivateRequestHeader(json);
 
-		String res = restClient.post()
-				.uri(API_ENDPOINT + path)
-				.headers(h -> headers.forEach(h::add))
-				.contentType(APPLICATION_JSON)
-				.body(json)
-				.retrieve()
-				.body(String.class);
-		JsonNode data = JsonUtils.MAPPER.readTree(res).path("data");
-		return data.traverse(JsonUtils.MAPPER).readValueAs(clazz);
-	}
+	String res = restClient.post()
+			.uri(API_ENDPOINT + path)
+			.headers(h -> headers.forEach(h::add))
+			.contentType(APPLICATION_JSON)
+			.body(json)
+			.retrieve()
+			.body(String.class);
+	JsonNode data = JsonUtils.MAPPER.readTree(res).path("data");
+	return data.traverse(JsonUtils.MAPPER).readValueAs(clazz);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (getPrivateRequestHeader)
@@ -2712,7 +2712,7 @@ import cryptobot.misc.MailSender;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -2732,15 +2732,83 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	protected Map<String, String> getPrivateRequestHeader(String json) {
-		long nonce = currentTimeMillis();
-		String message = String.valueOf(nonce) + json;
-		return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message));
+protected Map<String, String> getPrivateRequestHeader(String json) {
+	long nonce = currentTimeMillis();
+	String message = String.valueOf(nonce) + json;
+	return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message));
+}
+
+```
+### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrderClosed)
+
+```java
+// --- インポート ---
+import static java.math.BigDecimal.*;
+import static java.math.RoundingMode.*;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
+import static org.knowm.xchange.dto.Order.OrderStatus.*;
+import static org.knowm.xchange.dto.Order.OrderType.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import cryptobot.dto.*;
+import org.springframework.web.client.RestClient;
+import org.knowm.xchange.BaseExchange;
+import org.knowm.xchange.currency.Currency;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.Order;
+import org.knowm.xchange.dto.account.Balance;
+import org.knowm.xchange.dto.account.Fee;
+import org.knowm.xchange.dto.marketdata.Ticker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import cryptobot.AppConfig;
+import cryptobot.misc.MailSender;
+
+// --- フィールド ---
+@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
+@Value("${cryptobot.price.precision}") protected int scale;
+@Value("${cryptobot.volume.precision}") protected int volScale;
+protected BaseExchange xchange;
+protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
+protected final OrderPool orderPool = new OrderPool();
+protected volatile Ticker lastTick;
+protected final Logger log = LoggerFactory.getLogger(this.getClass());
+private boolean enable = true;
+private boolean allowBid = true;
+private boolean allowAsk = true;
+@Autowired ApplicationEventPublisher publisher;
+@Autowired protected AppConfig config;
+@Autowired protected RestClient restClient;
+@Autowired MailSender mailer;
+protected Fee fee = new Fee(ZERO, ZERO);
+public static enum FeeType
+@Autowired TickerLogger tickerLogger;
+final Set<String> expectedOrderId = new HashSet<>();
+
+// --- メソッド定義 ---
+synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
+	var startTime = System.currentTimeMillis();
+	while (System.currentTimeMillis() - startTime < 10*1000L) {
+		var order = getById(orderId);
+		if (order != null && order.getStatus() != null) {
+			if (!order.isActive()) {
+				return order;
+			}
+		}
+		expectedOrderId.add(orderId);
+		this.wait(3000L);
+		expectedOrderId.remove(orderId);
 	}
+	return null;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrderClosed)
@@ -2794,89 +2862,21 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-		synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
-			var startTime = System.currentTimeMillis();
-			while (System.currentTimeMillis() - startTime < 10*1000L) {
-				var order = getById(orderId);
-				if (order != null && order.getStatus() != null) {
-					if (!order.isActive()) {
-						return order;
-					}
-				}
-				expectedOrderId.add(orderId);
-				this.wait(3000L);
-				expectedOrderId.remove(orderId);
+synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
+	var startTime = System.currentTimeMillis();
+	while (System.currentTimeMillis() - startTime < 10*1000L) {
+		var order = getById(orderId);
+		if (order != null && order.getStatus() != null) {
+			if (!order.isActive()) {
+				return order;
 			}
-			return null;
 		}
-
-```
-### src/main/java/cryptobot/exchange/ExchangeService.java (waitOrderClosed)
-
-```java
-// --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
-import static org.knowm.xchange.dto.Order.OrderStatus.*;
-import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import cryptobot.dto.*;
-import org.springframework.web.client.RestClient;
-import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.account.Balance;
-import org.knowm.xchange.dto.account.Fee;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import cryptobot.AppConfig;
-import cryptobot.misc.MailSender;
-
-// --- フィールド ---
-@Value("${cryptobot.currencyPair}") protected CurrencyPair ccyp;
-@Value("${cryptobot.price.precision}") protected int scale;
-@Value("${cryptobot.volume.precision}") protected int volScale;
-protected BaseExchange xchange;
-protected final ConcurrentHashMap<Currency, BalanceInfo> balanceInfoMap = new ConcurrentHashMap<>();
-protected final OrderPool orderPool = new OrderPool();
-protected volatile Ticker lastTick;
-protected final Logger log = LoggerFactory.getLogger(this.getClass());
-private boolean enable = true;
-private boolean allowBid = true;
-private boolean allowAsk = true;
-@Autowired ApplicationEventPublisher publisher;
-@Autowired protected AppConfig config;
-@Autowired protected RestClient restClient;
-@Autowired MailSender mailer;
-protected Fee fee = new Fee(ZERO, ZERO);
-public static enum FeeType
-@Autowired TickerLogger tickerLogger;
-final Set<String> expectedOrderId = new HashSet<>();
-
-// --- メソッド定義 ---
-		synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
-			var startTime = System.currentTimeMillis();
-			while (System.currentTimeMillis() - startTime < 10*1000L) {
-				var order = getById(orderId);
-				if (order != null && order.getStatus() != null) {
-					if (!order.isActive()) {
-						return order;
-					}
-				}
-				expectedOrderId.add(orderId);
-				this.wait(3000L);
-				expectedOrderId.remove(orderId);
-			}
-			return null;
-		}
+		expectedOrderId.add(orderId);
+		this.wait(3000L);
+		expectedOrderId.remove(orderId);
+	}
+	return null;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (getById)
@@ -2930,9 +2930,9 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-		synchronized public OrderRecord getById(String id) {
-			return get(id);
-		}
+synchronized public OrderRecord getById(String id) {
+	return get(id);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (getById)
@@ -2986,9 +2986,9 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-		synchronized public OrderRecord getById(String id) {
-			return get(id);
-		}
+synchronized public OrderRecord getById(String id) {
+	return get(id);
+}
 
 ```
 ### src/main/java/cryptobot/dto/OrderRecord.java (isActive)
@@ -3008,9 +3008,9 @@ private HashMap<String, Object> metaInfo = new HashMap<>();
 private Currency feeCurrency;
 
 // --- メソッド定義 ---
-	public boolean isActive() {
-		return getStatus() == null || !getStatus().isFinal();
-	}
+public boolean isActive() {
+	return getStatus() == null || !getStatus().isFinal();
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (buySpot)
@@ -3069,11 +3069,11 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		LimitOrder order = new LimitOrder(OrderType.BID, volume, ccyp, null, null, limitPrice);
-		String id = xchange.getTradeService().placeLimitOrder(order);
-		return getOrder(id);
-	}
+public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	LimitOrder order = new LimitOrder(OrderType.BID, volume, ccyp, null, null, limitPrice);
+	String id = xchange.getTradeService().placeLimitOrder(order);
+	return getOrder(id);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (buySpot)
@@ -3119,19 +3119,19 @@ private BitfinexTradeService tradeService;
 @Autowired BitfinexOrderbookService orderbookService;
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		// 取得通貨で手数料を徴収されるため、取引金額(volume)に手数分を上乗せて受け渡す。
-		volume = volume.divide(ONE.subtract(getFeeRate(MAKER)),
-				8, RoundingMode.HALF_UP);
-		LimitOrder limitOrder = new LimitOrder.Builder(OrderType.BID, ccyp)
-				.limitPrice(limitPrice).originalAmount(volume).build();
-		BitfinexOrderStatusResponse newOrder = tradeService.placeBitfinexLimitOrder(
-				limitOrder, BitfinexOrderType.LIMIT);
-		log.info("order executed. id: {}", newOrder);
-		return waitOrderCreate(String.valueOf(newOrder.getId()));
+@Override
+public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	// 取得通貨で手数料を徴収されるため、取引金額(volume)に手数分を上乗せて受け渡す。
+	volume = volume.divide(ONE.subtract(getFeeRate(MAKER)),
+			8, RoundingMode.HALF_UP);
+	LimitOrder limitOrder = new LimitOrder.Builder(OrderType.BID, ccyp)
+			.limitPrice(limitPrice).originalAmount(volume).build();
+	BitfinexOrderStatusResponse newOrder = tradeService.placeBitfinexLimitOrder(
+			limitOrder, BitfinexOrderType.LIMIT);
+	log.info("order executed. id: {}", newOrder);
+	return waitOrderCreate(String.valueOf(newOrder.getId()));
 
-	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (buySpot)
@@ -3163,7 +3163,7 @@ import static org.knowm.xchange.dto.Order.OrderType.BID;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -3183,27 +3183,27 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		// 取引通貨(base currency)で手数料を徴収されるため、徴収後の取得額が引数で指定された額になるよう調整
-		volume = volume.divide(ONE.subtract(getFeeRate(FeeType.MAKER)), volScale, HALF_UP);
-		LimitOrder order = new LimitOrder.Builder(OrderType.BID, ccyp)
-				.limitPrice(limitPrice).originalAmount(volume).build();
-		String acceptanceId = placeLimitOrder(order);
-		log.info("order sent. id: {}", acceptanceId);
-		return waitOrderCreate(acceptanceId);
-	}
+@Override
+public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	// 取引通貨(base currency)で手数料を徴収されるため、徴収後の取得額が引数で指定された額になるよう調整
+	volume = volume.divide(ONE.subtract(getFeeRate(FeeType.MAKER)), volScale, HALF_UP);
+	LimitOrder order = new LimitOrder.Builder(OrderType.BID, ccyp)
+			.limitPrice(limitPrice).originalAmount(volume).build();
+	String acceptanceId = placeLimitOrder(order);
+	log.info("order sent. id: {}", acceptanceId);
+	return waitOrderCreate(acceptanceId);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (placeLimitOrder)
@@ -3232,7 +3232,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -3252,32 +3252,32 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	protected String placeLimitOrder(LimitOrder order) throws Exception {
-		String type = BitflyerOrderType.fromOrderType(order.getType()).toString();
-		String product = toPairString(order.getCurrencyPair());
-		String path = "/v1/me/sendchildorder";
-		BitflyerNewOrderRequest request = new BitflyerNewOrderRequest(
-			"LIMIT", product, type, order.getOriginalAmount(), order.getLimitPrice());
-		String requestBody = OBJECT_MAPPER.writeValueAsString(request);
-		try {
-			OrderResult orderResult = doPostWithAuth(path, requestBody, OrderResult.class);
-			if (orderResult==null) return null;
+protected String placeLimitOrder(LimitOrder order) throws Exception {
+	String type = BitflyerOrderType.fromOrderType(order.getType()).toString();
+	String product = toPairString(order.getCurrencyPair());
+	String path = "/v1/me/sendchildorder";
+	BitflyerNewOrderRequest request = new BitflyerNewOrderRequest(
+		"LIMIT", product, type, order.getOriginalAmount(), order.getLimitPrice());
+	String requestBody = OBJECT_MAPPER.writeValueAsString(request);
+	try {
+		OrderResult orderResult = doPostWithAuth(path, requestBody, OrderResult.class);
+		if (orderResult==null) return null;
         	return orderResult.getChildOrderAcceptanceId();
         } catch (Exception e) {
             throw e;
         }
-	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (doPostWithAuth)
@@ -3304,7 +3304,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -3324,31 +3324,31 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	private <T> T doPostWithAuth(String path, String requestBody, Class<T> responseClass) {
-		String timestamp = String.valueOf(new Date().getTime());
-		String data = timestamp + "POST" + path + requestBody;
-		String hash = createHMAC(SECRET, data);
-		return restClient.post()
-				.uri(URL_BASE + path)
-				.header(ACCESS_KEY, API_KEY)
-				.header(ACCESS_TIMESTAMP, timestamp)
-				.header(ACCESS_SIGN, hash)
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(requestBody)
-				.retrieve()
-				.body(responseClass);
-	}
+private <T> T doPostWithAuth(String path, String requestBody, Class<T> responseClass) {
+	String timestamp = String.valueOf(new Date().getTime());
+	String data = timestamp + "POST" + path + requestBody;
+	String hash = createHMAC(SECRET, data);
+	return restClient.post()
+			.uri(URL_BASE + path)
+			.header(ACCESS_KEY, API_KEY)
+			.header(ACCESS_TIMESTAMP, timestamp)
+			.header(ACCESS_SIGN, hash)
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(requestBody)
+			.retrieve()
+			.body(responseClass);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/dto/OrderResult.java (getChildOrderAcceptanceId)
@@ -3359,12 +3359,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 // --- フィールド ---
 @JsonProperty("child_order_acceptance_id")
-	private String childOrderAcceptanceId;
+private String childOrderAcceptanceId;
 
 // --- メソッド定義 ---
-	public String getChildOrderAcceptanceId() {
-		return childOrderAcceptanceId;
-	}
+public String getChildOrderAcceptanceId() {
+	return childOrderAcceptanceId;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (waitOrderCreate)
@@ -3391,7 +3391,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -3411,32 +3411,32 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	/**
-	 * 指値注文発行後の取得待ち(注文発行後は即時に取得できない)
-	 * @param acceptanceId CHILD_ORDER_ACCEPTANCE_ID(注文送信直後なのでCHILD_ORDER_IDが未決定の状態を想定)
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public OrderRecord waitOrderCreate(String acceptanceId) throws Exception {
-		var order = orderPool.waitOrder(acceptanceId, null);
-		if (order != null) {
-			return order;
-		} else {
-			return getOrderWithRetry(acceptanceId);
-		}
+/**
+ * 指値注文発行後の取得待ち(注文発行後は即時に取得できない)
+ * @param acceptanceId CHILD_ORDER_ACCEPTANCE_ID(注文送信直後なのでCHILD_ORDER_IDが未決定の状態を想定)
+ * @return
+ * @throws Exception
+ */
+@Override
+public OrderRecord waitOrderCreate(String acceptanceId) throws Exception {
+	var order = orderPool.waitOrder(acceptanceId, null);
+	if (order != null) {
+		return order;
+	} else {
+		return getOrderWithRetry(acceptanceId);
 	}
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (getOrderWithRetry)
@@ -3465,7 +3465,7 @@ import static cryptobot.exchange.bitflyer.Bitflyer.OrderFilterBy.child_order_acc
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -3485,29 +3485,29 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	private OrderRecord getOrderWithRetry(String acceptanceId) throws Exception {
-		for (int i = 0; i < 30; i++) {
-			try {
-				var orderRecord = getOrder(acceptanceId, child_order_acceptance_id);
-				if (orderRecord != null) return orderRecord;
-			} catch (Exception e) {
-				log.warn(e.getMessage());
-			}
-			Thread.sleep(3*1000);
+private OrderRecord getOrderWithRetry(String acceptanceId) throws Exception {
+	for (int i = 0; i < 30; i++) {
+		try {
+			var orderRecord = getOrder(acceptanceId, child_order_acceptance_id);
+			if (orderRecord != null) return orderRecord;
+		} catch (Exception e) {
+			log.warn(e.getMessage());
 		}
-		throw new PlacedOrderNotFoundException(acceptanceId);
+		Thread.sleep(3*1000);
 	}
+	throw new PlacedOrderNotFoundException(acceptanceId);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (buySpot)
@@ -3551,10 +3551,10 @@ public BigDecimal pnl;
 public BigDecimal sfd;
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		return null;
-	}
+@Override
+public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	return null;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (buySpot)
@@ -3597,26 +3597,26 @@ private static final String CONTENT_TYPE = "Content-Type";
 @Autowired MailSender mail;
 @Autowired BitpointOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
-			CurrencyPair.BTC_JPY, "BTCJPY",
-			CurrencyPair.ETH_JPY, "ETHJPY");
+		CurrencyPair.BTC_JPY, "BTCJPY",
+		CurrencyPair.ETH_JPY, "ETHJPY");
 @Autowired BitpointWeb web;
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		var path = "/api/order";
-		var params = Map.of(
-				"symbol", SUPPORTED_CCYP.get(BTC_JPY),
-				"side", "BUY",
-				"type", "LIMIT",
-				"timeInForce", "GTC",
-				"quantity", volume.toString(),
-				"price", limitPrice.toString(),
-				"pinCode", PIN_CODE);
-		JsonNode result = doHttpPost(path, params);
-		var order = createLimitOrder(result);
-		return new OrderRecord(this, order);
-	}
+@Override
+public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	var path = "/api/order";
+	var params = Map.of(
+			"symbol", SUPPORTED_CCYP.get(BTC_JPY),
+			"side", "BUY",
+			"type", "LIMIT",
+			"timeInForce", "GTC",
+			"quantity", volume.toString(),
+			"price", limitPrice.toString(),
+			"pinCode", PIN_CODE);
+	JsonNode result = doHttpPost(path, params);
+	var order = createLimitOrder(result);
+	return new OrderRecord(this, order);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (doHttpPost)
@@ -3659,33 +3659,33 @@ private static final String CONTENT_TYPE = "Content-Type";
 @Autowired MailSender mail;
 @Autowired BitpointOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
-			CurrencyPair.BTC_JPY, "BTCJPY",
-			CurrencyPair.ETH_JPY, "ETHJPY");
+		CurrencyPair.BTC_JPY, "BTCJPY",
+		CurrencyPair.ETH_JPY, "ETHJPY");
 @Autowired BitpointWeb web;
 
 // --- メソッド定義 ---
-	private JsonNode doHttpPost(String path, Map<String, String> params) throws Exception {
-		long nonce = System.currentTimeMillis();
-		var data = new HashMap<>(params);
-		data.put("timestamp", String.valueOf(nonce));
-		data.put("recvWindow", "10000");
-		
-		var json = JsonUtils.MAPPER.writeValueAsString(data);
-		var url = URL_BASE + path;
-		var message = API_KEY + "\n" + nonce + "\n" + (json == null ? "" : json);
-		var signature = createHMAC(SECRET, message);
+private JsonNode doHttpPost(String path, Map<String, String> params) throws Exception {
+	long nonce = System.currentTimeMillis();
+	var data = new HashMap<>(params);
+	data.put("timestamp", String.valueOf(nonce));
+	data.put("recvWindow", "10000");
+	
+	var json = JsonUtils.MAPPER.writeValueAsString(data);
+	var url = URL_BASE + path;
+	var message = API_KEY + "\n" + nonce + "\n" + (json == null ? "" : json);
+	var signature = createHMAC(SECRET, message);
 
-		String body = restClient.post()
-				.uri(url)
-				.header(ACCESS_KEY, API_KEY)
-				.header(ACCESS_NONCE, String.valueOf(nonce))
-				.header(ACCESS_SIGN, signature)
-				.header(CONTENT_TYPE, APPLICATION_JSON)
-				.body(json)
-				.retrieve()
-				.body(String.class);
-		return JsonUtils.MAPPER.readTree(body);
-	}
+	String body = restClient.post()
+			.uri(url)
+			.header(ACCESS_KEY, API_KEY)
+			.header(ACCESS_NONCE, String.valueOf(nonce))
+			.header(ACCESS_SIGN, signature)
+			.header(CONTENT_TYPE, APPLICATION_JSON)
+			.body(json)
+			.retrieve()
+			.body(String.class);
+	return JsonUtils.MAPPER.readTree(body);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (sellSpot)
@@ -3744,11 +3744,11 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		LimitOrder order = new LimitOrder(OrderType.ASK, volume, ccyp, null, null, limitPrice);
-		String id = xchange.getTradeService().placeLimitOrder(order);
-		return getOrder(id);
-	}
+public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	LimitOrder order = new LimitOrder(OrderType.ASK, volume, ccyp, null, null, limitPrice);
+	String id = xchange.getTradeService().placeLimitOrder(order);
+	return getOrder(id);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/binance/Binance.java (sellSpot)
@@ -3793,14 +3793,14 @@ private final int stepSize = 4;
 @Value("${exchange.api.binance:#{null}}") private String API_ENDPOINT;
 
 // --- メソッド定義 ---
-	@Override
-	synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		LimitOrder limitOrder = new Builder(OrderType.ASK, ccyp)
-				.limitPrice(limitPrice).originalAmount(volume.setScale(stepSize, HALF_UP)).build();
-		String orderId = tradeService.placeLimitOrder(limitOrder);
-		log.info("order sent. id: {}", orderId);
-		return waitOrderCreate(orderId);
-	}
+@Override
+synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	LimitOrder limitOrder = new Builder(OrderType.ASK, ccyp)
+			.limitPrice(limitPrice).originalAmount(volume.setScale(stepSize, HALF_UP)).build();
+	String orderId = tradeService.placeLimitOrder(limitOrder);
+	log.info("order sent. id: {}", orderId);
+	return waitOrderCreate(orderId);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (sellSpot)
@@ -3830,7 +3830,7 @@ import cryptobot.misc.MailSender;
 
 // --- フィールド ---
 @Value("${exchange.api.bitbank:https://api.bitbank.cc}")
-	private String API_ENDPOINT;
+private String API_ENDPOINT;
 @Value("${bitbank.web.2fa.secret}") String SECRET_KEY_FOR_2FA;
 @Value("${bitbank.api.key}") String API_KEY;
 @Value("${bitbank.api.secret}") String SECRET;
@@ -3850,14 +3850,14 @@ BitbankAssets assetsResponse = null;
 String ccyps;
 private Map<String, String> errorCodes;
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-			CurrencyPair.BTC_JPY, "BTC_JPY"
-	);
+		CurrencyPair.BTC_JPY, "BTC_JPY"
+);
 
 // --- メソッド定義 ---
-	@Override
-	synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		return executeOrder(volume, limitPrice, BitbankOrders.Side.SELL, BitbankOrders.Type.LIMIT);
-	}
+@Override
+synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	return executeOrder(volume, limitPrice, BitbankOrders.Side.SELL, BitbankOrders.Type.LIMIT);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (sellSpot)
@@ -3916,11 +3916,11 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		LimitOrder order = new LimitOrder(OrderType.ASK, volume, ccyp, null, null, limitPrice);
-		String id = xchange.getTradeService().placeLimitOrder(order);
-		return getOrder(id);
-	}
+public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	LimitOrder order = new LimitOrder(OrderType.ASK, volume, ccyp, null, null, limitPrice);
+	String id = xchange.getTradeService().placeLimitOrder(order);
+	return getOrder(id);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (sellSpot)
@@ -3965,15 +3965,15 @@ private BitfinexTradeService tradeService;
 @Autowired BitfinexOrderbookService orderbookService;
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		LimitOrder limitOrder = new LimitOrder.Builder(OrderType.ASK, ccyp)
-				.limitPrice(limitPrice).originalAmount(volume).build();
-		BitfinexOrderStatusResponse newOrder = tradeService.placeBitfinexLimitOrder(
-				limitOrder, BitfinexOrderType.LIMIT);
-		log.info("order executed. id: {}", newOrder);
-		return waitOrderCreate(String.valueOf(newOrder.getId()));
-	}
+@Override
+public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	LimitOrder limitOrder = new LimitOrder.Builder(OrderType.ASK, ccyp)
+			.limitPrice(limitPrice).originalAmount(volume).build();
+	BitfinexOrderStatusResponse newOrder = tradeService.placeBitfinexLimitOrder(
+			limitOrder, BitfinexOrderType.LIMIT);
+	log.info("order executed. id: {}", newOrder);
+	return waitOrderCreate(String.valueOf(newOrder.getId()));
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (sellSpot)
@@ -4005,7 +4005,7 @@ import static org.knowm.xchange.dto.Order.OrderType.ASK;
 
 // --- フィールド ---
 @Value("${exchange.api.bitflyer:https://api.bitflyer.jp}")
-	private String URL_BASE;
+private String URL_BASE;
 private static final String APPLICATION_JSON = "application/json";
 private static final String ACCESS_KEY = "ACCESS-KEY";
 private static final String ACCESS_TIMESTAMP = "ACCESS-TIMESTAMP";
@@ -4025,27 +4025,27 @@ private HealthStatus status;
 @Autowired BitflyerOrderbookService orderbookService;
 @Autowired BitflyerWeb web;
 ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-			Thread.ofVirtual().name("bf_healthcheck").factory());
+		Thread.ofVirtual().name("bf_healthcheck").factory());
 private static final ObjectMapper OBJECT_MAPPER = JsonUtils.MAPPER;
 public static enum OrderFilterBy
 public enum BitflyerOrderType
 private static final Map<String, BitflyerOrderType> fromString = new HashMap<String, BitflyerOrderType>();
 static Map<CurrencyPair, String> SUPPORTED_CCYPS = Map.of(
-		CurrencyPair.BTC_JPY, "BTC_JPY",
-		CurrencyPair.ETH_BTC, "ETH_BTC",
-		CurrencyPair.BCH_BTC, "BCH_BTC");
+	CurrencyPair.BTC_JPY, "BTC_JPY",
+	CurrencyPair.ETH_BTC, "ETH_BTC",
+	CurrencyPair.BCH_BTC, "BCH_BTC");
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		// 取引通貨(base currency)で手数料を徴収されるため、引数で指定された額＝残高減少額になるよう調整
-		volume = volume.divide(ONE.add(getFeeRate(FeeType.MAKER)), volScale, HALF_UP);
-		LimitOrder order = new LimitOrder.Builder(OrderType.ASK, ccyp)
-				.limitPrice(limitPrice).originalAmount(volume).build();
-		String acceptanceId = placeLimitOrder(order);
-		log.info("order sent. id: {}", acceptanceId);
-		return waitOrderCreate(acceptanceId);
-	}
+@Override
+public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	// 取引通貨(base currency)で手数料を徴収されるため、引数で指定された額＝残高減少額になるよう調整
+	volume = volume.divide(ONE.add(getFeeRate(FeeType.MAKER)), volScale, HALF_UP);
+	LimitOrder order = new LimitOrder.Builder(OrderType.ASK, ccyp)
+			.limitPrice(limitPrice).originalAmount(volume).build();
+	String acceptanceId = placeLimitOrder(order);
+	log.info("order sent. id: {}", acceptanceId);
+	return waitOrderCreate(acceptanceId);
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (sellSpot)
@@ -4089,10 +4089,10 @@ public BigDecimal pnl;
 public BigDecimal sfd;
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		return null;
-	}
+@Override
+public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	return null;
+}
 
 ```
 ### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (sellSpot)
@@ -4135,26 +4135,26 @@ private static final String CONTENT_TYPE = "Content-Type";
 @Autowired MailSender mail;
 @Autowired BitpointOrderbookService orderbookService;
 static Map<CurrencyPair, String> SUPPORTED_CCYP = Map.of(
-			CurrencyPair.BTC_JPY, "BTCJPY",
-			CurrencyPair.ETH_JPY, "ETHJPY");
+		CurrencyPair.BTC_JPY, "BTCJPY",
+		CurrencyPair.ETH_JPY, "ETHJPY");
 @Autowired BitpointWeb web;
 
 // --- メソッド定義 ---
-	@Override
-	public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		var path = "/api/order";
-		var params = Map.of(
-				"symbol", SUPPORTED_CCYP.get(BTC_JPY),
-				"side", "SELL",
-				"type", "LIMIT",
-				"timeInForce", "GTC",
-				"quantity", volume.toString(),
-				"price", limitPrice.toString(),
-				"pinCode", PIN_CODE);
-		JsonNode result = doHttpPost(path, params);
-		var order = createLimitOrder(result);
-		return new OrderRecord(this, order);
-	}
+@Override
+public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	var path = "/api/order";
+	var params = Map.of(
+			"symbol", SUPPORTED_CCYP.get(BTC_JPY),
+			"side", "SELL",
+			"type", "LIMIT",
+			"timeInForce", "GTC",
+			"quantity", volume.toString(),
+			"price", limitPrice.toString(),
+			"pinCode", PIN_CODE);
+	JsonNode result = doHttpPost(path, params);
+	var order = createLimitOrder(result);
+	return new OrderRecord(this, order);
+}
 
 ```
 ### src/main/java/cryptobot/misc/MailSender.java (info)
@@ -4173,14 +4173,14 @@ import java.util.concurrent.Executors;
 @Value("${mail.smtp.port:587}") String port;
 @Value("${mail.destination}") String destination;
 ExecutorService executor = Executors.newThreadPerTaskExecutor(
-            Thread.ofVirtual().name("mail-send").factory());
+        Thread.ofVirtual().name("mail-send").factory());
 
 // --- メソッド定義 ---
-    public void info(String subject, String body) {
-        executor.submit(()->{
-            send(subject, body);
-        });
-    }
+public void info(String subject, String body) {
+    executor.submit(()->{
+        send(subject, body);
+    });
+}
 
 ```
 ### src/main/java/cryptobot/misc/MailSender.java (send)
@@ -4203,57 +4203,57 @@ import java.util.concurrent.Executors;
 @Value("${mail.smtp.port:587}") String port;
 @Value("${mail.destination}") String destination;
 ExecutorService executor = Executors.newThreadPerTaskExecutor(
-            Thread.ofVirtual().name("mail-send").factory());
+        Thread.ofVirtual().name("mail-send").factory());
 
 // --- メソッド定義 ---
-    private void send(String subject, String body) {
-        // SMTPサーバーの設定
-        Properties props = new Properties();
-        props.put("mail.smtp.host", hostname); // Gmail SMTPサーバー
-        props.put("mail.smtp.port", port); // TLSポート
-        props.put("mail.smtp.auth", "true"); // 認証を有効にする
-        props.put("mail.smtp.starttls.enable", "true"); // STARTTLSを有効にする (TLS暗号化)
+private void send(String subject, String body) {
+    // SMTPサーバーの設定
+    Properties props = new Properties();
+    props.put("mail.smtp.host", hostname); // Gmail SMTPサーバー
+    props.put("mail.smtp.port", port); // TLSポート
+    props.put("mail.smtp.auth", "true"); // 認証を有効にする
+    props.put("mail.smtp.starttls.enable", "true"); // STARTTLSを有効にする (TLS暗号化)
 
-        // 必要に応じてタイムアウト設定などを追加
-        // props.put("mail.smtp.connectiontimeout", "5000");
-        // props.put("mail.smtp.timeout", "5000");
+    // 必要に応じてタイムアウト設定などを追加
+    // props.put("mail.smtp.connectiontimeout", "5000");
+    // props.put("mail.smtp.timeout", "5000");
 
-        // セッションの取得 (認証情報を含む)
-        Session session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(userid, password);
-            }
-        });
-
-        try {
-            // メッセージの作成
-            Message message = new MimeMessage(session);
-            // 送信元設定 (オプションで表示名も設定可能)
-            try {
-                message.setFrom(new InternetAddress(userid, "Cryptobot")); // 必要に応じて表示名を変更
-            } catch (UnsupportedEncodingException e) {
-                message.setFrom(new InternetAddress(userid));
-            }
-            // 送信先設定
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destination));
-            // 件名設定
-            message.setSubject(subject);
-            // 本文設定
-            message.setText(body);
-            // メールの送信
-            Transport.send(message);
-
-        } catch (MessagingException e) {
-            log.error("メール送信中にエラーが発生しました。", e);
-            // 考えられる原因:
-            // - 認証情報 (ユーザー名、アプリパスワード) が間違っている
-            // - ネットワーク接続の問題
-            // - Gmail側の設定 (2段階認証、アプリパスワードが正しく設定されていない)
-            // - ファイアウォールによるブロック
-            // - ライブラリの不足
+    // セッションの取得 (認証情報を含む)
+    Session session = Session.getInstance(props, new Authenticator() {
+        @Override
+        protected PasswordAuthentication getPasswordAuthentication() {
+            return new PasswordAuthentication(userid, password);
         }
+    });
+
+    try {
+        // メッセージの作成
+        Message message = new MimeMessage(session);
+        // 送信元設定 (オプションで表示名も設定可能)
+        try {
+            message.setFrom(new InternetAddress(userid, "Cryptobot")); // 必要に応じて表示名を変更
+        } catch (UnsupportedEncodingException e) {
+            message.setFrom(new InternetAddress(userid));
+        }
+        // 送信先設定
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destination));
+        // 件名設定
+        message.setSubject(subject);
+        // 本文設定
+        message.setText(body);
+        // メールの送信
+        Transport.send(message);
+
+    } catch (MessagingException e) {
+        log.error("メール送信中にエラーが発生しました。", e);
+        // 考えられる原因:
+        // - 認証情報 (ユーザー名、アプリパスワード) が間違っている
+        // - ネットワーク接続の問題
+        // - Gmail側の設定 (2段階認証、アプリパスワードが正しく設定されていない)
+        // - ファイアウォールによるブロック
+        // - ライブラリの不足
     }
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (getName)
@@ -4307,9 +4307,9 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
+public String getName() {
+	return this.getClass().getSimpleName();
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (getName)
@@ -4363,9 +4363,9 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
+public String getName() {
+	return this.getClass().getSimpleName();
+}
 
 ```
 ### src/main/java/cryptobot/exchange/ExchangeService.java (order)
@@ -4421,30 +4421,30 @@ public static enum FeeType
 final Set<String> expectedOrderId = new HashSet<>();
 
 // --- メソッド定義 ---
-	/**
-	 * 指値注文
-	 * @param type
-	 * @param volume
-	 * @param limitPrice
-	 * @return
-	 * @throws Exception
-	 */
-	public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPrice) throws Exception {
-		OrderRecord order;
-		try {
-			if (type.equals(OrderType.BID)) {
-				order = buySpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
-			} else {
-				order = sellSpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
-			}
-			log.info("limit order created. order: {}", order);
-			return order;
-		} catch (Exception e) {
-			mailer.info("exchange disabled on order error", "disabled exchange: " + getName());
-			setEnable(false);
-			throw e;
+/**
+ * 指値注文
+ * @param type
+ * @param volume
+ * @param limitPrice
+ * @return
+ * @throws Exception
+ */
+public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPrice) throws Exception {
+	OrderRecord order;
+	try {
+		if (type.equals(OrderType.BID)) {
+			order = buySpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
+		} else {
+			order = sellSpot(volume.setScale(volScale, HALF_UP), limitPrice.setScale(scale, HALF_UP));
 		}
+		log.info("limit order created. order: {}", order);
+		return order;
+	} catch (Exception e) {
+		mailer.info("exchange disabled on order error", "disabled exchange: " + getName());
+		setEnable(false);
+		throw e;
 	}
+}
 
 ```
 

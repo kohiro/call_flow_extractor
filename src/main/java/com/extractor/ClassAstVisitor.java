@@ -13,9 +13,18 @@ public class ClassAstVisitor extends ASTVisitor {
     private final int targetArgCount;
     private final String fileContent;
 
+    public static class FieldData {
+        public final String source;
+        public final List<String> names;
+        public FieldData(String source, List<String> names) {
+            this.source = source;
+            this.names = names;
+        }
+    }
+
     private final List<String> imports = new ArrayList<>();
     private final List<String> staticImports = new ArrayList<>();
-    private final List<String> fields = new ArrayList<>();
+    private final List<FieldData> fields = new ArrayList<>();
     private String targetMethodSource = null;
     private MethodDeclaration targetMethodDecl = null;
     
@@ -52,7 +61,14 @@ public class ClassAstVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(FieldDeclaration node) {
-        fields.add(extractSourceDedented(node));
+        String source = extractSourceDedented(node);
+        List<String> names = new ArrayList<>();
+        for (Object obj : node.fragments()) {
+            if (obj instanceof VariableDeclarationFragment) {
+                names.add(((VariableDeclarationFragment) obj).getName().getIdentifier());
+            }
+        }
+        fields.add(new FieldData(source, names));
         return super.visit(node);
     }
 
@@ -195,7 +211,7 @@ public class ClassAstVisitor extends ASTVisitor {
         return staticImports;
     }
 
-    public List<String> getFields() {
+    public List<FieldData> getFields() {
         return fields;
     }
 

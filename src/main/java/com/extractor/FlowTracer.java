@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FlowTracer {
 
@@ -82,9 +83,26 @@ public class FlowTracer {
 
             // Build the block content
             StringBuilder blockContent = new StringBuilder();
-            
-            // Determine which text is actually extracted
-            String extractedContent = String.join("\n", visitor.getFields()) + "\n" + visitor.getTargetMethodSource();
+
+            // Filter fields based on usage in the target method
+            List<String> usedFields = new ArrayList<>();
+            String methodSource = visitor.getTargetMethodSource();
+            for (ClassAstVisitor.FieldData fd : visitor.getFields()) {
+                boolean isUsed = false;
+                for (String name : fd.names) {
+                    // Match whole word
+                    if (methodSource.matches("(?s).*\\b" + name + "\\b.*")) {
+                        isUsed = true;
+                        break;
+                    }
+                }
+                if (isUsed) {
+                    usedFields.add(fd.source);
+                }
+            }
+
+            // Determine which text is actually extracted for import filtering
+            String extractedContent = String.join("\n", usedFields) + "\n" + methodSource;
             
             boolean hasImports = false;
             StringBuilder importsBlock = new StringBuilder();
@@ -103,16 +121,16 @@ public class FlowTracer {
                 blockContent.append(importsBlock).append("\n");
             }
             
-            if (!visitor.getFields().isEmpty()) {
+            if (!usedFields.isEmpty()) {
                 blockContent.append("// --- フィールド ---\n");
-                for (String field : visitor.getFields()) {
+                for (String field : usedFields) {
                     blockContent.append(field).append("\n");
                 }
                 blockContent.append("\n");
             }
             
             blockContent.append("// --- メソッド定義 ---\n");
-            blockContent.append(visitor.getTargetMethodSource()).append("\n");
+            blockContent.append(methodSource).append("\n");
 
             extractedBlocks.add(new ExtractedBlock(title, blockContent.toString()));
 
@@ -143,7 +161,8 @@ public class FlowTracer {
                     traceClassAndImplementors(fqcn, call.methodName, call.argCount);
                 } else {
                     // Resolve the receiver to a class
-                    String targetTypeFqcn = resolveTargetTypeFqcn(call.receiver, fqcn, visitor.getFields(), visitor.getImports(), visitor.getLocalVariableTypes());
+                    List<String> fieldSources = visitor.getFields().stream().map(fd -> fd.source).collect(Collectors.toList());
+                    String targetTypeFqcn = resolveTargetTypeFqcn(call.receiver, fqcn, fieldSources, visitor.getImports(), visitor.getLocalVariableTypes());
                     if (targetTypeFqcn != null) {
                         traceClassAndImplementors(targetTypeFqcn, call.methodName, call.argCount);
                     }
