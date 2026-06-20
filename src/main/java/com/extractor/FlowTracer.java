@@ -82,23 +82,22 @@ public class FlowTracer {
                 return currentLinks;
             }
 
-            String simpleClassName = visitor.getTargetClassName();
-            if (simpleClassName == null) {
-                simpleClassName = fqcn;
-                int lastDot = fqcn.lastIndexOf('.');
-                int lastDollar = fqcn.lastIndexOf('$');
-                int lastSeparator = Math.max(lastDot, lastDollar);
-                if (lastSeparator != -1) {
-                    simpleClassName = fqcn.substring(lastSeparator + 1);
-                }
+            String actualFqcn = visitor.getTargetFqcn();
+            if (actualFqcn == null) {
+                actualFqcn = fqcn;
             }
 
-            String relativePath = indexer.getProjectRootPath().relativize(javaFile).toString();
-            String title = relativePath + " (" + simpleClassName + "#" + methodName + ")";
+            String title = actualFqcn + "#" + methodName;
             String anchor = title.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
             
+            String simpleClassName = actualFqcn;
+            int lastDot = actualFqcn.lastIndexOf('.');
+            if (lastDot != -1) {
+                simpleClassName = actualFqcn.substring(lastDot + 1);
+            }
+            
             currentLinks.clear();
-            currentLinks.add(String.format("[%s](#%s)", javaFile.getFileName().toString() + " (" + methodName + ")", anchor));
+            currentLinks.add(String.format("[%s](#%s)", simpleClassName + "#" + methodName, anchor));
 
             // Trace further down and collect links
             Map<Integer, Set<String>> lineToLinks = new HashMap<>();
@@ -206,12 +205,16 @@ public class FlowTracer {
             if (javaFile.toString().endsWith("Mapper.java") || javaFile.toString().endsWith("Repository.java")) {
                 String xmlSql = XmlSqlExtractor.extractSql(indexer.getAllXmlFiles(), fqcn, methodName);
                 if (xmlSql != null) {
-                    String xmlTitle = relativePath + " (XML: " + methodName + ")";
+                    String xmlTitle = fqcn + "#" + methodName + " (XML)";
                     String xmlAnchor = xmlTitle.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
                     extractedBlocks.add(new ExtractedBlock(xmlTitle, xmlSql, xmlAnchor));
                     
+                    String simpleXmlName = fqcn;
+                    int xmlDot = fqcn.lastIndexOf('.');
+                    if (xmlDot != -1) simpleXmlName = fqcn.substring(xmlDot + 1);
+                    
                     currentLinks.clear();
-                    currentLinks.add(String.format("[%s](#%s)", javaFile.getFileName().toString() + " (XML)", xmlAnchor));
+                    currentLinks.add(String.format("[%s](#%s)", simpleXmlName + "#" + methodName + " (XML)", xmlAnchor));
                 }
                 return currentLinks; // Reached DB layer
             }

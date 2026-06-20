@@ -314,6 +314,33 @@ public class ClassAstVisitor extends ASTVisitor {
         return null;
     }
 
+    public String getTargetFqcn() {
+        if (targetMethodDecl != null) {
+            StringBuilder sb = new StringBuilder();
+            ASTNode parent = targetMethodDecl.getParent();
+            while (parent != null) {
+                if (parent instanceof TypeDeclaration) {
+                    if (sb.length() > 0) sb.insert(0, ".");
+                    sb.insert(0, ((TypeDeclaration) parent).getName().getIdentifier());
+                } else if (parent instanceof EnumDeclaration) {
+                    if (sb.length() > 0) sb.insert(0, ".");
+                    sb.insert(0, ((EnumDeclaration) parent).getName().getIdentifier());
+                } else if (parent instanceof RecordDeclaration) {
+                    if (sb.length() > 0) sb.insert(0, ".");
+                    sb.insert(0, ((RecordDeclaration) parent).getName().getIdentifier());
+                }
+                parent = parent.getParent();
+            }
+            if (sb.length() > 0) {
+                if (cu != null && cu.getPackage() != null) {
+                    return cu.getPackage().getName().getFullyQualifiedName() + "." + sb.toString();
+                }
+                return sb.toString();
+            }
+        }
+        return null;
+    }
+
     public List<MethodCallInfo> getMethodCalls() {
         return methodCalls;
     }
