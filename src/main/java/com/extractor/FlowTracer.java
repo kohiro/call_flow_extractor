@@ -276,7 +276,7 @@ public class FlowTracer {
             String fileLink = null;
             if (javaFile != null && !visitor.getExtractedMethods().isEmpty()) {
                 int firstLine = visitor.getExtractedMethods().get(0).firstLineNumber;
-                fileLink = javaFile.toAbsolutePath().normalize().toUri().toString() + "#L" + firstLine;
+                fileLink = javaFile.toAbsolutePath().normalize().toString().replace('\\', '/') + "#L" + firstLine;
             }
             extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor, fileLink));
 
