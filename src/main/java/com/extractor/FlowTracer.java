@@ -276,7 +276,12 @@ public class FlowTracer {
             String fileLink = null;
             if (javaFile != null && !visitor.getExtractedMethods().isEmpty()) {
                 int firstLine = visitor.getExtractedMethods().get(0).firstLineNumber;
-                fileLink = javaFile.toAbsolutePath().normalize().toString().replace('\\', '/') + "#L" + firstLine;
+                String absPath = javaFile.toAbsolutePath().normalize().toString().replace('\\', '/');
+                // Ensure the path starts with a slash for the vscode://file/ URL format
+                if (!absPath.startsWith("/")) {
+                    absPath = "/" + absPath;
+                }
+                fileLink = "vscode://file" + absPath + ":" + firstLine;
             }
             extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor, fileLink));
 
