@@ -161,14 +161,30 @@ public class FlowTracer {
             // Determine which text is actually extracted for import filtering
             String extractedContent = String.join("\n", usedFields) + "\n" + methodSource;
             
+            Set<String> words = new HashSet<>();
+            java.util.regex.Matcher wordMatcher = java.util.regex.Pattern.compile("\\b[A-Za-z_][A-Za-z0-9_]*\\b").matcher(extractedContent);
+            while (wordMatcher.find()) {
+                words.add(wordMatcher.group());
+            }
+            
             boolean hasImports = false;
             StringBuilder importsBlock = new StringBuilder();
             for (String imp : visitor.getImports()) {
-                // Example: "import java.util.List;" -> "List"
-                // Example: "import static org.mockito.Mockito.when;" -> "when"
                 String simpleName = getSimpleNameFromImport(imp);
-                // Wildcards or directly used classes
-                if (simpleName.equals("*") || extractedContent.contains(simpleName)) {
+                if (simpleName.equals("*")) {
+                    boolean keep = true;
+                    if (imp.startsWith("import static ")) {
+                        String className = imp.substring(14, imp.lastIndexOf('.')).trim();
+                        keep = isStaticWildcardUsed(className, words, indexer);
+                    } else {
+                        String packageName = imp.substring(7, imp.lastIndexOf('.')).trim();
+                        keep = isPackageWildcardUsed(packageName, words, indexer);
+                    }
+                    if (keep) {
+                        importsBlock.append(imp).append("\n");
+                        hasImports = true;
+                    }
+                } else if (words.contains(simpleName)) {
                     importsBlock.append(imp).append("\n");
                     hasImports = true;
                 }
@@ -237,6 +253,71 @@ public class FlowTracer {
             links.addAll(traceRecursive(impl, methodName, argCount));
         }
         return links;
+    }
+
+    private Class<?> loadClass(String className) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            int lastDot = className.lastIndexOf('.');
+            if (lastDot != -1) {
+                try {
+                    return Class.forName(className.substring(0, lastDot) + "$" + className.substring(lastDot + 1));
+                } catch (ClassNotFoundException ex) {}
+            }
+        }
+        return null;
+    }
+
+    private boolean isStaticWildcardUsed(String className, Set<String> words, ProjectIndexer indexer) {
+        Set<String> safeWords = new HashSet<>(words);
+        safeWords.removeAll(Arrays.asList("public", "private", "protected", "static", "final", "void", "return", "if", "else", "for", "while", "do", "switch", "case", "default", "break", "continue", "new", "try", "catch", "finally", "throw", "throws", "this", "super", "synchronized", "volatile", "transient", "instanceof", "null", "true", "false", "class", "interface", "enum", "extends", "implements", "package", "import", "var"));
+
+        try {
+            Class<?> clazz = loadClass(className);
+            if (clazz != null) {
+                for (java.lang.reflect.Field f : clazz.getDeclaredFields()) {
+                    if (java.lang.reflect.Modifier.isStatic(f.getModifiers()) && java.lang.reflect.Modifier.isPublic(f.getModifiers())) {
+                        if (safeWords.contains(f.getName())) return true;
+                    }
+                }
+                for (java.lang.reflect.Method m : clazz.getDeclaredMethods()) {
+                    if (java.lang.reflect.Modifier.isStatic(m.getModifiers()) && java.lang.reflect.Modifier.isPublic(m.getModifiers())) {
+                        if (safeWords.contains(m.getName())) return true;
+                    }
+                }
+                return false;
+            }
+        } catch (Throwable t) {}
+
+        java.nio.file.Path srcFile = indexer.getJavaFile(className);
+        if (srcFile != null) {
+            try {
+                String content = java.nio.file.Files.readString(srcFile);
+                for (String w : safeWords) {
+                    if (content.matches("(?s).*\\b" + w + "\\b.*")) return true;
+                }
+                return false;
+            } catch (Exception e) {}
+        }
+        
+        return className.startsWith("java.") || className.startsWith("javax.") ? false : true;
+    }
+
+    private boolean isPackageWildcardUsed(String packageName, Set<String> words, ProjectIndexer indexer) {
+        for (String w : words) {
+            if (w.length() > 0 && Character.isUpperCase(w.charAt(0))) {
+                try {
+                    Class.forName(packageName + "." + w);
+                    return true;
+                } catch (Throwable t) {}
+                
+                if (indexer.getJavaFile(packageName + "." + w) != null) {
+                    return true;
+                }
+            }
+        }
+        return packageName.startsWith("java.") || packageName.startsWith("javax.") ? false : true;
     }
 
     private boolean isMyBatisAnnotation(String methodSource) {

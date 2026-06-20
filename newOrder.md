@@ -2,8 +2,8 @@
 
 **Start:** `cryptobot.web.view.pages.MarketView#newOrder`
 
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicegetorder"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#getOrder)
+<a id="cryptobotexchangeexchangeservicegetorder"></a>
+### cryptobot.exchange.ExchangeService#getOrder
 
 ```java
 // --- インポート ---
@@ -24,8 +24,8 @@ import org.knowm.xchange.dto.Order;
 abstract public OrderRecord getOrder(String id) throws Exception;
 
 ```
-<a id="srcmainjavacryptobotexchangebinancebinancejava-binancegetorder"></a>
-### src/main/java/cryptobot/exchange/binance/Binance.java (Binance#getOrder)
+<a id="cryptobotexchangebinancebinancegetorder"></a>
+### cryptobot.exchange.binance.Binance#getOrder
 
 ```java
 // --- インポート ---
@@ -73,8 +73,8 @@ synchronized public OrderRecord getOrder(String orderId) throws Exception {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbankmakeprivaterequestheaders"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#makePrivateRequestHeaders)
+<a id="cryptobotexchangebitbankbitbankmakeprivaterequestheaders"></a>
+### cryptobot.exchange.bitbank.Bitbank#makePrivateRequestHeaders
 
 ```java
 // --- インポート ---
@@ -107,8 +107,8 @@ private Map<String, String> makePrivateRequestHeaders(long nonce, String sign) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangegenericservicejava-genericservicecreatehmac"></a>
-### src/main/java/cryptobot/exchange/GenericService.java (GenericService#createHMAC)
+<a id="cryptobotexchangegenericservicecreatehmac"></a>
+### cryptobot.exchange.GenericService#createHMAC
 
 ```java
 // --- インポート ---
@@ -138,8 +138,8 @@ protected String createHMAC(String secret, String data) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbankgetprivaterequestheader"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#getPrivateRequestHeader)
+<a id="cryptobotexchangebitbankbitbankgetprivaterequestheader"></a>
+### cryptobot.exchange.bitbank.Bitbank#getPrivateRequestHeader
 
 ```java
 // --- インポート ---
@@ -171,12 +171,12 @@ protected Map<String, String> getPrivateRequestHeader(String path, Map<String, S
 			.map(e -> e.getKey() + "=" + e.getValue()).collect(joining("&"));
 	if (!queryString.isEmpty()) queryString = "?" + queryString;
 	String message = String.valueOf(nonce) + path + queryString;
-	return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message)); // -> [Bitbank.java (makePrivateRequestHeaders)](#srcmainjavacryptobotexchangebitbankbitbankjava-bitbankmakeprivaterequestheaders), [GenericService.java (createHMAC)](#srcmainjavacryptobotexchangegenericservicejava-genericservicecreatehmac)
+	return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message)); // -> [Bitbank#makePrivateRequestHeaders](#cryptobotexchangebitbankbitbankmakeprivaterequestheaders), [GenericService#createHMAC](#cryptobotexchangegenericservicecreatehmac)
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbankdohttpget"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#doHttpGet)
+<a id="cryptobotexchangebitbankbitbankdohttpget"></a>
+### cryptobot.exchange.bitbank.Bitbank#doHttpGet
 
 ```java
 // --- インポート ---
@@ -207,7 +207,7 @@ private String API_ENDPOINT;
 // --- メソッド定義 ---
 protected <T> T doHttpGet(String path, Class<T> clazz, Map<String, String> params) throws Exception {
 	Map<String, String> query = params != null ? params : Map.of();
-	Map<String, String> headers = getPrivateRequestHeader(path, query); // -> [Bitbank.java (getPrivateRequestHeader)](#srcmainjavacryptobotexchangebitbankbitbankjava-bitbankgetprivaterequestheader)
+	Map<String, String> headers = getPrivateRequestHeader(path, query); // -> [Bitbank#getPrivateRequestHeader](#cryptobotexchangebitbankbitbankgetprivaterequestheader)
 	
 	var uriBuilder = fromUriString(API_ENDPOINT + path);
 	query.forEach(uriBuilder::queryParam);
@@ -227,8 +227,8 @@ protected <T> T doHttpGet(String path, Class<T> clazz, Map<String, String> param
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbankgetorder"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#getOrder)
+<a id="cryptobotexchangebitbankbitbankgetorder"></a>
+### cryptobot.exchange.bitbank.Bitbank#getOrder
 
 ```java
 // --- インポート ---
@@ -257,7 +257,7 @@ String ccyps;
 @Override
 synchronized public OrderRecord getOrder(String id) throws Exception {
 	var path = "/v1/user/spot/order";
-	var order = doHttpGet(path, BitbankOrders.Order.class, Map.of("pair", ccyps, "order_id", id)); // -> [Bitbank.java (doHttpGet)](#srcmainjavacryptobotexchangebitbankbitbankjava-bitbankdohttpget)
+	var order = doHttpGet(path, BitbankOrders.Order.class, Map.of("pair", ccyps, "order_id", id)); // -> [Bitbank#doHttpGet](#cryptobotexchangebitbankbitbankdohttpget)
 	if (order == null || order.orderId == 0)
 		throw new PlacedOrderNotFoundException("order not exists");
 	OrderRecord record = new OrderRecord(this, order.converLimitOrder());
@@ -270,8 +270,8 @@ synchronized public OrderRecord getOrder(String id) throws Exception {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangecoincheckcoincheckjava-coinchecksendrequest"></a>
-### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (Coincheck#sendRequest)
+<a id="cryptobotexchangecoincheckcoinchecksendrequest"></a>
+### cryptobot.exchange.coincheck.Coincheck#sendRequest
 
 ```java
 // --- インポート ---
@@ -291,7 +291,7 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 private <T> T sendRequest(String path, Class<T> responseClass) {
     var url = "https://coincheck.com" + path;
     var nonce = String.valueOf(new Date().getTime());
-    var signature = createHMAC(SECRET, nonce + url); // -> [GenericService.java (createHMAC)](#srcmainjavacryptobotexchangegenericservicejava-genericservicecreatehmac)
+    var signature = createHMAC(SECRET, nonce + url); // -> [GenericService#createHMAC](#cryptobotexchangegenericservicecreatehmac)
 
     return restClient.get()
             .uri(url)
@@ -303,8 +303,8 @@ private <T> T sendRequest(String path, Class<T> responseClass) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangecoincheckcoincheckjava-coincheckparsedatetime"></a>
-### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (Coincheck#parseDatetime)
+<a id="cryptobotexchangecoincheckcoincheckparsedatetime"></a>
+### cryptobot.exchange.coincheck.Coincheck#parseDatetime
 
 ```java
 // --- インポート ---
@@ -327,8 +327,8 @@ private static Date parseDatetime(String datetime) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangecoincheckcoincheckjava-coincheckgetopenorders"></a>
-### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (Coincheck#getOpenOrders)
+<a id="cryptobotexchangecoincheckcoincheckgetopenorders"></a>
+### cryptobot.exchange.coincheck.Coincheck#getOpenOrders
 
 ```java
 // --- インポート ---
@@ -360,7 +360,7 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 @Override
 public List<LimitOrder> getOpenOrders() throws IOException {
     var path = "/api/exchange/orders/opens";
-    JsonNode json = sendRequest(path, JsonNode.class); // -> [Coincheck.java (sendRequest)](#srcmainjavacryptobotexchangecoincheckcoincheckjava-coinchecksendrequest)
+    JsonNode json = sendRequest(path, JsonNode.class); // -> [Coincheck#sendRequest](#cryptobotexchangecoincheckcoinchecksendrequest)
     if (!json.path("success").asBoolean()) {
         throw new RuntimeException("get order list failed.");
     }
@@ -379,7 +379,7 @@ public List<LimitOrder> getOpenOrders() throws IOException {
             .remainingAmount(o.path("pending_amount").isNull() ?
                 (o.path("pending_market_buy_amount").isNull() ? ZERO : new BigDecimal(o.path("pending_market_buy_amount").asText()))
                 :new BigDecimal(o.path("pending_amount").asText()))
-            .timestamp(parseDatetime(o.get("created_at").asText())) // -> [Coincheck.java (parseDatetime)](#srcmainjavacryptobotexchangecoincheckcoincheckjava-coincheckparsedatetime)
+            .timestamp(parseDatetime(o.get("created_at").asText())) // -> [Coincheck#parseDatetime](#cryptobotexchangecoincheckcoincheckparsedatetime)
             .limitPrice(o.path("rate").isNull() ? null:
                     new BigDecimal(o.path("rate").asText()))
             .build();
@@ -398,8 +398,8 @@ public List<LimitOrder> getOpenOrders() throws IOException {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangecoincheckcoincheckjava-coincheckgetorder"></a>
-### src/main/java/cryptobot/exchange/coincheck/Coincheck.java (Coincheck#getOrder)
+<a id="cryptobotexchangecoincheckcoincheckgetorder"></a>
+### cryptobot.exchange.coincheck.Coincheck#getOrder
 
 ```java
 // --- インポート ---
@@ -415,7 +415,7 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 // --- メソッド定義 ---
 @Override
 public OrderRecord getOrder(String id) throws Exception {
-    List<LimitOrder> openOrders =  getOpenOrders(); // -> [Coincheck.java (getOpenOrders)](#srcmainjavacryptobotexchangecoincheckcoincheckjava-coincheckgetopenorders)
+    List<LimitOrder> openOrders =  getOpenOrders(); // -> [Coincheck#getOpenOrders](#cryptobotexchangecoincheckcoincheckgetopenorders)
     var order = openOrders.stream().filter(o->o.getId().equals(id)).findAny();
     if (order.isPresent()){
         return new OrderRecord(this, order.get());
@@ -423,7 +423,7 @@ public OrderRecord getOrder(String id) throws Exception {
     var op = orderPool.getById(id);
     if (op != null) {
         var limitOrder = op;
-        var result = sendRequest("/api/exchange/orders/cancel_status?id=%s".formatted(id), JsonNode.class); // -> [Coincheck.java (sendRequest)](#srcmainjavacryptobotexchangecoincheckcoincheckjava-coinchecksendrequest)
+        var result = sendRequest("/api/exchange/orders/cancel_status?id=%s".formatted(id), JsonNode.class); // -> [Coincheck#sendRequest](#cryptobotexchangecoincheckcoinchecksendrequest)
         if (result.path("success").asBoolean()) {
             if (result.path("cancel").asBoolean()) {
                 limitOrder.setOrderStatus(CANCELED);
@@ -440,8 +440,8 @@ public OrderRecord getOrder(String id) throws Exception {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitfinexbitfinexjava-bitfinexgetopenorders"></a>
-### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (Bitfinex#getOpenOrders)
+<a id="cryptobotexchangebitfinexbitfinexgetopenorders"></a>
+### cryptobot.exchange.bitfinex.Bitfinex#getOpenOrders
 
 ```java
 // --- インポート ---
@@ -488,8 +488,8 @@ synchronized public List<LimitOrder> getOpenOrders() throws IOException {
 	}
 
 ```
-<a id="srcmainjavacryptobotdtoorderrecordjava-orderrecordgetvolume"></a>
-### src/main/java/cryptobot/dto/OrderRecord.java (OrderRecord#getVolume)
+<a id="cryptobotdtoorderrecordgetvolume"></a>
+### cryptobot.dto.OrderRecord#getVolume
 
 ```java
 // --- インポート ---
@@ -506,8 +506,8 @@ public BigDecimal getVolume() {
 }
 
 ```
-<a id="srcmainjavacryptobotdtoorderrecordjava-orderrecordadjuststatusbyexecutionvolume"></a>
-### src/main/java/cryptobot/dto/OrderRecord.java (OrderRecord#adjustStatusByExecutionVolume)
+<a id="cryptobotdtoorderrecordadjuststatusbyexecutionvolume"></a>
+### cryptobot.dto.OrderRecord#adjustStatusByExecutionVolume
 
 ```java
 // --- インポート ---
@@ -541,8 +541,8 @@ private void adjustStatusByExecutionVolume() {
 }
 
 ```
-<a id="srcmainjavacryptobotdtoorderrecordjava-orderrecordsetexecutedvolume"></a>
-### src/main/java/cryptobot/dto/OrderRecord.java (OrderRecord#setExecutedVolume)
+<a id="cryptobotdtoorderrecordsetexecutedvolume"></a>
+### cryptobot.dto.OrderRecord#setExecutedVolume
 
 ```java
 // --- インポート ---
@@ -557,12 +557,12 @@ import static org.knowm.xchange.dto.Order.OrderStatus.*;
 // --- メソッド定義 ---
 public void setExecutedVolume(BigDecimal executedVolume) {
 	setCumulativeAmount(executedVolume);
-	adjustStatusByExecutionVolume(); // -> [OrderRecord.java (adjustStatusByExecutionVolume)](#srcmainjavacryptobotdtoorderrecordjava-orderrecordadjuststatusbyexecutionvolume)
+	adjustStatusByExecutionVolume(); // -> [OrderRecord#adjustStatusByExecutionVolume](#cryptobotdtoorderrecordadjuststatusbyexecutionvolume)
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitfinexbitfinexjava-bitfinexgetorder"></a>
-### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (Bitfinex#getOrder)
+<a id="cryptobotexchangebitfinexbitfinexgetorder"></a>
+### cryptobot.exchange.bitfinex.Bitfinex#getOrder
 
 ```java
 // --- インポート ---
@@ -605,7 +605,7 @@ private BitfinexTradeService tradeService;
 		}
 		OrderRecord record;
 		// 未約定(部分約定含む)の注文を取得
-		var openOrders = getOpenOrders(); // -> [Bitfinex.java (getOpenOrders)](#srcmainjavacryptobotexchangebitfinexbitfinexjava-bitfinexgetopenorders)
+		var openOrders = getOpenOrders(); // -> [Bitfinex#getOpenOrders](#cryptobotexchangebitfinexbitfinexgetopenorders)
 		var openOrderOption = openOrders.stream().filter(o->o.getId().equals(id)).findAny();
 		if (openOrderOption.isPresent()) {
 			// 取得できた場合
@@ -632,16 +632,16 @@ private BitfinexTradeService tradeService;
 			.reduce(ZERO, BigDecimal::add).abs();
 		var averagePrice = execVol.compareTo(ZERO) > 0 ?
 				execVolBase.divide(execVol, scale, HALF_UP) : null;
-		var origVol = record.getVolume(); // -> [OrderRecord.java (getVolume)](#srcmainjavacryptobotdtoorderrecordjava-orderrecordgetvolume)
-		record.setExecutedVolume(execVol); // -> [OrderRecord.java (setExecutedVolume)](#srcmainjavacryptobotdtoorderrecordjava-orderrecordsetexecutedvolume)
+		var origVol = record.getVolume(); // -> [OrderRecord#getVolume](#cryptobotdtoorderrecordgetvolume)
+		record.setExecutedVolume(execVol); // -> [OrderRecord#setExecutedVolume](#cryptobotdtoorderrecordsetexecutedvolume)
 		record.setAveragePrice(averagePrice);
 		return record;
 
 	}
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyertopairstring"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#toPairString)
+<a id="cryptobotexchangebitflyerbitflyertopairstring"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#toPairString
 
 ```java
 // --- インポート ---
@@ -659,8 +659,8 @@ public static String toPairString(CurrencyPair currencyPair) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyerdogetwithauth"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#doGetWithAuth)
+<a id="cryptobotexchangebitflyerbitflyerdogetwithauth"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#doGetWithAuth
 
 ```java
 // --- インポート ---
@@ -695,8 +695,8 @@ private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeRefer
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyergetorder"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#getOrder)
+<a id="cryptobotexchangebitflyerbitflyergetorder"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#getOrder
 
 ```java
 // --- インポート ---
@@ -730,8 +730,8 @@ synchronized public OrderRecord getOrder(String orderKey, OrderFilterBy filterBy
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyerparsedate"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#parseDate)
+<a id="cryptobotexchangebitflyerbitflyerparsedate"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#parseDate
 
 ```java
 // --- インポート ---
@@ -753,8 +753,8 @@ public static Date parseDate(String datetime) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyergettradesbyorderid"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#getTradesByOrderId)
+<a id="cryptobotexchangebitflyerbitflyergettradesbyorderid"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#getTradesByOrderId
 
 ```java
 // --- インポート ---
@@ -802,8 +802,8 @@ public List<UserTrade> getTradesByOrderId(String childOrderId) throws IOExceptio
 }
 
 ```
-<a id="srcmainjavacryptobotdtoorderrecordjava-orderrecordgetexecutedvolume"></a>
-### src/main/java/cryptobot/dto/OrderRecord.java (OrderRecord#getExecutedVolume)
+<a id="cryptobotdtoorderrecordgetexecutedvolume"></a>
+### cryptobot.dto.OrderRecord#getExecutedVolume
 
 ```java
 // --- インポート ---
@@ -820,8 +820,8 @@ public BigDecimal getExecutedVolume() {
 }
 
 ```
-<a id="srcmainjavacryptobotmiscutiljava-utilsleep"></a>
-### src/main/java/cryptobot/misc/Util.java (Util#sleep)
+<a id="cryptobotmiscutilsleep"></a>
+### cryptobot.misc.Util#sleep
 
 ```java
 // --- インポート ---
@@ -842,8 +842,8 @@ public static void sleep(long milli) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyergetorder"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#getOrder)
+<a id="cryptobotexchangebitflyerbitflyergetorder"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#getOrder
 
 ```java
 // --- インポート ---
@@ -889,8 +889,8 @@ synchronized public OrderRecord getOrder(String childOrderId) throws IOException
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerfxjava-bitflyerfxcreatehmac"></a>
-### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (BitflyerFX#createHMAC)
+<a id="cryptobotexchangebitflyerbitflyerfxcreatehmac"></a>
+### cryptobot.exchange.bitflyer.BitflyerFX#createHMAC
 
 ```java
 // --- インポート ---
@@ -925,8 +925,8 @@ private char[] createHMAC(String method, String path, String timestamp, String b
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerfxjava-bitflyerfxdogetwithauth"></a>
-### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (BitflyerFX#doGetWithAuth)
+<a id="cryptobotexchangebitflyerbitflyerfxdogetwithauth"></a>
+### cryptobot.exchange.bitflyer.BitflyerFX#doGetWithAuth
 
 ```java
 // --- インポート ---
@@ -962,8 +962,8 @@ private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeRefer
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerfxjava-bitflyerfxgetorder"></a>
-### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (BitflyerFX#getOrder)
+<a id="cryptobotexchangebitflyerbitflyerfxgetorder"></a>
+### cryptobot.exchange.bitflyer.BitflyerFX#getOrder
 
 ```java
 // --- インポート ---
@@ -1009,8 +1009,8 @@ public OrderRecord getOrder(String childOrderAcceptanceId) throws IOException {
 }
 
 ```
-<a id="srcmainjavacryptobotdtoorderbookjava-orderbookput"></a>
-### src/main/java/cryptobot/dto/Orderbook.java (Orderbook#put)
+<a id="cryptobotdtoorderbookput"></a>
+### cryptobot.dto.Orderbook#put
 
 ```java
 // --- インポート ---
@@ -1037,8 +1037,8 @@ public TreeMap<BigDecimal, BigDecimal> put(OrderType type, TreeMap<BigDecimal, B
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitpointbitpointjava-bitpointdohttpget"></a>
-### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (Bitpoint#doHttpGet)
+<a id="cryptobotexchangebitpointbitpointdohttpget"></a>
+### cryptobot.exchange.bitpoint.Bitpoint#doHttpGet
 
 ```java
 // --- インポート ---
@@ -1072,8 +1072,8 @@ private static final String CONTENT_TYPE = "Content-Type";
 private JsonNode doHttpGet(String path, Map<String, String> params) throws Exception {
 	long nonce = System.currentTimeMillis();
 	var requestParam = new HashMap<>(params);
-	requestParam.put("timestamp", String.valueOf(nonce)); // -> [Orderbook.java (put)](#srcmainjavacryptobotdtoorderbookjava-orderbookput)
-	requestParam.put("recvWindow", "10000"); // -> [Orderbook.java (put)](#srcmainjavacryptobotdtoorderbookjava-orderbookput)
+	requestParam.put("timestamp", String.valueOf(nonce)); // -> [Orderbook#put](#cryptobotdtoorderbookput)
+	requestParam.put("recvWindow", "10000"); // -> [Orderbook#put](#cryptobotdtoorderbookput)
 	
 	var paramString = requestParam.entrySet().stream()
 			.map(e -> e.getKey() + "=" + e.getValue())
@@ -1081,7 +1081,7 @@ private JsonNode doHttpGet(String path, Map<String, String> params) throws Excep
 	
 	var url = URL_BASE + path + (isEmpty(paramString) ? "" : "?" + paramString);
 	var message = API_KEY + "\n" + nonce + "\n" + (paramString == null ? "" : paramString);
-	var signature = createHMAC(SECRET, message); // -> [GenericService.java (createHMAC)](#srcmainjavacryptobotexchangegenericservicejava-genericservicecreatehmac)
+	var signature = createHMAC(SECRET, message); // -> [GenericService#createHMAC](#cryptobotexchangegenericservicecreatehmac)
 
 	String body = restClient.get()
 			.uri(url)
@@ -1095,8 +1095,8 @@ private JsonNode doHttpGet(String path, Map<String, String> params) throws Excep
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitpointbitpointjava-bitpointadaptstatus"></a>
-### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (Bitpoint#adaptStatus)
+<a id="cryptobotexchangebitpointbitpointadaptstatus"></a>
+### cryptobot.exchange.bitpoint.Bitpoint#adaptStatus
 
 ```java
 // --- インポート ---
@@ -1127,8 +1127,8 @@ private static OrderStatus adaptStatus(String status) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitpointbitpointjava-bitpointcreatelimitorder"></a>
-### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (Bitpoint#createLimitOrder)
+<a id="cryptobotexchangebitpointbitpointcreatelimitorder"></a>
+### cryptobot.exchange.bitpoint.Bitpoint#createLimitOrder
 
 ```java
 // --- インポート ---
@@ -1156,7 +1156,7 @@ private LimitOrder createLimitOrder(JsonNode json) {
 	var totalVolume = new BigDecimal(json.path("orderQty").asText("0"));
 	var price = new BigDecimal(json.path("price").asText("0"));
 	var timestamp = new Date(json.path("time").asLong());
-	var status = adaptStatus(json.path("status").asText()); // -> [Bitpoint.java (adaptStatus)](#srcmainjavacryptobotexchangebitpointbitpointjava-bitpointadaptstatus)
+	var status = adaptStatus(json.path("status").asText()); // -> [Bitpoint#adaptStatus](#cryptobotexchangebitpointbitpointadaptstatus)
 	var symbol = json.path("symbol").asText("");
 	var ccyp = new CurrencyPair(symbol.substring(0, 3), symbol.substring(3, 6));
 	return new LimitOrder(type, totalVolume, ccyp, orderId,
@@ -1164,8 +1164,8 @@ private LimitOrder createLimitOrder(JsonNode json) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitpointbitpointjava-bitpointgetorder"></a>
-### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (Bitpoint#getOrder)
+<a id="cryptobotexchangebitpointbitpointgetorder"></a>
+### cryptobot.exchange.bitpoint.Bitpoint#getOrder
 
 ```java
 // --- インポート ---
@@ -1198,15 +1198,15 @@ public OrderRecord getOrder(String id) throws Exception {
 			"symbol", SUPPORTED_CCYP.get(BTC_JPY),
 			"orderId", id,
 			"tradeType", "SPOT");
-	JsonNode json = doHttpGet(path, params); // -> [Bitpoint.java (doHttpGet)](#srcmainjavacryptobotexchangebitpointbitpointjava-bitpointdohttpget)
+	JsonNode json = doHttpGet(path, params); // -> [Bitpoint#doHttpGet](#cryptobotexchangebitpointbitpointdohttpget)
 	log.info("order info : {}", json);
-	var order = createLimitOrder(json); // -> [Bitpoint.java (createLimitOrder)](#srcmainjavacryptobotexchangebitpointbitpointjava-bitpointcreatelimitorder)
+	var order = createLimitOrder(json); // -> [Bitpoint#createLimitOrder](#cryptobotexchangebitpointbitpointcreatelimitorder)
 	return new OrderRecord(this, order);
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicebuyspot"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#buySpot)
+<a id="cryptobotexchangeexchangeservicebuyspot"></a>
+### cryptobot.exchange.ExchangeService#buySpot
 
 ```java
 // --- インポート ---
@@ -1244,8 +1244,8 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicegetfeerate"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#getFeeRate)
+<a id="cryptobotexchangeexchangeservicegetfeerate"></a>
+### cryptobot.exchange.ExchangeService#getFeeRate
 
 ```java
 // --- インポート ---
@@ -1277,8 +1277,8 @@ public BigDecimal getFeeRate(FeeType feeType) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-orderpoolwaitorder"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (OrderPool#waitOrder)
+<a id="cryptobotexchangeexchangeserviceorderpoolwaitorder"></a>
+### cryptobot.exchange.ExchangeService.OrderPool#waitOrder
 
 ```java
 // --- インポート ---
@@ -1319,8 +1319,8 @@ synchronized public OrderRecord waitOrder(String orderId, List<OrderStatus> stat
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-orderpoolupdate"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (OrderPool#update)
+<a id="cryptobotexchangeexchangeserviceorderpoolupdate"></a>
+### cryptobot.exchange.ExchangeService.OrderPool#update
 
 ```java
 // --- インポート ---
@@ -1381,8 +1381,8 @@ synchronized public void update(OrderRecord order) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicewaitordercreate"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#waitOrderCreate)
+<a id="cryptobotexchangeexchangeservicewaitordercreate"></a>
+### cryptobot.exchange.ExchangeService#waitOrderCreate
 
 ```java
 // --- インポート ---
@@ -1422,8 +1422,8 @@ protected OrderRecord waitOrderCreate(String orderId) throws Exception {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebinancebinancejava-binancebuyspot"></a>
-### src/main/java/cryptobot/exchange/binance/Binance.java (Binance#buySpot)
+<a id="cryptobotexchangebinancebinancebuyspot"></a>
+### cryptobot.exchange.binance.Binance#buySpot
 
 ```java
 // --- インポート ---
@@ -1454,17 +1454,17 @@ private final int stepSize = 4;
 @Override
 synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 	// 取得通貨で手数料を徴収されるため、取引金額(volume)に手数分を上乗せて受け渡す。
-	volume = volume.divide(ONE.subtract(getFeeRate(MAKER)), stepSize, HALF_UP); // -> [ExchangeService.java (getFeeRate)](#srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicegetfeerate)
+	volume = volume.divide(ONE.subtract(getFeeRate(MAKER)), stepSize, HALF_UP); // -> [ExchangeService#getFeeRate](#cryptobotexchangeexchangeservicegetfeerate)
 	LimitOrder limitOrder = new Builder(OrderType.BID, ccyp)
 			.limitPrice(limitPrice).originalAmount(volume.setScale(stepSize, HALF_UP)).build();
 	String orderId = tradeService.placeLimitOrder(limitOrder);
 	log.info("order sent. id: {}", orderId);
-	return waitOrderCreate(orderId); // -> [ExchangeService.java (waitOrderCreate)](#srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicewaitordercreate)
+	return waitOrderCreate(orderId); // -> [ExchangeService#waitOrderCreate](#cryptobotexchangeexchangeservicewaitordercreate)
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbankgetprivaterequestheader"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#getPrivateRequestHeader)
+<a id="cryptobotexchangebitbankbitbankgetprivaterequestheader"></a>
+### cryptobot.exchange.bitbank.Bitbank#getPrivateRequestHeader
 
 ```java
 // --- インポート ---
@@ -1493,12 +1493,12 @@ import cryptobot.exchange.bitbank.dto.*;
 protected Map<String, String> getPrivateRequestHeader(String json) {
 	long nonce = currentTimeMillis();
 	String message = String.valueOf(nonce) + json;
-	return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message)); // -> [Bitbank.java (makePrivateRequestHeaders)](#srcmainjavacryptobotexchangebitbankbitbankjava-bitbankmakeprivaterequestheaders), [GenericService.java (createHMAC)](#srcmainjavacryptobotexchangegenericservicejava-genericservicecreatehmac)
+	return makePrivateRequestHeaders(nonce, createHMAC(SECRET, message)); // -> [Bitbank#makePrivateRequestHeaders](#cryptobotexchangebitbankbitbankmakeprivaterequestheaders), [GenericService#createHMAC](#cryptobotexchangegenericservicecreatehmac)
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbankdohttppost"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#doHttpPost)
+<a id="cryptobotexchangebitbankbitbankdohttppost"></a>
+### cryptobot.exchange.bitbank.Bitbank#doHttpPost
 
 ```java
 // --- インポート ---
@@ -1528,7 +1528,7 @@ private String API_ENDPOINT;
 // --- メソッド定義 ---
 protected <T> T doHttpPost(String path, Class<T> clazz, Object body) throws Exception {
 	String json = JsonUtils.MAPPER.writeValueAsString(body);
-	Map<String, String> headers = getPrivateRequestHeader(json); // -> [Bitbank.java (getPrivateRequestHeader)](#srcmainjavacryptobotexchangebitbankbitbankjava-bitbankgetprivaterequestheader)
+	Map<String, String> headers = getPrivateRequestHeader(json); // -> [Bitbank#getPrivateRequestHeader](#cryptobotexchangebitbankbitbankgetprivaterequestheader)
 
 	String res = restClient.post()
 			.uri(API_ENDPOINT + path)
@@ -1542,8 +1542,8 @@ protected <T> T doHttpPost(String path, Class<T> clazz, Object body) throws Exce
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-orderpoolgetbyid"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (OrderPool#getById)
+<a id="cryptobotexchangeexchangeserviceorderpoolgetbyid"></a>
+### cryptobot.exchange.ExchangeService.OrderPool#getById
 
 ```java
 // --- インポート ---
@@ -1566,8 +1566,8 @@ synchronized public OrderRecord getById(String id) {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-orderpoolgetbyid"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (OrderPool#getById)
+<a id="cryptobotexchangeexchangeserviceorderpoolgetbyid"></a>
+### cryptobot.exchange.ExchangeService.OrderPool#getById
 
 ```java
 // --- インポート ---
@@ -1590,8 +1590,8 @@ synchronized public OrderRecord getById(String id) {
 }
 
 ```
-<a id="srcmainjavacryptobotdtoorderrecordjava-orderrecordisactive"></a>
-### src/main/java/cryptobot/dto/OrderRecord.java (OrderRecord#isActive)
+<a id="cryptobotdtoorderrecordisactive"></a>
+### cryptobot.dto.OrderRecord#isActive
 
 ```java
 // --- インポート ---
@@ -1607,8 +1607,8 @@ public boolean isActive() {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-orderpoolwaitorderclosed"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (OrderPool#waitOrderClosed)
+<a id="cryptobotexchangeexchangeserviceorderpoolwaitorderclosed"></a>
+### cryptobot.exchange.ExchangeService.OrderPool#waitOrderClosed
 
 ```java
 // --- インポート ---
@@ -1632,9 +1632,9 @@ final Set<String> expectedOrderId = new HashSet<>();
 synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
 	var startTime = System.currentTimeMillis();
 	while (System.currentTimeMillis() - startTime < 10*1000L) {
-		var order = getById(orderId); // -> [ExchangeService.java (getById)](#srcmainjavacryptobotexchangeexchangeservicejava-orderpoolgetbyid)
+		var order = getById(orderId); // -> [OrderPool#getById](#cryptobotexchangeexchangeserviceorderpoolgetbyid)
 		if (order != null && order.getStatus() != null) {
-			if (!order.isActive()) { // -> [OrderRecord.java (isActive)](#srcmainjavacryptobotdtoorderrecordjava-orderrecordisactive)
+			if (!order.isActive()) { // -> [OrderRecord#isActive](#cryptobotdtoorderrecordisactive)
 				return order;
 			}
 		}
@@ -1646,8 +1646,8 @@ synchronized public OrderRecord waitOrderClosed(String orderId) throws Interrupt
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-orderpoolwaitorderclosed"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (OrderPool#waitOrderClosed)
+<a id="cryptobotexchangeexchangeserviceorderpoolwaitorderclosed"></a>
+### cryptobot.exchange.ExchangeService.OrderPool#waitOrderClosed
 
 ```java
 // --- インポート ---
@@ -1671,9 +1671,9 @@ final Set<String> expectedOrderId = new HashSet<>();
 synchronized public OrderRecord waitOrderClosed(String orderId) throws InterruptedException {
 	var startTime = System.currentTimeMillis();
 	while (System.currentTimeMillis() - startTime < 10*1000L) {
-		var order = getById(orderId); // -> [ExchangeService.java (getById)](#srcmainjavacryptobotexchangeexchangeservicejava-orderpoolgetbyid)
+		var order = getById(orderId); // -> [OrderPool#getById](#cryptobotexchangeexchangeserviceorderpoolgetbyid)
 		if (order != null && order.getStatus() != null) {
-			if (!order.isActive()) { // -> [OrderRecord.java (isActive)](#srcmainjavacryptobotdtoorderrecordjava-orderrecordisactive)
+			if (!order.isActive()) { // -> [OrderRecord#isActive](#cryptobotdtoorderrecordisactive)
 				return order;
 			}
 		}
@@ -1685,8 +1685,8 @@ synchronized public OrderRecord waitOrderClosed(String orderId) throws Interrupt
 }
 
 ```
-<a id="srcmainjavacryptobotdtoorderrecordjava-orderrecordisactive"></a>
-### src/main/java/cryptobot/dto/OrderRecord.java (OrderRecord#isActive)
+<a id="cryptobotdtoorderrecordisactive"></a>
+### cryptobot.dto.OrderRecord#isActive
 
 ```java
 // --- インポート ---
@@ -1702,8 +1702,8 @@ public boolean isActive() {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbankexecuteorder"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#executeOrder)
+<a id="cryptobotexchangebitbankbitbankexecuteorder"></a>
+### cryptobot.exchange.bitbank.Bitbank#executeOrder
 
 ```java
 // --- インポート ---
@@ -1741,7 +1741,7 @@ private OrderRecord executeOrder(BigDecimal volume, BigDecimal price, BitbankOrd
 			.type(type.getCode())
 			.build();
 	
-	var order = doHttpPost(path, BitbankOrders.Order.class, body); // -> [Bitbank.java (doHttpPost)](#srcmainjavacryptobotexchangebitbankbitbankjava-bitbankdohttppost)
+	var order = doHttpPost(path, BitbankOrders.Order.class, body); // -> [Bitbank#doHttpPost](#cryptobotexchangebitbankbitbankdohttppost)
 
 	log.info("order sent. id: {}", order.orderId);
 	var orderId = String.valueOf(order.orderId);
@@ -1749,18 +1749,18 @@ private OrderRecord executeOrder(BigDecimal volume, BigDecimal price, BitbankOrd
 	if (type == BitbankOrders.Type.MARKET) {
 		var startTime = currentTimeMillis();
 		while (currentTimeMillis() - startTime < 3600 * 1000L) {
-			OrderRecord or = waitOrderClosed(orderId); // -> [ExchangeService.java (waitOrderClosed)](#srcmainjavacryptobotexchangeexchangeservicejava-orderpoolwaitorderclosed)
-			if (or != null && !or.isActive()) return or; // -> [OrderRecord.java (isActive)](#srcmainjavacryptobotdtoorderrecordjava-orderrecordisactive)
+			OrderRecord or = waitOrderClosed(orderId); // -> [OrderPool#waitOrderClosed](#cryptobotexchangeexchangeserviceorderpoolwaitorderclosed)
+			if (or != null && !or.isActive()) return or; // -> [OrderRecord#isActive](#cryptobotdtoorderrecordisactive)
 		}
 		throw new OrderNotFilledException(orderPool.getById(orderId));
 	} else {
-		return waitOrderCreate(orderId); // -> [ExchangeService.java (waitOrderCreate)](#srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicewaitordercreate)
+		return waitOrderCreate(orderId); // -> [ExchangeService#waitOrderCreate](#cryptobotexchangeexchangeservicewaitordercreate)
 	}
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbankbuyspot"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#buySpot)
+<a id="cryptobotexchangebitbankbitbankbuyspot"></a>
+### cryptobot.exchange.bitbank.Bitbank#buySpot
 
 ```java
 // --- インポート ---
@@ -1783,12 +1783,12 @@ import cryptobot.exchange.bitbank.dto.*;
 // --- メソッド定義 ---
 @Override
 synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-	return executeOrder(volume, limitPrice, BitbankOrders.Side.BUY, BitbankOrders.Type.LIMIT); // -> [Bitbank.java (executeOrder)](#srcmainjavacryptobotexchangebitbankbitbankjava-bitbankexecuteorder)
+	return executeOrder(volume, limitPrice, BitbankOrders.Side.BUY, BitbankOrders.Type.LIMIT); // -> [Bitbank#executeOrder](#cryptobotexchangebitbankbitbankexecuteorder)
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicebuyspot"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#buySpot)
+<a id="cryptobotexchangeexchangeservicebuyspot"></a>
+### cryptobot.exchange.ExchangeService#buySpot
 
 ```java
 // --- インポート ---
@@ -1826,8 +1826,8 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitfinexbitfinexjava-bitfinexbuyspot"></a>
-### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (Bitfinex#buySpot)
+<a id="cryptobotexchangebitfinexbitfinexbuyspot"></a>
+### cryptobot.exchange.bitfinex.Bitfinex#buySpot
 
 ```java
 // --- インポート ---
@@ -1862,20 +1862,20 @@ private BitfinexTradeService tradeService;
 @Override
 public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
 	// 取得通貨で手数料を徴収されるため、取引金額(volume)に手数分を上乗せて受け渡す。
-	volume = volume.divide(ONE.subtract(getFeeRate(MAKER)), // -> [ExchangeService.java (getFeeRate)](#srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicegetfeerate)
+	volume = volume.divide(ONE.subtract(getFeeRate(MAKER)), // -> [ExchangeService#getFeeRate](#cryptobotexchangeexchangeservicegetfeerate)
 			8, RoundingMode.HALF_UP);
 	LimitOrder limitOrder = new LimitOrder.Builder(OrderType.BID, ccyp)
 			.limitPrice(limitPrice).originalAmount(volume).build();
 	BitfinexOrderStatusResponse newOrder = tradeService.placeBitfinexLimitOrder(
 			limitOrder, BitfinexOrderType.LIMIT);
 	log.info("order executed. id: {}", newOrder);
-	return waitOrderCreate(String.valueOf(newOrder.getId())); // -> [ExchangeService.java (waitOrderCreate)](#srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicewaitordercreate)
+	return waitOrderCreate(String.valueOf(newOrder.getId())); // -> [ExchangeService#waitOrderCreate](#cryptobotexchangeexchangeservicewaitordercreate)
 
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyerdopostwithauth"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#doPostWithAuth)
+<a id="cryptobotexchangebitflyerbitflyerdopostwithauth"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#doPostWithAuth
 
 ```java
 // --- インポート ---
@@ -1913,8 +1913,8 @@ private <T> T doPostWithAuth(String path, String requestBody, Class<T> responseC
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerdtoorderresultjava-orderresultgetchildorderacceptanceid"></a>
-### src/main/java/cryptobot/exchange/bitflyer/dto/OrderResult.java (OrderResult#getChildOrderAcceptanceId)
+<a id="cryptobotexchangebitflyerdtoorderresultgetchildorderacceptanceid"></a>
+### cryptobot.exchange.bitflyer.dto.OrderResult#getChildOrderAcceptanceId
 
 ```java
 // --- インポート ---
@@ -1933,8 +1933,8 @@ public String getChildOrderAcceptanceId() {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyerplacelimitorder"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#placeLimitOrder)
+<a id="cryptobotexchangebitflyerbitflyerplacelimitorder"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#placeLimitOrder
 
 ```java
 // --- インポート ---
@@ -1975,8 +1975,8 @@ protected String placeLimitOrder(LimitOrder order) throws Exception {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyergetorderwithretry"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#getOrderWithRetry)
+<a id="cryptobotexchangebitflyerbitflyergetorderwithretry"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#getOrderWithRetry
 
 ```java
 // --- インポート ---
@@ -2003,8 +2003,8 @@ private OrderRecord getOrderWithRetry(String acceptanceId) throws Exception {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyerwaitordercreate"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#waitOrderCreate)
+<a id="cryptobotexchangebitflyerbitflyerwaitordercreate"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#waitOrderCreate
 
 ```java
 // --- インポート ---
@@ -2032,8 +2032,8 @@ public OrderRecord waitOrderCreate(String acceptanceId) throws Exception {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyerbuyspot"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#buySpot)
+<a id="cryptobotexchangebitflyerbitflyerbuyspot"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#buySpot
 
 ```java
 // --- インポート ---
@@ -2063,8 +2063,8 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerfxjava-bitflyerfxbuyspot"></a>
-### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (BitflyerFX#buySpot)
+<a id="cryptobotexchangebitflyerbitflyerfxbuyspot"></a>
+### cryptobot.exchange.bitflyer.BitflyerFX#buySpot
 
 ```java
 // --- インポート ---
@@ -2089,8 +2089,8 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitpointbitpointjava-bitpointdohttppost"></a>
-### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (Bitpoint#doHttpPost)
+<a id="cryptobotexchangebitpointbitpointdohttppost"></a>
+### cryptobot.exchange.bitpoint.Bitpoint#doHttpPost
 
 ```java
 // --- インポート ---
@@ -2124,13 +2124,13 @@ private static final String CONTENT_TYPE = "Content-Type";
 private JsonNode doHttpPost(String path, Map<String, String> params) throws Exception {
 	long nonce = System.currentTimeMillis();
 	var data = new HashMap<>(params);
-	data.put("timestamp", String.valueOf(nonce)); // -> [Orderbook.java (put)](#srcmainjavacryptobotdtoorderbookjava-orderbookput)
-	data.put("recvWindow", "10000"); // -> [Orderbook.java (put)](#srcmainjavacryptobotdtoorderbookjava-orderbookput)
+	data.put("timestamp", String.valueOf(nonce)); // -> [Orderbook#put](#cryptobotdtoorderbookput)
+	data.put("recvWindow", "10000"); // -> [Orderbook#put](#cryptobotdtoorderbookput)
 	
 	var json = JsonUtils.MAPPER.writeValueAsString(data);
 	var url = URL_BASE + path;
 	var message = API_KEY + "\n" + nonce + "\n" + (json == null ? "" : json);
-	var signature = createHMAC(SECRET, message); // -> [GenericService.java (createHMAC)](#srcmainjavacryptobotexchangegenericservicejava-genericservicecreatehmac)
+	var signature = createHMAC(SECRET, message); // -> [GenericService#createHMAC](#cryptobotexchangegenericservicecreatehmac)
 
 	String body = restClient.post()
 			.uri(url)
@@ -2145,8 +2145,8 @@ private JsonNode doHttpPost(String path, Map<String, String> params) throws Exce
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitpointbitpointjava-bitpointbuyspot"></a>
-### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (Bitpoint#buySpot)
+<a id="cryptobotexchangebitpointbitpointbuyspot"></a>
+### cryptobot.exchange.bitpoint.Bitpoint#buySpot
 
 ```java
 // --- インポート ---
@@ -2192,8 +2192,8 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicesellspot"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#sellSpot)
+<a id="cryptobotexchangeexchangeservicesellspot"></a>
+### cryptobot.exchange.ExchangeService#sellSpot
 
 ```java
 // --- インポート ---
@@ -2231,8 +2231,8 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebinancebinancejava-binancesellspot"></a>
-### src/main/java/cryptobot/exchange/binance/Binance.java (Binance#sellSpot)
+<a id="cryptobotexchangebinancebinancesellspot"></a>
+### cryptobot.exchange.binance.Binance#sellSpot
 
 ```java
 // --- インポート ---
@@ -2264,12 +2264,12 @@ synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPric
 			.limitPrice(limitPrice).originalAmount(volume.setScale(stepSize, HALF_UP)).build();
 	String orderId = tradeService.placeLimitOrder(limitOrder);
 	log.info("order sent. id: {}", orderId);
-	return waitOrderCreate(orderId); // -> [ExchangeService.java (waitOrderCreate)](#srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicewaitordercreate)
+	return waitOrderCreate(orderId); // -> [ExchangeService#waitOrderCreate](#cryptobotexchangeexchangeservicewaitordercreate)
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitbankbitbankjava-bitbanksellspot"></a>
-### src/main/java/cryptobot/exchange/bitbank/Bitbank.java (Bitbank#sellSpot)
+<a id="cryptobotexchangebitbankbitbanksellspot"></a>
+### cryptobot.exchange.bitbank.Bitbank#sellSpot
 
 ```java
 // --- インポート ---
@@ -2292,12 +2292,12 @@ import cryptobot.exchange.bitbank.dto.*;
 // --- メソッド定義 ---
 @Override
 synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exception {
-	return executeOrder(volume, limitPrice, BitbankOrders.Side.SELL, BitbankOrders.Type.LIMIT); // -> [Bitbank.java (executeOrder)](#srcmainjavacryptobotexchangebitbankbitbankjava-bitbankexecuteorder)
+	return executeOrder(volume, limitPrice, BitbankOrders.Side.SELL, BitbankOrders.Type.LIMIT); // -> [Bitbank#executeOrder](#cryptobotexchangebitbankbitbankexecuteorder)
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicesellspot"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#sellSpot)
+<a id="cryptobotexchangeexchangeservicesellspot"></a>
+### cryptobot.exchange.ExchangeService#sellSpot
 
 ```java
 // --- インポート ---
@@ -2335,8 +2335,8 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitfinexbitfinexjava-bitfinexsellspot"></a>
-### src/main/java/cryptobot/exchange/bitfinex/Bitfinex.java (Bitfinex#sellSpot)
+<a id="cryptobotexchangebitfinexbitfinexsellspot"></a>
+### cryptobot.exchange.bitfinex.Bitfinex#sellSpot
 
 ```java
 // --- インポート ---
@@ -2374,12 +2374,12 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 	BitfinexOrderStatusResponse newOrder = tradeService.placeBitfinexLimitOrder(
 			limitOrder, BitfinexOrderType.LIMIT);
 	log.info("order executed. id: {}", newOrder);
-	return waitOrderCreate(String.valueOf(newOrder.getId())); // -> [ExchangeService.java (waitOrderCreate)](#srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicewaitordercreate)
+	return waitOrderCreate(String.valueOf(newOrder.getId())); // -> [ExchangeService#waitOrderCreate](#cryptobotexchangeexchangeservicewaitordercreate)
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerjava-bitflyersellspot"></a>
-### src/main/java/cryptobot/exchange/bitflyer/Bitflyer.java (Bitflyer#sellSpot)
+<a id="cryptobotexchangebitflyerbitflyersellspot"></a>
+### cryptobot.exchange.bitflyer.Bitflyer#sellSpot
 
 ```java
 // --- インポート ---
@@ -2409,8 +2409,8 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitflyerbitflyerfxjava-bitflyerfxsellspot"></a>
-### src/main/java/cryptobot/exchange/bitflyer/BitflyerFX.java (BitflyerFX#sellSpot)
+<a id="cryptobotexchangebitflyerbitflyerfxsellspot"></a>
+### cryptobot.exchange.bitflyer.BitflyerFX#sellSpot
 
 ```java
 // --- インポート ---
@@ -2435,8 +2435,8 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 }
 
 ```
-<a id="srcmainjavacryptobotexchangebitpointbitpointjava-bitpointsellspot"></a>
-### src/main/java/cryptobot/exchange/bitpoint/Bitpoint.java (Bitpoint#sellSpot)
+<a id="cryptobotexchangebitpointbitpointsellspot"></a>
+### cryptobot.exchange.bitpoint.Bitpoint#sellSpot
 
 ```java
 // --- インポート ---
@@ -2482,8 +2482,8 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 }
 
 ```
-<a id="srcmainjavacryptobotmiscmailsenderjava-mailsendersend"></a>
-### src/main/java/cryptobot/misc/MailSender.java (MailSender#send)
+<a id="cryptobotmiscmailsendersend"></a>
+### cryptobot.misc.MailSender#send
 
 ```java
 // --- インポート ---
@@ -2555,8 +2555,8 @@ private void send(String subject, String body) {
 }
 
 ```
-<a id="srcmainjavacryptobotmiscmailsenderjava-mailsenderinfo"></a>
-### src/main/java/cryptobot/misc/MailSender.java (MailSender#info)
+<a id="cryptobotmiscmailsenderinfo"></a>
+### cryptobot.misc.MailSender#info
 
 ```java
 // --- インポート ---
@@ -2574,13 +2574,13 @@ ExecutorService executor = Executors.newThreadPerTaskExecutor(
 // --- メソッド定義 ---
 public void info(String subject, String body) {
     executor.submit(()->{
-        send(subject, body); // -> [MailSender.java (send)](#srcmainjavacryptobotmiscmailsenderjava-mailsendersend)
+        send(subject, body); // -> [MailSender#send](#cryptobotmiscmailsendersend)
     });
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicegetname"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#getName)
+<a id="cryptobotexchangeexchangeservicegetname"></a>
+### cryptobot.exchange.ExchangeService#getName
 
 ```java
 // --- インポート ---
@@ -2602,8 +2602,8 @@ public String getName() {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeservicegetname"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#getName)
+<a id="cryptobotexchangeexchangeservicegetname"></a>
+### cryptobot.exchange.ExchangeService#getName
 
 ```java
 // --- インポート ---
@@ -2625,8 +2625,8 @@ public String getName() {
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeserviceorder"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#order)
+<a id="cryptobotexchangeexchangeserviceorder"></a>
+### cryptobot.exchange.ExchangeService#order
 
 ```java
 // --- インポート ---
@@ -2683,8 +2683,8 @@ public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPric
 }
 
 ```
-<a id="srcmainjavacryptobotexchangeexchangeservicejava-exchangeserviceorder"></a>
-### src/main/java/cryptobot/exchange/ExchangeService.java (ExchangeService#order)
+<a id="cryptobotexchangeexchangeserviceorder"></a>
+### cryptobot.exchange.ExchangeService#order
 
 ```java
 // --- インポート ---
@@ -2741,8 +2741,8 @@ public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPric
 }
 
 ```
-<a id="srcmainjavacryptobotwebviewpagesmarketviewjava-marketviewplaceorder"></a>
-### src/main/java/cryptobot/web/view/pages/MarketView.java (MarketView#placeOrder)
+<a id="cryptobotwebviewpagesmarketviewplaceorder"></a>
+### cryptobot.web.view.pages.MarketView#placeOrder
 
 ```java
 // --- インポート ---
@@ -2776,7 +2776,7 @@ private boolean placeOrder(ExchangeService service, OrderType orderType, BigDeci
     }
     taskWorker.execute(()->{
         try {
-            service.order(orderType, volume, price); // -> [ExchangeService.java (order)](#srcmainjavacryptobotexchangeexchangeservicejava-exchangeserviceorder)
+            service.order(orderType, volume, price); // -> [ExchangeService#order](#cryptobotexchangeexchangeserviceorder)
             notifySuccess(this.getUI(),"Order placed");
         } catch (Exception e) {
             notifyError(this.getUI(),"Order error\n%s".formatted(e.getMessage()));
@@ -2786,8 +2786,8 @@ private boolean placeOrder(ExchangeService service, OrderType orderType, BigDeci
 }
 
 ```
-<a id="srcmainjavacryptobotwebviewpagesmarketviewjava-marketviewneworder"></a>
-### src/main/java/cryptobot/web/view/pages/MarketView.java (MarketView#newOrder)
+<a id="cryptobotwebviewpagesmarketviewneworder"></a>
+### cryptobot.web.view.pages.MarketView#newOrder
 
 ```java
 // --- インポート ---
@@ -2857,7 +2857,7 @@ private void newOrder(Grid<MarketData> grid, MarketData marketData) {
     }});
     var cancel = new Button("Cancel", e -> dialog.close());
     var execute = new Button("Execute", e ->{
-        boolean success = placeOrder( // -> [MarketView.java (placeOrder)](#srcmainjavacryptobotwebviewpagesmarketviewjava-marketviewplaceorder)
+        boolean success = placeOrder( // -> [MarketView#placeOrder](#cryptobotwebviewpagesmarketviewplaceorder)
             marketData.getExchangeService(), orderType.getValue(),
             new BigDecimal(limitPrice.getValue()), new BigDecimal(volume.getValue()));
         if (success) dialog.close();
