@@ -30,6 +30,8 @@ public class ProjectIndexer {
         return entryMethods;
     }
 
+
+
     private final Map<String, Path> javaFilesByFqcn = new HashMap<>();
     private final Map<String, Path> javaFilesBySimpleName = new HashMap<>();
     private final Map<Path, String> fqcnByJavaFile = new HashMap<>();

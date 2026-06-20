@@ -267,7 +267,12 @@ public class FlowTracer {
             
             blockContent.append(methodSource).append("\n");
 
-            extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor));
+            String fileLink = null;
+            if (javaFile != null && indexer.getProjectRootPath() != null && !visitor.getExtractedMethods().isEmpty()) {
+                int firstLine = visitor.getExtractedMethods().get(0).firstLineNumber;
+                fileLink = indexer.getProjectRootPath().relativize(javaFile).toString().replace('\\', '/') + "#L" + firstLine;
+            }
+            extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor, fileLink));
 
             if (hasMybatis) {
                 return currentLinks; // SQL is already in the annotation, we can stop here
