@@ -30,7 +30,7 @@ public class CallFlowExtractorMain {
             }
 
             for (ProjectIndexer.EntryMethod entry : entryMethods) {
-                FlowTracer tracer = new FlowTracer(indexer);
+                FlowTracer tracer = new FlowTracer(indexer, outDirPath);
                 List<ExtractedBlock> blocks = tracer.trace(entry.fqcn, entry.methodName, -1);
 
                 if (blocks.isEmpty()) {

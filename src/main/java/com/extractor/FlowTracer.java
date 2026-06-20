@@ -13,11 +13,17 @@ import java.util.stream.Collectors;
 public class FlowTracer {
 
     private final ProjectIndexer indexer;
-    private final List<ExtractedBlock> extractedBlocks = new ArrayList<>();
     private final Map<String, List<String>> visitedMethods = new HashMap<>();
+    private final List<ExtractedBlock> extractedBlocks = new ArrayList<>();
+    private final java.nio.file.Path outDirPath;
+
+    public FlowTracer(ProjectIndexer indexer, java.nio.file.Path outDirPath) {
+        this.indexer = indexer;
+        this.outDirPath = outDirPath != null ? outDirPath.toAbsolutePath().normalize() : null;
+    }
 
     public FlowTracer(ProjectIndexer indexer) {
-        this.indexer = indexer;
+        this(indexer, null);
     }
 
     public List<ExtractedBlock> getExtractedBlocks() {
@@ -268,9 +274,17 @@ public class FlowTracer {
             blockContent.append(methodSource).append("\n");
 
             String fileLink = null;
-            if (javaFile != null && indexer.getProjectRootPath() != null && !visitor.getExtractedMethods().isEmpty()) {
+            if (javaFile != null && !visitor.getExtractedMethods().isEmpty()) {
                 int firstLine = visitor.getExtractedMethods().get(0).firstLineNumber;
-                fileLink = indexer.getProjectRootPath().relativize(javaFile).toString().replace('\\', '/') + "#L" + firstLine;
+                if (outDirPath != null) {
+                    try {
+                        fileLink = outDirPath.relativize(javaFile.toAbsolutePath().normalize()).toString().replace('\\', '/') + "#L" + firstLine;
+                    } catch (IllegalArgumentException e) {
+                        fileLink = "file://" + javaFile.toAbsolutePath().normalize().toString().replace('\\', '/') + "#L" + firstLine;
+                    }
+                } else if (indexer.getProjectRootPath() != null) {
+                    fileLink = indexer.getProjectRootPath().relativize(javaFile).toString().replace('\\', '/') + "#L" + firstLine;
+                }
             }
             extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor, fileLink));
 
