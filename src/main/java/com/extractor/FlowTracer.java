@@ -276,15 +276,7 @@ public class FlowTracer {
             String fileLink = null;
             if (javaFile != null && !visitor.getExtractedMethods().isEmpty()) {
                 int firstLine = visitor.getExtractedMethods().get(0).firstLineNumber;
-                if (outDirPath != null) {
-                    try {
-                        fileLink = outDirPath.relativize(javaFile.toAbsolutePath().normalize()).toString().replace('\\', '/') + "#L" + firstLine;
-                    } catch (IllegalArgumentException e) {
-                        fileLink = "file://" + javaFile.toAbsolutePath().normalize().toString().replace('\\', '/') + "#L" + firstLine;
-                    }
-                } else if (indexer.getProjectRootPath() != null) {
-                    fileLink = indexer.getProjectRootPath().relativize(javaFile).toString().replace('\\', '/') + "#L" + firstLine;
-                }
+                fileLink = javaFile.toAbsolutePath().normalize().toUri().toString() + "#L" + firstLine;
             }
             extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor, fileLink));
 
