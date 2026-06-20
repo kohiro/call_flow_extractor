@@ -20,9 +20,14 @@ public class FlowTracer {
         this.indexer = indexer;
     }
 
+    public List<ExtractedBlock> getExtractedBlocks() {
+        extractedBlocks.removeIf(java.util.Objects::isNull);
+        return extractedBlocks;
+    }
+
     public List<ExtractedBlock> trace(String fqcn, String methodName, int argCount) {
         traceRecursive(fqcn, methodName, argCount);
-        return extractedBlocks;
+        return getExtractedBlocks();
     }
 
     private List<String> traceRecursive(String fqcn, String methodName, int argCount) {
@@ -98,6 +103,10 @@ public class FlowTracer {
             
             currentLinks.clear();
             currentLinks.add(String.format("[%s](#%s)", simpleClassName + "#" + methodName, anchor));
+
+            // Reserve spot for PRE-ORDER traversal output
+            int blockIndex = extractedBlocks.size();
+            extractedBlocks.add(null);
 
             // Trace further down and collect links
             Map<Integer, Set<String>> lineToLinks = new HashMap<>();
@@ -210,7 +219,7 @@ public class FlowTracer {
             blockContent.append("// --- メソッド定義 ---\n");
             blockContent.append(methodSource).append("\n");
 
-            extractedBlocks.add(new ExtractedBlock(title, blockContent.toString(), anchor));
+            extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor));
 
             // Check if this is a Mapper with an annotation
             if (isMyBatisAnnotation(visitor.getTargetMethodSource())) {

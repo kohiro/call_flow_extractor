@@ -7,15 +7,9 @@
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 
 // --- 所属クラス ---
 // class ExchangeService extends GenericService
@@ -35,9 +29,7 @@ import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.LimitOrder.Builder;
 import org.knowm.xchange.instrument.Instrument;
-import org.knowm.xchange.service.trade.TradeService;
 import org.knowm.xchange.service.trade.params.orders.OrderQueryParamInstrument;
-import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -82,8 +74,6 @@ import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.lang.String.*;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
@@ -112,7 +102,6 @@ private Map<String, String> makePrivateRequestHeaders(long nonce, String sign) {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.NotNull;
@@ -148,14 +137,12 @@ import static java.lang.String.*;
 import static java.lang.System.currentTimeMillis;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import cryptobot.exchange.bitbank.dto.*;
 
 // --- 所属クラス ---
@@ -181,11 +168,6 @@ protected Map<String, String> getPrivateRequestHeader(String path, Map<String, S
 ```java
 // --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
-import static java.lang.String.*;
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
@@ -233,16 +215,12 @@ protected <T> T doHttpGet(String path, Class<T> clazz, Map<String, String> param
 ```java
 // --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
-import static java.lang.String.*;
 import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
 import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.Map;
-import org.knowm.xchange.dto.trade.LimitOrder;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.PlacedOrderNotFoundException;
 import cryptobot.exchange.bitbank.dto.*;
@@ -276,7 +254,6 @@ synchronized public OrderRecord getOrder(String id) throws Exception {
 ```java
 // --- インポート ---
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
@@ -334,7 +311,6 @@ private static Date parseDatetime(String datetime) {
 // --- インポート ---
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.trade.LimitOrder;
@@ -458,7 +434,6 @@ import java.util.*;
 import org.knowm.xchange.bitfinex.service.BitfinexTradeService;
 import org.knowm.xchange.bitfinex.v1.BitfinexUtils;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.springframework.stereotype.Service;
 
 // --- 所属クラス ---
 // class Bitfinex extends ExchangeService
@@ -494,7 +469,6 @@ synchronized public List<LimitOrder> getOpenOrders() throws IOException {
 ```java
 // --- インポート ---
 import java.math.BigDecimal;
-import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
 // --- 所属クラス ---
@@ -511,9 +485,7 @@ public BigDecimal getVolume() {
 
 ```java
 // --- インポート ---
-import org.knowm.xchange.dto.Order;
 import java.math.BigDecimal;
-import java.util.*;
 import static java.math.BigDecimal.ZERO;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
@@ -546,9 +518,7 @@ private void adjustStatusByExecutionVolume() {
 
 ```java
 // --- インポート ---
-import org.knowm.xchange.dto.Order;
 import java.math.BigDecimal;
-import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
 // --- 所属クラス ---
@@ -570,7 +540,6 @@ import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.io.IOException;
@@ -580,11 +549,8 @@ import org.knowm.xchange.bitfinex.service.BitfinexAdapters;
 import org.knowm.xchange.bitfinex.service.BitfinexTradeService;
 import org.knowm.xchange.bitfinex.v1.BitfinexUtils;
 import org.knowm.xchange.bitfinex.v1.dto.trade.BitfinexOrderStatusResponse;
-import org.knowm.xchange.dto.Order.OrderStatus;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 
 // --- 所属クラス ---
@@ -645,9 +611,7 @@ private BitfinexTradeService tradeService;
 
 ```java
 // --- インポート ---
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import java.util.*;
 
 // --- 所属クラス ---
 // class Bitflyer extends ExchangeService
@@ -702,9 +666,7 @@ private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeRefer
 // --- インポート ---
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.bitflyer.BitflyerOrder.OrderList;
-import org.knowm.xchange.dto.trade.LimitOrder;
 import java.io.IOException;
-import java.util.*;
 
 // --- 所属クラス ---
 // class Bitflyer extends ExchangeService
@@ -759,7 +721,6 @@ public static Date parseDate(String datetime) {
 ```java
 // --- インポート ---
 import cryptobot.exchange.bitflyer.dto.TradeRecord.TradeList;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.trade.UserTrade;
 import java.io.IOException;
@@ -808,7 +769,6 @@ public List<UserTrade> getTradesByOrderId(String childOrderId) throws IOExceptio
 ```java
 // --- インポート ---
 import java.math.BigDecimal;
-import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
 // --- 所属クラス ---
@@ -825,8 +785,6 @@ public BigDecimal getExecutedVolume() {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 
 // --- 所属クラス ---
@@ -851,7 +809,6 @@ import cryptobot.dto.OrderRecord;
 import cryptobot.misc.Util;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
 import static java.math.BigDecimal.ZERO;
 
 // --- 所属クラス ---
@@ -894,13 +851,10 @@ synchronized public OrderRecord getOrder(String childOrderId) throws IOException
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Hex;
@@ -967,16 +921,12 @@ private <T> T doGetWithAuth(String path, ParameterizedTypeReference<T> typeRefer
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.io.IOException;
 import java.util.*;
 import static java.util.stream.Collectors.joining;
 import cryptobot.exchange.bitflyer.BitflyerOrder.OrderList;
-import org.knowm.xchange.dto.trade.LimitOrder;
-import org.springframework.beans.factory.annotation.Value;
 import cryptobot.dto.OrderRecord;
 
 // --- 所属クラス ---
@@ -1014,7 +964,6 @@ public OrderRecord getOrder(String childOrderAcceptanceId) throws IOException {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
@@ -1049,9 +998,7 @@ import static org.knowm.xchange.currency.CurrencyPair.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.HashMap;
 import java.util.Map;
-import org.knowm.xchange.dto.Order;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import cryptobot.misc.JsonUtils;
 
@@ -1100,12 +1047,9 @@ private JsonNode doHttpGet(String path, Map<String, String> params) throws Excep
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.currency.CurrencyPair.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderStatus;
 
 // --- 所属クラス ---
@@ -1133,15 +1077,12 @@ private static OrderStatus adaptStatus(String status) {
 ```java
 // --- インポート ---
 import static java.math.BigDecimal.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.currency.CurrencyPair.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
 import java.util.Date;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -1169,16 +1110,11 @@ private LimitOrder createLimitOrder(JsonNode json) {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.currency.CurrencyPair.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.Map;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.trade.LimitOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import cryptobot.dto.OrderRecord;
 
@@ -1210,23 +1146,14 @@ public OrderRecord getOrder(String id) throws Exception {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.*;
 import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.marketdata.Trade;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.knowm.xchange.service.trade.TradeService;
 import org.springframework.beans.factory.annotation.Value;
 
 // --- 所属クラス ---
@@ -1250,13 +1177,9 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 ```java
 // --- インポート ---
 import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.*;
 import org.knowm.xchange.dto.account.Fee;
 
@@ -1282,15 +1205,10 @@ public BigDecimal getFeeRate(FeeType feeType) {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderStatus;
 
 // --- 所属クラス ---
@@ -1324,15 +1242,11 @@ synchronized public OrderRecord waitOrder(String orderId, List<OrderStatus> stat
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 
 // --- 所属クラス ---
 // class OrderPool extends ConcurrentHashMap<String,OrderRecord>
@@ -1386,15 +1300,9 @@ synchronized public void update(OrderRecord order) {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 
 // --- 所属クラス ---
 // class ExchangeService extends GenericService
@@ -1430,14 +1338,10 @@ protected OrderRecord waitOrderCreate(String orderId) throws Exception {
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.ExchangeService;
 import org.knowm.xchange.binance.service.BinanceTradeService;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.LimitOrder.Builder;
-import org.knowm.xchange.service.trade.TradeService;
-import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
-import java.util.*;
 import static cryptobot.exchange.ExchangeService.FeeType.MAKER;
 import static java.math.BigDecimal.ONE;
 import static java.math.RoundingMode.HALF_UP;
@@ -1473,14 +1377,11 @@ import static java.lang.String.*;
 import static java.lang.System.currentTimeMillis;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import cryptobot.exchange.bitbank.dto.*;
 
 // --- 所属クラス ---
@@ -1503,11 +1404,6 @@ protected Map<String, String> getPrivateRequestHeader(String json) {
 ```java
 // --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
-import static java.lang.String.*;
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
@@ -1547,15 +1443,9 @@ protected <T> T doHttpPost(String path, Class<T> clazz, Object body) throws Exce
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 
 // --- 所属クラス ---
 // class OrderPool extends ConcurrentHashMap<String,OrderRecord>
@@ -1571,15 +1461,9 @@ synchronized public OrderRecord getById(String id) {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 
 // --- 所属クラス ---
 // class OrderPool extends ConcurrentHashMap<String,OrderRecord>
@@ -1595,7 +1479,6 @@ synchronized public OrderRecord getById(String id) {
 
 ```java
 // --- インポート ---
-import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
 // --- 所属クラス ---
@@ -1612,15 +1495,10 @@ public boolean isActive() {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 
 // --- 所属クラス ---
 // class OrderPool extends ConcurrentHashMap<String,OrderRecord>
@@ -1651,15 +1529,10 @@ synchronized public OrderRecord waitOrderClosed(String orderId) throws Interrupt
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 
 // --- 所属クラス ---
 // class OrderPool extends ConcurrentHashMap<String,OrderRecord>
@@ -1690,7 +1563,6 @@ synchronized public OrderRecord waitOrderClosed(String orderId) throws Interrupt
 
 ```java
 // --- インポート ---
-import java.util.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 
 // --- 所属クラス ---
@@ -1713,12 +1585,10 @@ import static java.lang.System.currentTimeMillis;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
 import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.ExchangeService;
 import cryptobot.exchange.OrderNotFilledException;
@@ -1765,11 +1635,6 @@ private OrderRecord executeOrder(BigDecimal volume, BigDecimal price, BitbankOrd
 ```java
 // --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
-import static java.lang.String.*;
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
@@ -1792,23 +1657,14 @@ synchronized public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.*;
 import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.marketdata.Trade;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.knowm.xchange.service.trade.TradeService;
 import org.springframework.beans.factory.annotation.Value;
 
 // --- 所属クラス ---
@@ -1834,21 +1690,15 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
-import org.knowm.xchange.Exchange;
 import org.knowm.xchange.bitfinex.service.BitfinexTradeService;
 import org.knowm.xchange.bitfinex.v1.BitfinexOrderType;
 import org.knowm.xchange.bitfinex.v1.dto.trade.BitfinexOrderStatusResponse;
-import org.knowm.xchange.dto.Order.OrderStatus;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.ExchangeService;
 
@@ -1942,13 +1792,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cryptobot.exchange.bitflyer.dto.BitflyerNewOrderRequest;
 import cryptobot.exchange.bitflyer.dto.OrderResult;
 import cryptobot.misc.JsonUtils;
-import cryptobot.misc.Util;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.springframework.beans.factory.annotation.Value;
-import java.util.*;
 
 // --- 所属クラス ---
 // class Bitflyer extends ExchangeService
@@ -1982,7 +1826,6 @@ protected String placeLimitOrder(LimitOrder order) throws Exception {
 // --- インポート ---
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.PlacedOrderNotFoundException;
-import java.util.*;
 import static cryptobot.exchange.bitflyer.Bitflyer.OrderFilterBy.child_order_acceptance_id;
 
 // --- 所属クラス ---
@@ -2009,7 +1852,6 @@ private OrderRecord getOrderWithRetry(String acceptanceId) throws Exception {
 ```java
 // --- インポート ---
 import cryptobot.dto.OrderRecord;
-import java.util.*;
 
 // --- 所属クラス ---
 // class Bitflyer extends ExchangeService
@@ -2039,10 +1881,8 @@ public OrderRecord waitOrderCreate(String acceptanceId) throws Exception {
 // --- インポート ---
 import cryptobot.dto.OrderRecord;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.account.Fee;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import java.math.BigDecimal;
-import java.util.*;
 import static java.math.BigDecimal.ONE;
 import static java.math.RoundingMode.HALF_UP;
 import static org.knowm.xchange.dto.Order.OrderType.BID;
@@ -2068,12 +1908,9 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.OrderRecord;
 
 // --- 所属クラス ---
@@ -2095,15 +1932,12 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 ```java
 // --- インポート ---
 import static java.math.BigDecimal.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.currency.CurrencyPair.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.util.HashMap;
 import java.util.Map;
-import org.knowm.xchange.dto.Order;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import cryptobot.misc.JsonUtils;
 
@@ -2150,17 +1984,12 @@ private JsonNode doHttpPost(String path, Map<String, String> params) throws Exce
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.currency.CurrencyPair.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
 import java.util.Map;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.trade.LimitOrder;
 import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.JsonNode;
 import cryptobot.dto.OrderRecord;
@@ -2197,23 +2026,14 @@ public OrderRecord buySpot(BigDecimal volume, BigDecimal limitPrice) throws Exce
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.*;
 import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.marketdata.Trade;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.knowm.xchange.service.trade.TradeService;
 import org.springframework.beans.factory.annotation.Value;
 
 // --- 所属クラス ---
@@ -2239,14 +2059,10 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.ExchangeService;
 import org.knowm.xchange.binance.service.BinanceTradeService;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.LimitOrder.Builder;
-import org.knowm.xchange.service.trade.TradeService;
-import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
-import java.util.*;
 import static java.math.RoundingMode.HALF_UP;
 import static org.knowm.xchange.dto.Order.OrderType.ASK;
 
@@ -2274,11 +2090,6 @@ synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPric
 ```java
 // --- インポート ---
 import static cryptobot.exchange.ExchangeService.FeeType.*;
-import static java.lang.String.*;
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
@@ -2301,23 +2112,14 @@ synchronized public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPric
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.*;
 import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.marketdata.Trade;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.knowm.xchange.service.trade.TradeService;
 import org.springframework.beans.factory.annotation.Value;
 
 // --- 所属クラス ---
@@ -2343,20 +2145,14 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 import static cryptobot.exchange.ExchangeService.FeeType.*;
 import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
-import static java.util.Objects.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
-import org.knowm.xchange.Exchange;
 import org.knowm.xchange.bitfinex.service.BitfinexTradeService;
 import org.knowm.xchange.bitfinex.v1.BitfinexOrderType;
 import org.knowm.xchange.bitfinex.v1.dto.trade.BitfinexOrderStatusResponse;
-import org.knowm.xchange.dto.Order.OrderStatus;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.springframework.stereotype.Service;
 import cryptobot.dto.OrderRecord;
 import cryptobot.exchange.ExchangeService;
 
@@ -2385,10 +2181,8 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 // --- インポート ---
 import cryptobot.dto.OrderRecord;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.account.Fee;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import java.math.BigDecimal;
-import java.util.*;
 import static java.math.BigDecimal.ONE;
 import static java.math.RoundingMode.HALF_UP;
 import static org.knowm.xchange.dto.Order.OrderType.ASK;
@@ -2414,12 +2208,9 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
 import static org.knowm.xchange.currency.Currency.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.OrderRecord;
 
 // --- 所属クラス ---
@@ -2440,17 +2231,12 @@ public OrderRecord sellSpot(BigDecimal volume, BigDecimal limitPrice) throws Exc
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.knowm.xchange.currency.CurrencyPair.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
 import java.util.Map;
-import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.trade.LimitOrder;
 import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.JsonNode;
 import cryptobot.dto.OrderRecord;
@@ -2584,13 +2370,8 @@ public void info(String subject, String body) {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
 import cryptobot.dto.*;
 
 // --- 所属クラス ---
@@ -2607,13 +2388,8 @@ public String getName() {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
-import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
-import java.util.*;
 import cryptobot.dto.*;
 
 // --- 所属クラス ---
@@ -2630,16 +2406,11 @@ public String getName() {
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2688,16 +2459,11 @@ public OrderRecord order(OrderType type, BigDecimal volume, BigDecimal limitPric
 
 ```java
 // --- インポート ---
-import static java.math.BigDecimal.*;
 import static java.math.RoundingMode.*;
-import static java.util.Optional.*;
-import static java.util.stream.Collectors.*;
 import static org.knowm.xchange.dto.Order.OrderStatus.*;
 import static org.knowm.xchange.dto.Order.OrderType.*;
 import java.math.BigDecimal;
-import java.util.*;
 import cryptobot.dto.*;
-import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2752,7 +2518,6 @@ import org.knowm.xchange.dto.Order.OrderType;
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutorService;
 import static cryptobot.web.view.pages.CommonComponent.*;
-import static java.lang.String.format;
 
 // --- 所属クラス ---
 // class MarketView extends VerticalLayout
@@ -2799,12 +2564,10 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
-import cryptobot.exchange.ExchangeService;
 import cryptobot.web.entity.Entity.MarketData;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
-import java.util.List;
 import static cryptobot.web.view.pages.CommonComponent.*;
 import static java.math.BigDecimal.ONE;
 import static org.knowm.xchange.dto.Order.OrderType.ASK;
