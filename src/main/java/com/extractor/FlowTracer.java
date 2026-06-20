@@ -85,7 +85,6 @@ public class FlowTracer {
             String relativePath = indexer.getProjectRootPath().relativize(javaFile).toString();
             String title = relativePath + " (" + methodName + ")";
             String anchor = title.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
-            String titleWithAnchor = "<a id=\"" + anchor + "\"></a>" + title;
             
             currentLinks.clear();
             currentLinks.add(String.format("[%s](#%s)", javaFile.getFileName().toString() + " (" + methodName + ")", anchor));
@@ -180,7 +179,7 @@ public class FlowTracer {
             blockContent.append("// --- メソッド定義 ---\n");
             blockContent.append(methodSource).append("\n");
 
-            extractedBlocks.add(new ExtractedBlock(titleWithAnchor, blockContent.toString()));
+            extractedBlocks.add(new ExtractedBlock(title, blockContent.toString(), anchor));
 
             // Check if this is a Mapper with an annotation
             if (isMyBatisAnnotation(visitor.getTargetMethodSource())) {
@@ -193,7 +192,7 @@ public class FlowTracer {
                 if (xmlSql != null) {
                     String xmlTitle = relativePath + " (XML: " + methodName + ")";
                     String xmlAnchor = xmlTitle.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
-                    extractedBlocks.add(new ExtractedBlock("<a id=\"" + xmlAnchor + "\"></a>" + xmlTitle, xmlSql));
+                    extractedBlocks.add(new ExtractedBlock(xmlTitle, xmlSql, xmlAnchor));
                     
                     currentLinks.clear();
                     currentLinks.add(String.format("[%s](#%s)", javaFile.getFileName().toString() + " (XML)", xmlAnchor));

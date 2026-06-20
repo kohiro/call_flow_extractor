@@ -32,6 +32,7 @@ public class ClassAstVisitor extends ASTVisitor {
     
     private final List<MethodCallInfo> methodCalls = new ArrayList<>();
     private final Map<String, String> localVariableTypes = new HashMap<>();
+    private final Map<String, String> methodReturnTypes = new HashMap<>();
     private boolean isInterface = false;
 
     public ClassAstVisitor(String fileContent, String targetMethodName, int targetArgCount, CompilationUnit cu) {
@@ -39,6 +40,17 @@ public class ClassAstVisitor extends ASTVisitor {
         this.targetMethodName = targetMethodName;
         this.targetArgCount = targetArgCount;
         this.cu = cu;
+        
+        // First pass to collect method return types
+        cu.accept(new ASTVisitor() {
+            @Override
+            public boolean visit(MethodDeclaration node) {
+                if (node.getReturnType2() != null) {
+                    methodReturnTypes.put(node.getName().getIdentifier(), node.getReturnType2().toString());
+                }
+                return false; // No need to visit children of MethodDeclaration for this pass
+            }
+        });
     }
 
     public int getTargetMethodFirstLineNumber() {
@@ -79,6 +91,8 @@ public class ClassAstVisitor extends ASTVisitor {
         return super.visit(node);
     }
 
+
+
     @Override
     public boolean visit(MethodDeclaration node) {
         if (node.getName().getIdentifier().equals(targetMethodName)) {
@@ -108,7 +122,22 @@ public class ClassAstVisitor extends ASTVisitor {
                     String typeName = varNode.getType().toString();
                     for (Object fragObj : varNode.fragments()) {
                         VariableDeclarationFragment frag = (VariableDeclarationFragment) fragObj;
-                        localVariableTypes.put(frag.getName().getIdentifier(), typeName);
+                        String name = frag.getName().getIdentifier();
+                        String inferredType = typeName;
+                        if ("var".equals(typeName) && frag.getInitializer() != null) {
+                            if (frag.getInitializer() instanceof MethodInvocation) {
+                                MethodInvocation minv = (MethodInvocation) frag.getInitializer();
+                                if (minv.getExpression() == null) {
+                                    String retType = methodReturnTypes.get(minv.getName().getIdentifier());
+                                    if (retType != null) {
+                                        inferredType = retType;
+                                    }
+                                }
+                            } else if (frag.getInitializer() instanceof ClassInstanceCreation) {
+                                inferredType = ((ClassInstanceCreation) frag.getInitializer()).getType().toString();
+                            }
+                        }
+                        localVariableTypes.put(name, inferredType);
                     }
                     return super.visit(varNode);
                 }

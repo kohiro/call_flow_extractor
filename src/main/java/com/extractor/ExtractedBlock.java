@@ -1,16 +1,22 @@
 package com.extractor;
 
 public class ExtractedBlock {
-    private final String filePath;
+    private final String title;
     private final String content;
+    private final String anchorId;
 
-    public ExtractedBlock(String filePath, String content) {
-        this.filePath = filePath;
+    public ExtractedBlock(String title, String content, String anchorId) {
+        this.title = title;
         this.content = content;
+        this.anchorId = anchorId;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public ExtractedBlock(String title, String content) {
+        this(title, content, null);
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getContent() {
@@ -18,6 +24,9 @@ public class ExtractedBlock {
     }
 
     public String toMarkdown() {
-        return "### " + filePath + "\n\n```java\n" + content + "\n```\n";
+        if (anchorId != null) {
+            return "<a id=\"" + anchorId + "\"></a>\n### " + title + "\n\n```java\n" + content + "\n```\n";
+        }
+        return "### " + title + "\n\n```java\n" + content + "\n```\n";
     }
 }
