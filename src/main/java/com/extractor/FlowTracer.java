@@ -291,15 +291,22 @@ public class FlowTracer {
 
             // If it's potentially a Mapper but no annotation, try finding XML
             if (javaFile.toString().endsWith("Mapper.java") || javaFile.toString().endsWith("Repository.java")) {
-                String xmlSql = XmlSqlExtractor.extractSql(indexer.getAllXmlFiles(), fqcn, methodName);
-                if (xmlSql != null) {
-                    String xmlTitle = fqcn + "#" + methodName + " (XML)";
+                XmlSqlExtractor.XmlResult xmlResult = XmlSqlExtractor.extractSql(indexer.getAllXmlFiles(), actualFqcn, methodName);
+                if (xmlResult != null) {
+                    String xmlTitle = actualFqcn + "#" + methodName + " (XML)";
                     String xmlAnchor = xmlTitle.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
-                    extractedBlocks.add(new ExtractedBlock(xmlTitle, xmlSql, xmlAnchor));
                     
-                    String simpleXmlName = fqcn;
-                    int xmlDot = fqcn.lastIndexOf('.');
-                    if (xmlDot != -1) simpleXmlName = fqcn.substring(xmlDot + 1);
+                    String absPath = xmlResult.filePath.replace('\\', '/');
+                    if (!absPath.startsWith("/")) {
+                        absPath = "/" + absPath;
+                    }
+                    String xmlFileLink = "vscode://file" + absPath + ":" + xmlResult.lineNumber;
+                    
+                    extractedBlocks.add(new ExtractedBlock(xmlTitle, xmlResult.sql, xmlAnchor, xmlFileLink));
+                    
+                    String simpleXmlName = actualFqcn;
+                    int xmlDot = actualFqcn.lastIndexOf('.');
+                    if (xmlDot != -1) simpleXmlName = actualFqcn.substring(xmlDot + 1);
                     
                     currentLinks.clear();
                     currentLinks.add(String.format("[%s](#%s)", simpleXmlName + "#" + methodName + " (XML)", xmlAnchor));

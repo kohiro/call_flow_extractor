@@ -12,7 +12,19 @@ import java.util.List;
 
 public class XmlSqlExtractor {
 
-    public static String extractSql(List<Path> xmlFiles, String mapperFqcn, String methodName) {
+    public static class XmlResult {
+        public final String sql;
+        public final String filePath;
+        public final int lineNumber;
+
+        public XmlResult(String sql, String filePath, int lineNumber) {
+            this.sql = sql;
+            this.filePath = filePath;
+            this.lineNumber = lineNumber;
+        }
+    }
+
+    public static XmlResult extractSql(List<Path> xmlFiles, String mapperFqcn, String methodName) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             // Important: Disable DTD validation for faster parsing and avoiding network calls for MyBatis DTDs
@@ -36,7 +48,9 @@ public class XmlSqlExtractor {
                                     Element element = (Element) node;
                                     String id = element.getAttribute("id");
                                     if (methodName.equals(id)) {
-                                        return formatXmlNode(node);
+                                        String sql = formatXmlNode(node);
+                                        int lineNumber = findLineNumber(xmlFile, methodName);
+                                        return new XmlResult(sql, xmlFile.toAbsolutePath().normalize().toString(), lineNumber);
                                     }
                                 }
                             }
@@ -50,6 +64,21 @@ public class XmlSqlExtractor {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static int findLineNumber(Path xmlFile, String methodName) {
+        try {
+            List<String> lines = java.nio.file.Files.readAllLines(xmlFile);
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if (line.contains("id=\"" + methodName + "\"") || line.contains("id='" + methodName + "'")) {
+                    return i + 1;
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return 1;
     }
 
     private static String formatXmlNode(Node node) {
