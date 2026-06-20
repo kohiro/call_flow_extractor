@@ -183,13 +183,7 @@ public class FlowTracer {
                 }
 
                 String[] methodLines = em.source.split("\n", -1);
-                for (Map.Entry<Integer, Set<String>> entry : lineToLinks.entrySet()) {
-                    int lineIndex = entry.getKey();
-                    if (lineIndex >= 0 && lineIndex < methodLines.length) {
-                        String linksComment = " // -> " + String.join(", ", entry.getValue());
-                        methodLines[lineIndex] = methodLines[lineIndex] + linksComment;
-                    }
-                }
+
                 
                 if (!firstMethod) {
                     combinedSource.append("\n\n");
