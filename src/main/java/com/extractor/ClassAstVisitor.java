@@ -12,6 +12,8 @@ public class ClassAstVisitor extends ASTVisitor {
     private final String targetMethodName;
     private final int targetArgCount;
     private final String fileContent;
+    private final CompilationUnit cu;
+    private int targetMethodFirstLineNumber = -1;
 
     public static class FieldData {
         public final String source;
@@ -32,10 +34,15 @@ public class ClassAstVisitor extends ASTVisitor {
     private final Map<String, String> localVariableTypes = new HashMap<>();
     private boolean isInterface = false;
 
-    public ClassAstVisitor(String fileContent, String targetMethodName, int targetArgCount) {
+    public ClassAstVisitor(String fileContent, String targetMethodName, int targetArgCount, CompilationUnit cu) {
         this.fileContent = fileContent;
         this.targetMethodName = targetMethodName;
         this.targetArgCount = targetArgCount;
+        this.cu = cu;
+    }
+
+    public int getTargetMethodFirstLineNumber() {
+        return targetMethodFirstLineNumber;
     }
 
     @Override
@@ -111,7 +118,8 @@ public class ClassAstVisitor extends ASTVisitor {
                     String receiver = methodInvocation.getExpression() != null ? methodInvocation.getExpression().toString() : null;
                     String methodName = methodInvocation.getName().getIdentifier();
                     int argCount = methodInvocation.arguments().size();
-                    methodCalls.add(new MethodCallInfo(receiver, methodName, argCount));
+                    int lineNumber = cu.getLineNumber(methodInvocation.getStartPosition());
+                    methodCalls.add(new MethodCallInfo(receiver, methodName, argCount, lineNumber));
                     return super.visit(methodInvocation);
                 }
             });
@@ -134,6 +142,9 @@ public class ClassAstVisitor extends ASTVisitor {
         while (lineStart > 0 && fileContent.charAt(lineStart - 1) != '\n') {
             lineStart--;
         }
+        
+        // Record the first line number for comment injection
+        targetMethodFirstLineNumber = cu.getLineNumber(lineStart);
         
         String rawSource = fileContent.substring(lineStart, start + length);
         String[] lines = rawSource.split("\n", -1);
@@ -239,11 +250,13 @@ public class ClassAstVisitor extends ASTVisitor {
         public final String receiver;
         public final String methodName;
         public final int argCount;
+        public final int lineNumber;
 
-        public MethodCallInfo(String receiver, String methodName, int argCount) {
+        public MethodCallInfo(String receiver, String methodName, int argCount, int lineNumber) {
             this.receiver = receiver; // Can be null if statically imported or intra-class
             this.methodName = methodName;
             this.argCount = argCount;
+            this.lineNumber = lineNumber;
         }
     }
 }
