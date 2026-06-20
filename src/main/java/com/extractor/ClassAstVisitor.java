@@ -26,10 +26,11 @@ public class ClassAstVisitor extends ASTVisitor {
 
     private final List<String> imports = new ArrayList<>();
     private final List<String> staticImports = new ArrayList<>();
-    private final List<FieldData> fields = new ArrayList<>();
     private String targetMethodSource = null;
     private MethodDeclaration targetMethodDecl = null;
+    private String targetClassSignature;
     
+    private final List<FieldData> fields = new ArrayList<>();
     private final List<MethodCallInfo> methodCalls = new ArrayList<>();
     private final Map<String, String> localVariableTypes = new HashMap<>();
     private final Map<String, String> methodReturnTypes = new HashMap<>();
@@ -104,6 +105,35 @@ public class ClassAstVisitor extends ASTVisitor {
             // Found target method
             targetMethodSource = extractSourceDedented(node);
             targetMethodDecl = node;
+            
+            // Extract class signature
+            ASTNode parent = node.getParent();
+            while (parent != null && !(parent instanceof TypeDeclaration) && !(parent instanceof EnumDeclaration) && !(parent instanceof RecordDeclaration)) {
+                parent = parent.getParent();
+            }
+            if (parent instanceof TypeDeclaration) {
+                TypeDeclaration td = (TypeDeclaration) parent;
+                StringBuilder sig = new StringBuilder();
+                if (td.isInterface()) sig.append("interface ");
+                else sig.append("class ");
+                sig.append(td.getName().getIdentifier());
+                if (td.getSuperclassType() != null) {
+                    sig.append(" extends ").append(td.getSuperclassType().toString());
+                }
+                if (!td.superInterfaceTypes().isEmpty()) {
+                    sig.append(" implements ");
+                    List<String> itfs = new ArrayList<>();
+                    for (Object itf : td.superInterfaceTypes()) {
+                        itfs.add(itf.toString());
+                    }
+                    sig.append(String.join(", ", itfs));
+                }
+                targetClassSignature = sig.toString();
+            } else if (parent instanceof EnumDeclaration) {
+                targetClassSignature = "enum " + ((EnumDeclaration) parent).getName().getIdentifier();
+            } else if (parent instanceof RecordDeclaration) {
+                targetClassSignature = "record " + ((RecordDeclaration) parent).getName().getIdentifier();
+            }
             
             // Extract method parameters
             for (Object obj : node.parameters()) {
@@ -261,6 +291,27 @@ public class ClassAstVisitor extends ASTVisitor {
 
     public MethodDeclaration getTargetMethodDecl() {
         return targetMethodDecl;
+    }
+
+    public String getTargetClassSignature() {
+        return targetClassSignature;
+    }
+
+    public String getTargetClassName() {
+        if (targetMethodDecl != null) {
+            ASTNode parent = targetMethodDecl.getParent();
+            while (parent != null && !(parent instanceof TypeDeclaration) && !(parent instanceof EnumDeclaration) && !(parent instanceof RecordDeclaration)) {
+                parent = parent.getParent();
+            }
+            if (parent instanceof TypeDeclaration) {
+                return ((TypeDeclaration) parent).getName().getIdentifier();
+            } else if (parent instanceof EnumDeclaration) {
+                return ((EnumDeclaration) parent).getName().getIdentifier();
+            } else if (parent instanceof RecordDeclaration) {
+                return ((RecordDeclaration) parent).getName().getIdentifier();
+            }
+        }
+        return null;
     }
 
     public List<MethodCallInfo> getMethodCalls() {

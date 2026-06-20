@@ -82,8 +82,19 @@ public class FlowTracer {
                 return currentLinks;
             }
 
+            String simpleClassName = visitor.getTargetClassName();
+            if (simpleClassName == null) {
+                simpleClassName = fqcn;
+                int lastDot = fqcn.lastIndexOf('.');
+                int lastDollar = fqcn.lastIndexOf('$');
+                int lastSeparator = Math.max(lastDot, lastDollar);
+                if (lastSeparator != -1) {
+                    simpleClassName = fqcn.substring(lastSeparator + 1);
+                }
+            }
+
             String relativePath = indexer.getProjectRootPath().relativize(javaFile).toString();
-            String title = relativePath + " (" + methodName + ")";
+            String title = relativePath + " (" + simpleClassName + "#" + methodName + ")";
             String anchor = title.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
             
             currentLinks.clear();
@@ -166,6 +177,11 @@ public class FlowTracer {
             if (hasImports) {
                 blockContent.append("// --- インポート ---\n");
                 blockContent.append(importsBlock).append("\n");
+            }
+            
+            if (visitor.getTargetClassSignature() != null) {
+                blockContent.append("// --- 所属クラス ---\n");
+                blockContent.append("// ").append(visitor.getTargetClassSignature()).append("\n\n");
             }
             
             if (!usedFields.isEmpty()) {
