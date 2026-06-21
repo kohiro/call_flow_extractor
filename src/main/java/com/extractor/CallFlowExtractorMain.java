@@ -9,9 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class CallFlowExtractorMain {
 
@@ -97,29 +97,29 @@ public class CallFlowExtractorMain {
         try {
             String systemPrompt = Files.readString(Path.of(systemPromptPath));
 
-            JsonObject payload = new JsonObject();
-            payload.addProperty("model", modelName);
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode payload = mapper.createObjectNode();
+            payload.put("model", modelName);
             
-            JsonArray messages = new JsonArray();
-            JsonObject sysMsg = new JsonObject();
-            sysMsg.addProperty("role", "system");
-            sysMsg.addProperty("content", systemPrompt);
+            ArrayNode messages = mapper.createArrayNode();
+            ObjectNode sysMsg = mapper.createObjectNode();
+            sysMsg.put("role", "system");
+            sysMsg.put("content", systemPrompt);
             messages.add(sysMsg);
 
-            JsonObject userMsg = new JsonObject();
-            userMsg.addProperty("role", "user");
-            userMsg.addProperty("content", markdownContent);
+            ObjectNode userMsg = mapper.createObjectNode();
+            userMsg.put("role", "user");
+            userMsg.put("content", markdownContent);
             messages.add(userMsg);
 
-            payload.add("messages", messages);
-            payload.addProperty("stream", false);
+            payload.set("messages", messages);
+            payload.put("stream", false);
 
-            JsonObject options = new JsonObject();
-            options.addProperty("num_ctx", numCtx);
-            payload.add("options", options);
+            ObjectNode options = mapper.createObjectNode();
+            options.put("num_ctx", numCtx);
+            payload.set("options", options);
 
-            Gson gson = new Gson();
-            String jsonBody = gson.toJson(payload);
+            String jsonBody = mapper.writeValueAsString(payload);
 
             HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
@@ -135,13 +135,13 @@ public class CallFlowExtractorMain {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
+                ObjectNode jsonResponse = (ObjectNode) mapper.readTree(response.body());
                 String content = "";
-                if (jsonResponse.has("message") && jsonResponse.getAsJsonObject("message").has("content")) {
-                    content = jsonResponse.getAsJsonObject("message").get("content").getAsString();
+                if (jsonResponse.has("message") && jsonResponse.get("message").has("content")) {
+                    content = jsonResponse.get("message").get("content").asText();
                 } else if (jsonResponse.has("response")) {
                     // fallback for older Ollama /api/generate endpoints if user configures that
-                    content = jsonResponse.get("response").getAsString();
+                    content = jsonResponse.get("response").asText();
                 } else {
                     content = response.body();
                 }
