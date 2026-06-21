@@ -32,7 +32,7 @@ public class FlowTracer {
     }
 
     public List<ExtractedBlock> trace(String fqcn, String methodName, int argCount) {
-        traceClassAndImplementors(fqcn, methodName, argCount);
+        traceHierarchy(fqcn, methodName, argCount);
         return getExtractedBlocks();
     }
 
@@ -134,14 +134,14 @@ public class FlowTracer {
                     for (String staticTarget : staticTargets) {
                         targetIds.addAll(traceRecursive(staticTarget, call.methodName, call.argCount));
                     }
-                    targetIds.addAll(traceClassAndImplementors(fqcn, call.methodName, call.argCount));
+                    targetIds.addAll(traceHierarchy(fqcn, call.methodName, call.argCount));
                 } else if ("this".equals(call.receiver)) {
-                    targetIds.addAll(traceClassAndImplementors(fqcn, call.methodName, call.argCount));
+                    targetIds.addAll(traceHierarchy(fqcn, call.methodName, call.argCount));
                 } else {
                     List<String> fieldSources = visitor.getFields().stream().map(fd -> fd.source).collect(Collectors.toList());
                     String targetTypeFqcn = resolveTargetTypeFqcn(call.receiver, fqcn, fieldSources, visitor.getImports(), visitor.getLocalVariableTypes());
                     if (targetTypeFqcn != null) {
-                        targetIds.addAll(traceClassAndImplementors(targetTypeFqcn, call.methodName, call.argCount));
+                        targetIds.addAll(traceHierarchy(targetTypeFqcn, call.methodName, call.argCount));
                     }
                 }
                 
@@ -172,14 +172,14 @@ public class FlowTracer {
                             for (String staticTarget : staticTargets) {
                                 targetIds.addAll(traceRecursive(staticTarget, call.methodName, call.argCount));
                             }
-                            targetIds.addAll(traceClassAndImplementors(fqcn, call.methodName, call.argCount));
+                            targetIds.addAll(traceHierarchy(fqcn, call.methodName, call.argCount));
                         } else if ("this".equals(call.receiver)) {
-                            targetIds.addAll(traceClassAndImplementors(fqcn, call.methodName, call.argCount));
+                            targetIds.addAll(traceHierarchy(fqcn, call.methodName, call.argCount));
                         } else {
                             List<String> fieldSources = visitor.getFields().stream().map(fd -> fd.source).collect(Collectors.toList());
                             String targetTypeFqcn = resolveTargetTypeFqcn(call.receiver, fqcn, fieldSources, visitor.getImports(), visitor.getLocalVariableTypes());
                             if (targetTypeFqcn != null) {
-                                targetIds.addAll(traceClassAndImplementors(targetTypeFqcn, call.methodName, call.argCount));
+                                targetIds.addAll(traceHierarchy(targetTypeFqcn, call.methodName, call.argCount));
                             }
                         }
                         if (!targetIds.isEmpty()) {
@@ -321,17 +321,40 @@ public class FlowTracer {
         }
     }
 
-    private List<String> traceClassAndImplementors(String targetFqcn, String methodName, int argCount) {
+    private List<String> traceHierarchy(String targetFqcn, String methodName, int argCount) {
         List<String> links = new ArrayList<>();
-        // Trace the declared type itself
+        
+        // 1. Trace superclasses and superinterfaces (declarations)
+        List<String> parents = new ArrayList<>();
+        collectParentsRecursive(targetFqcn, parents);
+        for (String parent : parents) {
+            links.addAll(traceRecursive(parent, methodName, argCount));
+        }
+
+        // 2. Trace the target class itself
         links.addAll(traceRecursive(targetFqcn, methodName, argCount));
         
-        // Also trace all implementors/subclasses
+        // 3. Trace implementors/subclasses
         List<String> implementors = indexer.getImplementors(targetFqcn);
         for (String impl : implementors) {
             links.addAll(traceRecursive(impl, methodName, argCount));
         }
         return links;
+    }
+
+    private void collectParentsRecursive(String fqcn, List<String> result) {
+        String superclass = indexer.getSuperclass(fqcn);
+        if (superclass != null && !result.contains(superclass)) {
+            collectParentsRecursive(superclass, result);
+            result.add(superclass);
+        }
+        List<String> superInterfaces = indexer.getSuperInterfaces(fqcn);
+        for (String iface : superInterfaces) {
+            if (!result.contains(iface)) {
+                collectParentsRecursive(iface, result);
+                result.add(iface);
+            }
+        }
     }
 
     private Class<?> loadClass(String className) {

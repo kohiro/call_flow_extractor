@@ -37,11 +37,16 @@ public class ProjectIndexer {
     private final Map<Path, String> fqcnByJavaFile = new HashMap<>();
     private final Map<String, List<String>> implementorsMap = new HashMap<>();
     private final Map<String, String> superclassMap = new HashMap<>(); // Child FQCN -> Parent Name
+    private final Map<String, List<String>> superInterfacesMap = new HashMap<>(); // Child FQCN -> List of Parent Names
     private List<Path> allXmlFiles;
     private Path projectRootPath;
 
     public Path getProjectRootPath() {
         return projectRootPath;
+    }
+
+    public List<String> getSuperInterfaces(String fqcn) {
+        return superInterfacesMap.getOrDefault(fqcn, new ArrayList<>());
     }
 
     public void indexProject(String rootPath) throws IOException {
@@ -104,7 +109,10 @@ public class ProjectIndexer {
                                 }
                             }
                             for (Object superInterface : node.superInterfaceTypes()) {
-                                addImplementor((Type) superInterface, fqcn);
+                                String parentName = addImplementor((Type) superInterface, fqcn);
+                                if (parentName != null) {
+                                    superInterfacesMap.computeIfAbsent(fqcn, k -> new ArrayList<>()).add(parentName);
+                                }
                             }
                             return super.visit(node);
                         }
