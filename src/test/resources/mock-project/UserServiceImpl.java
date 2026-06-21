@@ -1,26 +1,27 @@
 package mock;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
 
-    private final UserMapper userMapper;
-
-    public UserServiceImpl(UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
     public String getUserDetails(String id) {
-        String name = userMapper.findNameById(id);
-        String email = userMapper.findEmailById(id); // To test multiple calls
-        return name + " (" + email + ")";
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            return user.get().getName() + " (" + user.get().getEmail() + ")";
+        }
+        return "Unknown";
     }
 
     @Override
     @Transactional
     public User updateUser(UserRequest request) {
-        return userMapper.updateUser(request);
+        return userRepository.updateUser(request);
     }
 }

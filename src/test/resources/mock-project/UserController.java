@@ -1,22 +1,18 @@
 package mock;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserController {
+public class UserController implements UserApi {
     
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-    @GetMapping("/user")
+    @Override
     public String getUser() {
         return userService.getUserDetails("123");
     }
 
-    @PostMapping("/user/update")
+    @Override
     public User updateUser(UserRequest request) {
         return userService.updateUser(request);
     }
