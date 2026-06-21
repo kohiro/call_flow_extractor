@@ -7,11 +7,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 public class CallFlowExtractorMain {
 
@@ -46,6 +49,25 @@ public class CallFlowExtractorMain {
             }
         }
 
+        List<String> extraFilesList = new ArrayList<>();
+        Path yamlConfig = Path.of("extra-files.yaml");
+        if (Files.exists(yamlConfig)) {
+            try {
+                ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+                JsonNode root = yamlMapper.readTree(yamlConfig.toFile());
+                if (root != null && root.has("extraFiles")) {
+                    JsonNode extraFilesNode = root.get("extraFiles");
+                    if (extraFilesNode.isArray()) {
+                        for (JsonNode node : extraFilesNode) {
+                            extraFilesList.add(node.asText());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Warning: Failed to read extra-files.yaml: " + e.getMessage());
+            }
+        }
+
         try {
             ProjectIndexer indexer = new ProjectIndexer();
             indexer.indexProject(projectRoot);
@@ -75,6 +97,31 @@ public class CallFlowExtractorMain {
 
                 for (ExtractedBlock block : blocks) {
                     markdownOutput.append(block.toMarkdown());
+                }
+
+                if (!extraFilesList.isEmpty()) {
+                    markdownOutput.append("\n## 追加ファイル\n\n");
+                    for (String filePath : extraFilesList) {
+                        Path extraPath = Path.of(filePath);
+                        if (Files.exists(extraPath)) {
+                            markdownOutput.append("### ").append(extraPath.getFileName().toString()).append("\n\n");
+                            String ext = "";
+                            String filenameExt = extraPath.getFileName().toString();
+                            int dotIndex = filenameExt.lastIndexOf('.');
+                            if (dotIndex > 0) {
+                                ext = filenameExt.substring(dotIndex + 1);
+                            }
+                            markdownOutput.append("```").append(ext).append("\n");
+                            try {
+                                markdownOutput.append(Files.readString(extraPath));
+                            } catch (IOException e) {
+                                markdownOutput.append("Error reading file: ").append(e.getMessage());
+                            }
+                            markdownOutput.append("\n```\n\n");
+                        } else {
+                            System.err.println("Warning: Extra file not found: " + filePath);
+                        }
+                    }
                 }
 
                 String filename = entry.fqcn + "_" + entry.methodName + ".md";
