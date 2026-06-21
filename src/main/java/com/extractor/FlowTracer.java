@@ -26,13 +26,24 @@ public class FlowTracer {
         this(indexer, null);
     }
 
+    private final Set<String> dataModelsToExtract = new LinkedHashSet<>();
+    private String entryFqcn;
+    private String entryMethodName;
+
     public List<ExtractedBlock> getExtractedBlocks() {
         extractedBlocks.removeIf(java.util.Objects::isNull);
         return extractedBlocks;
     }
 
     public List<ExtractedBlock> trace(String fqcn, String methodName, int argCount) {
+        this.entryFqcn = fqcn;
+        this.entryMethodName = methodName;
         traceHierarchy(fqcn, methodName, argCount);
+        
+        for (String modelFqcn : new ArrayList<>(dataModelsToExtract)) {
+            tracePojo(modelFqcn);
+        }
+        
         return getExtractedBlocks();
     }
 
@@ -286,13 +297,29 @@ public class FlowTracer {
             extractedBlocks.set(blockIndex, new ExtractedBlock(title, blockContent.toString(), anchor, fileLink));
 
             if (hasMybatis) {
+                collectJavaMethodPojos(visitor, actualFqcn, methodName);
                 return currentLinks; // SQL is already in the annotation, we can stop here
             }
 
+            boolean isMapper = javaFile.toString().endsWith("Mapper.java") || javaFile.toString().endsWith("Repository.java");
+            boolean isEntry = (actualFqcn.equals(this.entryFqcn) && methodName.equals(this.entryMethodName));
+            if (isEntry || isMapper) {
+                collectJavaMethodPojos(visitor, actualFqcn, methodName);
+            }
+
             // If it's potentially a Mapper but no annotation, try finding XML
-            if (javaFile.toString().endsWith("Mapper.java") || javaFile.toString().endsWith("Repository.java")) {
+            if (isMapper) {
                 XmlSqlExtractor.XmlResult xmlResult = XmlSqlExtractor.extractSql(indexer.getAllXmlFiles(), actualFqcn, methodName);
                 if (xmlResult != null) {
+                    if (xmlResult.pojoFqcns != null) {
+                        for (String pojoType : xmlResult.pojoFqcns) {
+                            String resolved = resolveModelTypeFqcn(pojoType, actualFqcn, visitor.getImports());
+                            if (isCustomProjectClass(resolved)) {
+                                dataModelsToExtract.add(resolved);
+                            }
+                        }
+                    }
+
                     String xmlTitle = actualFqcn + "#" + methodName + " (XML)";
                     String xmlAnchor = xmlTitle.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
                     
@@ -318,6 +345,15 @@ public class FlowTracer {
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    private void collectJavaMethodPojos(ClassAstVisitor visitor, String actualFqcn, String methodName) {
+        for (String typeName : visitor.getMethodSignatureTypes()) {
+            String resolved = resolveModelTypeFqcn(typeName, actualFqcn, visitor.getImports());
+            if (isCustomProjectClass(resolved)) {
+                dataModelsToExtract.add(resolved);
+            }
         }
     }
 
@@ -443,14 +479,100 @@ public class FlowTracer {
     }
 
     private String getSimpleNameFromImport(String imp) {
-        // e.g. "import java.util.List;" -> "List"
-        // e.g. "import static org.mockito.Mockito.when;" -> "when"
         String cleaned = imp.replace("import ", "").replace("static ", "").replace(";", "").trim();
         int lastDot = cleaned.lastIndexOf('.');
         if (lastDot != -1) {
             return cleaned.substring(lastDot + 1);
         }
         return cleaned;
+    }
+
+    private String resolveModelTypeFqcn(String typeName, String currentFqcn, List<String> imports) {
+        if (typeName == null) return null;
+        String simpleType = typeName;
+        if (simpleType.contains("<") && simpleType.contains(">")) {
+            simpleType = simpleType.substring(simpleType.indexOf("<") + 1, simpleType.lastIndexOf(">"));
+        }
+        simpleType = simpleType.replace("[]", "").trim();
+
+        if (simpleType.equals("String") || simpleType.equals("Integer") || simpleType.equals("Long") || 
+            simpleType.equals("Boolean") || simpleType.equals("Double") || simpleType.equals("Float") ||
+            simpleType.equals("Object") || simpleType.equals("void") || simpleType.equals("int") ||
+            simpleType.equals("long") || simpleType.equals("boolean") || simpleType.equals("double")) {
+            return null;
+        }
+
+        for (String imp : imports) {
+            if (imp.endsWith("." + simpleType + ";") || imp.endsWith("." + simpleType + "\n")) {
+                return imp.replace("import ", "").replace(";", "").trim();
+            }
+        }
+        if (currentFqcn != null && currentFqcn.contains(".")) {
+            String pkg = currentFqcn.substring(0, currentFqcn.lastIndexOf('.'));
+            return pkg + "." + simpleType;
+        }
+        return simpleType;
+    }
+
+    private boolean isCustomProjectClass(String fqcn) {
+        if (fqcn == null || fqcn.startsWith("java.") || fqcn.startsWith("javax.") || fqcn.startsWith("org.springframework.")) {
+            return false;
+        }
+        return indexer.getJavaFile(fqcn) != null || indexer.getJavaFileBySimpleName(fqcn) != null;
+    }
+
+    private void tracePojo(String fqcn) {
+        Path javaFile = indexer.getJavaFile(fqcn);
+        if (javaFile == null) {
+            String simpleName = fqcn.contains(".") ? fqcn.substring(fqcn.lastIndexOf(".") + 1) : fqcn;
+            javaFile = indexer.getJavaFileBySimpleName(simpleName);
+        }
+        if (javaFile == null) return;
+
+        try {
+            String content = Files.readString(javaFile);
+            ASTParser parser = ASTParser.newParser(AST.JLS21); 
+            parser.setSource(content.toCharArray());
+            parser.setKind(ASTParser.K_COMPILATION_UNIT);
+            CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+            
+            ClassAstVisitor visitor = new ClassAstVisitor(content, fqcn, "non_existent_method_to_force_pojo_extraction", -1, cu);
+            cu.accept(visitor);
+            
+            StringBuilder blockContent = new StringBuilder();
+            
+            if (!visitor.getImports().isEmpty()) {
+                blockContent.append("// --- インポート ---\n");
+                for (String imp : visitor.getImports()) {
+                    blockContent.append(imp).append("\n");
+                }
+                blockContent.append("\n");
+            }
+            
+            if (visitor.getTargetClassSignature() != null) {
+                blockContent.append("// --- クラス定義 ---\n");
+                blockContent.append(visitor.getTargetClassSignature()).append(" {\n");
+            } else {
+                blockContent.append("// --- クラス定義 ---\nclass ").append(fqcn.substring(fqcn.lastIndexOf('.') + 1)).append(" {\n");
+            }
+            
+            if (!visitor.getFields().isEmpty()) {
+                for (ClassAstVisitor.FieldData fd : visitor.getFields()) {
+                    blockContent.append("    ").append(fd.source.replace("\n", "\n    ")).append("\n");
+                }
+            }
+            blockContent.append("}\n");
+
+            String title = fqcn + " (Data Model)";
+            String anchor = title.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
+            String absPath = javaFile.toAbsolutePath().normalize().toString().replace('\\', '/');
+            if (!absPath.startsWith("/")) absPath = "/" + absPath;
+            String fileLink = "vscode://file" + absPath + ":1";
+
+            extractedBlocks.add(new ExtractedBlock(title, blockContent.toString(), anchor, fileLink));
+        } catch (Exception e) {
+            // ignore
+        }
     }
 
     private String resolveTargetTypeFqcn(String receiver, String currentFqcn, List<String> fields, List<String> imports, Map<String, String> localVariableTypes) {

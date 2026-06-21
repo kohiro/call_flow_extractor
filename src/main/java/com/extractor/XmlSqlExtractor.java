@@ -16,11 +16,13 @@ public class XmlSqlExtractor {
         public final String sql;
         public final String filePath;
         public final int lineNumber;
+        public final List<String> pojoFqcns;
 
-        public XmlResult(String sql, String filePath, int lineNumber) {
+        public XmlResult(String sql, String filePath, int lineNumber, List<String> pojoFqcns) {
             this.sql = sql;
             this.filePath = filePath;
             this.lineNumber = lineNumber;
+            this.pojoFqcns = pojoFqcns;
         }
     }
 
@@ -50,7 +52,8 @@ public class XmlSqlExtractor {
                                     if (methodName.equals(id)) {
                                         String sql = formatXmlNode(node);
                                         int lineNumber = findLineNumber(xmlFile, methodName);
-                                        return new XmlResult(sql, xmlFile.toAbsolutePath().normalize().toString(), lineNumber);
+                                        java.util.List<String> pojoFqcns = extractPojoFqcns(element, root);
+                                        return new XmlResult(sql, xmlFile.toAbsolutePath().normalize().toString(), lineNumber, pojoFqcns);
                                     }
                                 }
                             }
@@ -64,6 +67,37 @@ public class XmlSqlExtractor {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static java.util.List<String> extractPojoFqcns(Element element, Element root) {
+        java.util.List<String> fqcns = new java.util.ArrayList<>();
+        String paramType = element.getAttribute("parameterType");
+        if (paramType != null && !paramType.isEmpty()) {
+            fqcns.add(paramType);
+        }
+        String resultType = element.getAttribute("resultType");
+        if (resultType != null && !resultType.isEmpty()) {
+            fqcns.add(resultType);
+        }
+        String resultMapId = element.getAttribute("resultMap");
+        if (resultMapId != null && !resultMapId.isEmpty()) {
+            // Find the resultMap element and its type attribute
+            NodeList childNodes = root.getChildNodes();
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node node = childNodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element child = (Element) node;
+                    if ("resultMap".equals(child.getNodeName()) && resultMapId.equals(child.getAttribute("id"))) {
+                        String type = child.getAttribute("type");
+                        if (type != null && !type.isEmpty()) {
+                            fqcns.add(type);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return fqcns;
     }
 
     private static int findLineNumber(Path xmlFile, String methodName) {

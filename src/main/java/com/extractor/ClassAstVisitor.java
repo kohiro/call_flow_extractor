@@ -68,19 +68,19 @@ public class ClassAstVisitor extends ASTVisitor {
     private String computeNodeFqcn(ASTNode node) {
         if (node != null) {
             StringBuilder sb = new StringBuilder();
-            ASTNode parent = node.getParent();
-            while (parent != null) {
-                if (parent instanceof TypeDeclaration) {
+            ASTNode curr = node;
+            while (curr != null) {
+                if (curr instanceof TypeDeclaration) {
                     if (sb.length() > 0) sb.insert(0, ".");
-                    sb.insert(0, ((TypeDeclaration) parent).getName().getIdentifier());
-                } else if (parent instanceof EnumDeclaration) {
+                    sb.insert(0, ((TypeDeclaration) curr).getName().getIdentifier());
+                } else if (curr instanceof EnumDeclaration) {
                     if (sb.length() > 0) sb.insert(0, ".");
-                    sb.insert(0, ((EnumDeclaration) parent).getName().getIdentifier());
-                } else if (parent instanceof RecordDeclaration) {
+                    sb.insert(0, ((EnumDeclaration) curr).getName().getIdentifier());
+                } else if (curr instanceof RecordDeclaration) {
                     if (sb.length() > 0) sb.insert(0, ".");
-                    sb.insert(0, ((RecordDeclaration) parent).getName().getIdentifier());
+                    sb.insert(0, ((RecordDeclaration) curr).getName().getIdentifier());
                 }
-                parent = parent.getParent();
+                curr = curr.getParent();
             }
             if (sb.length() > 0) {
                 if (cu != null && cu.getPackage() != null) {
@@ -101,6 +101,51 @@ public class ClassAstVisitor extends ASTVisitor {
         if (node.isInterface()) {
             isInterface = true;
         }
+        
+        String currentFqcn = computeNodeFqcn(node);
+        boolean fqcnMatch = false;
+        if (targetFqcn.equals(currentFqcn)) {
+            fqcnMatch = true;
+        } else {
+            String targetSimple = targetFqcn;
+            int lastDot = targetFqcn.lastIndexOf('.');
+            if (lastDot != -1) {
+                targetSimple = targetFqcn.substring(lastDot + 1);
+            }
+            if (currentFqcn != null && (currentFqcn.endsWith("." + targetSimple) || currentFqcn.equals(targetSimple))) {
+                if (lastDot != -1) {
+                    String targetPkg = targetFqcn.substring(0, lastDot);
+                    if (currentFqcn.startsWith(targetPkg + ".")) {
+                        fqcnMatch = true;
+                    }
+                } else {
+                    fqcnMatch = true;
+                }
+            }
+        }
+        
+        if (fqcnMatch && targetClassSignature == null) {
+            StringBuilder sig = new StringBuilder();
+            for (Object mod : node.modifiers()) {
+                sig.append(mod.toString()).append(" ");
+            }
+            if (node.isInterface()) sig.append("interface ");
+            else sig.append("class ");
+            sig.append(node.getName().getIdentifier());
+            if (node.getSuperclassType() != null) {
+                sig.append(" extends ").append(node.getSuperclassType().toString());
+            }
+            if (!node.superInterfaceTypes().isEmpty()) {
+                sig.append(" implements ");
+                List<String> itfs = new ArrayList<>();
+                for (Object itf : node.superInterfaceTypes()) {
+                    itfs.add(itf.toString());
+                }
+                sig.append(String.join(", ", itfs));
+            }
+            targetClassSignature = sig.toString();
+        }
+        
         return super.visit(node);
     }
 
@@ -174,42 +219,17 @@ public class ClassAstVisitor extends ASTVisitor {
             em.firstLineNumber = cu.getLineNumber(node.getStartPosition());
             extractedMethods.add(em);
             
-            // Extract class signature if not already extracted
-            ASTNode parent = node.getParent();
-            while (parent != null && !(parent instanceof TypeDeclaration) && !(parent instanceof EnumDeclaration) && !(parent instanceof RecordDeclaration)) {
-                parent = parent.getParent();
+            // Extract method parameters and return type
+            if (node.getReturnType2() != null) {
+                methodSignatureTypes.add(node.getReturnType2().toString());
             }
-            if (parent instanceof TypeDeclaration) {
-                TypeDeclaration td = (TypeDeclaration) parent;
-                StringBuilder sig = new StringBuilder();
-                if (td.isInterface()) sig.append("interface ");
-                else sig.append("class ");
-                sig.append(td.getName().getIdentifier());
-                if (td.getSuperclassType() != null) {
-                    sig.append(" extends ").append(td.getSuperclassType().toString());
-                }
-                if (!td.superInterfaceTypes().isEmpty()) {
-                    sig.append(" implements ");
-                    List<String> itfs = new ArrayList<>();
-                    for (Object itf : td.superInterfaceTypes()) {
-                        itfs.add(itf.toString());
-                    }
-                    sig.append(String.join(", ", itfs));
-                }
-                targetClassSignature = sig.toString();
-            } else if (parent instanceof EnumDeclaration) {
-                targetClassSignature = "enum " + ((EnumDeclaration) parent).getName().getIdentifier();
-            } else if (parent instanceof RecordDeclaration) {
-                targetClassSignature = "record " + ((RecordDeclaration) parent).getName().getIdentifier();
-            }
-            
-            // Extract method parameters
             for (Object obj : node.parameters()) {
                 if (obj instanceof SingleVariableDeclaration) {
                     SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
                     String varName = param.getName().getIdentifier();
                     String typeName = param.getType().toString();
                     localVariableTypes.put(varName, typeName);
+                    methodSignatureTypes.add(typeName);
                 }
             }
             
@@ -412,6 +432,12 @@ public class ClassAstVisitor extends ASTVisitor {
 
     public boolean isInterface() {
         return isInterface;
+    }
+
+    private final List<String> methodSignatureTypes = new ArrayList<>();
+
+    public List<String> getMethodSignatureTypes() {
+        return methodSignatureTypes;
     }
 
     public static class MethodCallInfo {

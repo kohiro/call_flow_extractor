@@ -1,9 +1,7 @@
 package mock;
 
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
@@ -18,5 +16,11 @@ public class UserServiceImpl implements UserService {
         String name = userMapper.findNameById(id);
         String email = userMapper.findEmailById(id); // To test multiple calls
         return name + " (" + email + ")";
+    }
+
+    @Override
+    @Transactional
+    public User updateUser(UserRequest request) {
+        return userMapper.updateUser(request);
     }
 }

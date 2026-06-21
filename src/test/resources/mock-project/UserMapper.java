@@ -1,14 +1,15 @@
 package mock;
 
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Update;
 
-@Mapper
 public interface UserMapper {
 
     @Select("SELECT name FROM users WHERE id = #{id}")
     String findNameById(String id);
 
-    // This one will be resolved from XML
     String findEmailById(String id);
+
+    @Update("UPDATE users SET name = 'foo' WHERE id = #{requestedId}")
+    User updateUser(UserRequest request);
 }
