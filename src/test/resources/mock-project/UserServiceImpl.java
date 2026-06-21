@@ -11,12 +11,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public String getUserDetails(String id) {
+    public User getUserDetails(String id) {
         Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return user.get().getName() + " (" + user.get().getEmail() + ")";
-        }
-        return "Unknown";
+        return user.orElse(null);
     }
 
     @Override

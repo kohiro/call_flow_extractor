@@ -2,12 +2,13 @@ package mock;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface UserApi {
     @GetMapping("/user")
-    String getUser();
+    UserResponse getUser(@RequestParam("id") String id);
 
     @PostMapping("/user/update")
-    User updateUser(UserRequest request);
+    UserResponse updateUser(@RequestBody UserRequest request);
 }
