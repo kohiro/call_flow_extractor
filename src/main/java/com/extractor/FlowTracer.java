@@ -47,17 +47,37 @@ public class FlowTracer {
         return getExtractedBlocks();
     }
 
+    /**
+     * メソッドの呼び出しフローを再帰的にトレースし、各メソッドのソースコードや呼び出し関係を抽出します。
+     * 指定されたクラス(FQCN)とメソッド名から出発し、AST（抽象構文木）を解析して
+     * メソッド内部で呼び出されている他のメソッドを再帰的に探索します。
+     *
+     * 【CallFlowを作成するうえで作成するデータ構造（主にマップ）の説明】
+     * - visitedMethods (Map<String, List<String>>): 
+     *   無限ループ（循環呼び出し）を防ぎ、同一メソッドの重複解析を避けるためのキャッシュです。
+     *   キーは "FQCN#メソッド名(引数数)" のユニークID、値はそのメソッドを表すMarkdownリンクのリストです。
+     * - extractedBlocks (List<ExtractedBlock>): 
+     *   最終的なMarkdown出力をプレオーダー（先行順）で保持するリストです。
+     *   解析開始時に自身のインデックス（null）を予約し、解析後にソースコードブロックを格納します。
+     *
+     * @param fqcn 対象メソッドが属するクラスの完全修飾クラス名(FQCN)
+     * @param methodName トレース対象のメソッド名
+     * @param argCount メソッドの引数の数（オーバーロード解決用、不明な場合は-1）
+     * @return 呼び出し元へ返すための、このメソッド自身を表すMarkdownリンク文字列のリスト
+     */
     private List<String> traceRecursive(String fqcn, String methodName, int argCount) {
-        // Prevent infinite recursion and duplicate processing
+        // メソッドの一意な識別子（探索済み判定用）
         String uniqueId = fqcn + "#" + methodName + (argCount != -1 ? "(" + argCount + ")" : "");
         if (visitedMethods.containsKey(uniqueId)) {
             return visitedMethods.get(uniqueId);
         }
         
+        // このメソッド自身のMarkdownリンクを保持するリスト。探索済みキャッシュとして先に登録しておく
         List<String> currentLinks = new ArrayList<>();
         visitedMethods.put(uniqueId, currentLinks);
 
 
+        // 対象クラスのJavaソースファイルを検索
         Path javaFile = indexer.getJavaFile(fqcn);
         if (javaFile == null) {
             String simpleName = fqcn.contains(".") ? fqcn.substring(fqcn.lastIndexOf(".") + 1) : fqcn;
@@ -66,11 +86,12 @@ public class FlowTracer {
 
 
         if (javaFile == null) {
-            // It could be an external library or we couldn't resolve it. Just skip.
+            // 外部ライブラリなど、ソースが解決できない場合はこれ以上トレースしない
             return currentLinks;
         }
 
         try {
+            // ソースコードの読み込み（文字コードのフォールバック対応）
             String content;
             try {
                 content = Files.readString(javaFile);
@@ -82,10 +103,13 @@ public class FlowTracer {
                 }
             }
             
+            // JDTを利用してソースコードのAST（抽象構文木）を構築
             ASTParser parser = ASTParser.newParser(AST.JLS21); 
             parser.setSource(content.toCharArray());
             parser.setKind(ASTParser.K_COMPILATION_UNIT);
             CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+            
+            // メソッド内の呼び出しやフィールド参照を抽出するためのVisitorを実行
             ClassAstVisitor visitor = new ClassAstVisitor(content, fqcn, methodName, argCount, cu);
             cu.accept(visitor);
 
@@ -122,6 +146,7 @@ public class FlowTracer {
                 visitedMethods.put(actualUniqueId, currentLinks);
             }
             
+            // Markdown出力時のジャンプ先アンカー文字列を生成
             String anchor = title.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").trim().replaceAll("\\s+", "-");
             String simpleClassName = actualFqcn;
             int lastDot = actualFqcn.lastIndexOf('.');
@@ -129,38 +154,16 @@ public class FlowTracer {
                 simpleClassName = actualFqcn.substring(lastDot + 1);
             }
             
+            // 呼び出し元に戻すための自メソッドへのリンクを構築
             currentLinks.clear();
             currentLinks.add(String.format("[%s](#%s)", simpleClassName + "#" + methodName + (argCount != -1 ? "(" + argCount + ")" : ""), anchor));
 
-            // Reserve spot for PRE-ORDER traversal output
+            // 出力順序を保つため、現在の抽出ブロックの位置(index)を予約しておく
             int blockIndex = extractedBlocks.size();
             extractedBlocks.add(null);
 
-            // Assign targetIds to method calls
-            for (ClassAstVisitor.MethodCallInfo call : visitor.getMethodCalls()) {
-                List<String> targetIds = new ArrayList<>();
-                
-                if (call.receiver == null) {
-                    List<String> staticTargets = resolveStaticImports(call.methodName, visitor.getStaticImports());
-                    for (String staticTarget : staticTargets) {
-                        targetIds.addAll(traceRecursive(staticTarget, call.methodName, call.argCount));
-                    }
-                    targetIds.addAll(traceHierarchy(fqcn, call.methodName, call.argCount));
-                } else if ("this".equals(call.receiver)) {
-                    targetIds.addAll(traceHierarchy(fqcn, call.methodName, call.argCount));
-                } else {
-                    List<String> fieldSources = visitor.getFields().stream().map(fd -> fd.source).collect(Collectors.toList());
-                    String targetTypeFqcn = resolveTargetTypeFqcn(call.receiver, fqcn, fieldSources, visitor.getImports(), visitor.getLocalVariableTypes());
-                    if (targetTypeFqcn != null) {
-                        targetIds.addAll(traceHierarchy(targetTypeFqcn, call.methodName, call.argCount));
-                    }
-                }
-                
-                // Use a dynamic field or just a local map to group targets
-                // Actually, wait, let's keep it simple
-            }
 
-            // Group links per method
+            // メソッドごとに抽出したソースコードを統合する
             StringBuilder combinedSource = new StringBuilder();
             boolean firstMethod = true;
             boolean hasMybatis = false;
@@ -170,31 +173,27 @@ public class FlowTracer {
                     hasMybatis = true;
                 }
                 
-                Map<Integer, Set<String>> lineToLinks = new HashMap<>();
+                // 抽出した各メソッド内での他のメソッド呼び出しを再帰的にトレースする
                 for (ClassAstVisitor.MethodCallInfo call : visitor.getMethodCalls()) {
-                    // Check if call belongs to THIS method
+                    // その呼び出しが現在のメソッド定義行の中に含まれているかチェック
                     int lineIndex = call.lineNumber - em.firstLineNumber;
                     String[] methodLines = em.source.split("\n", -1);
                     if (lineIndex >= 0 && lineIndex < methodLines.length) {
-                        // resolve again for the call since we didn't store it
-                        List<String> targetIds = new ArrayList<>();
+                        // 呼び出し先のインスタンス（receiver）の種類に応じてFQCNを解決し、再帰トレースを実行する
                         if (call.receiver == null) {
                             List<String> staticTargets = resolveStaticImports(call.methodName, visitor.getStaticImports());
                             for (String staticTarget : staticTargets) {
-                                targetIds.addAll(traceRecursive(staticTarget, call.methodName, call.argCount));
+                                traceRecursive(staticTarget, call.methodName, call.argCount);
                             }
-                            targetIds.addAll(traceHierarchy(fqcn, call.methodName, call.argCount));
+                            traceHierarchy(fqcn, call.methodName, call.argCount);
                         } else if ("this".equals(call.receiver)) {
-                            targetIds.addAll(traceHierarchy(fqcn, call.methodName, call.argCount));
+                            traceHierarchy(fqcn, call.methodName, call.argCount);
                         } else {
                             List<String> fieldSources = visitor.getFields().stream().map(fd -> fd.source).collect(Collectors.toList());
                             String targetTypeFqcn = resolveTargetTypeFqcn(call.receiver, fqcn, fieldSources, visitor.getImports(), visitor.getLocalVariableTypes());
                             if (targetTypeFqcn != null) {
-                                targetIds.addAll(traceHierarchy(targetTypeFqcn, call.methodName, call.argCount));
+                                traceHierarchy(targetTypeFqcn, call.methodName, call.argCount);
                             }
-                        }
-                        if (!targetIds.isEmpty()) {
-                            lineToLinks.computeIfAbsent(lineIndex, k -> new LinkedHashSet<>()).addAll(targetIds);
                         }
                     }
                 }
